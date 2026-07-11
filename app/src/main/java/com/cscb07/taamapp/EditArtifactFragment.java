@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +24,7 @@ public class EditArtifactFragment extends Fragment {
     private boolean isEditing;
     private boolean isModeAdd() { return !isEditing; }
 
+    @Nullable private Item initialItem;
     TextView textViewLotNumber;
     EditText
             editTextName,
@@ -40,18 +42,41 @@ public class EditArtifactFragment extends Fragment {
             spinnerArtifactCategory,
             spinnerArtifactMaterial,
             spinnerDynasty;
-
-
+    String
+            spinnerCategoryValue = SPINNER_DEFAULT_CATEGORY,
+            spinnerMaterialValue = SPINNER_DEFAULT_MATERIAL,
+            spinnerDynastyValue = SPINNER_DEFAULT_DYNASTY;
     public static final String SPINNER_DEFAULT_CATEGORY = "select category:";
     public static final String SPINNER_DEFAULT_MATERIAL = "select material:";
     public static final String SPINNER_DEFAULT_DYNASTY = "select dynasty/period:";
-    private void initSpinner(Spinner spin, String default_value, int arrayId)
+
+    public EditArtifactFragment()
+    {
+        this(null);
+    }
+    public EditArtifactFragment(@Nullable Item initialItem)
+    {
+        this.initialItem = initialItem;
+    }
+    private ArrayAdapter<CharSequence> initSpinner(Spinner spin, String default_value, int arrayId)
     {
         List<CharSequence> options = new ArrayList<>(Arrays.asList(getResources().getStringArray(arrayId)));
         options.add(0, default_value);
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, options);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spin.setAdapter(adapter);
+
+        return adapter;
+    }
+    private boolean trySetSelection(Spinner spin, ArrayAdapter<CharSequence> adapter, String value)
+    {
+        int idx = adapter.getPosition(value);
+        if (idx == -1)
+        {
+            return false;
+        }
+        spin.setSelection(idx);
+        return true;
     }
 
     @Nullable
@@ -63,12 +88,6 @@ public class EditArtifactFragment extends Fragment {
         textViewLotNumber = view.findViewById(R.id.textViewLotNumber);
         editTextName = view.findViewById(R.id.editTextName);
         editTextArtifactDescription = view.findViewById(R.id.editTextArtifactDescription);
-        spinnerArtifactCategory = view.findViewById(R.id.spinnerArtifactCategory);
-        initSpinner(spinnerArtifactCategory, SPINNER_DEFAULT_CATEGORY, R.array.categories_array);
-        spinnerArtifactMaterial = view.findViewById(R.id.spinnerArtifactMaterial);
-        initSpinner(spinnerArtifactMaterial, SPINNER_DEFAULT_MATERIAL, R.array.material_array);
-        spinnerDynasty = view.findViewById(R.id.spinnerDynasty);
-        initSpinner(spinnerDynasty, SPINNER_DEFAULT_DYNASTY, R.array.dynasty_period_array);
         editTextCulturalOrigin = view.findViewById(R.id.editTextCulturalOrigin);
         editTextDimensions = view.findViewById(R.id.editTextDimensions);
         editTextConditionReport = view.findViewById(R.id.editTextConditionReport);
@@ -78,6 +97,46 @@ public class EditArtifactFragment extends Fragment {
         editTextAccessionNumber = view.findViewById(R.id.editTextAccessionNumber);
         editTextNotes = view.findViewById(R.id.editTextNotes);
 
+        spinnerArtifactCategory = view.findViewById(R.id.spinnerArtifactCategory);
+        spinnerArtifactMaterial = view.findViewById(R.id.spinnerArtifactMaterial);
+        spinnerDynasty = view.findViewById(R.id.spinnerDynasty);
+        ArrayAdapter<CharSequence> categoryAdapter = initSpinner(spinnerArtifactCategory, SPINNER_DEFAULT_CATEGORY, R.array.categories_array);
+        ArrayAdapter<CharSequence> materialAdapter = initSpinner(spinnerArtifactMaterial, SPINNER_DEFAULT_MATERIAL, R.array.material_array);
+        ArrayAdapter<CharSequence> dynastyAdapter = initSpinner(spinnerDynasty, SPINNER_DEFAULT_DYNASTY, R.array.dynasty_period_array);
+        spinnerArtifactCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                spinnerCategoryValue = (String)adapterView.getItemAtPosition(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                spinnerCategoryValue = SPINNER_DEFAULT_CATEGORY;
+            }
+        });
+        spinnerArtifactMaterial.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                spinnerMaterialValue = (String) adapterView.getItemAtPosition(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                spinnerMaterialValue = SPINNER_DEFAULT_MATERIAL;
+            }
+        });
+        spinnerDynasty.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                spinnerDynastyValue = (String) adapterView.getItemAtPosition(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                spinnerDynastyValue = SPINNER_DEFAULT_DYNASTY;
+            }
+        });
+
         Button buttonCancel = view.findViewById(R.id.buttonCancel);
         Button buttonSave = view.findViewById(R.id.buttonSave);
 
@@ -85,6 +144,33 @@ public class EditArtifactFragment extends Fragment {
         // TODO: set up save button behaviour.
         buttonSave.setOnClickListener(v -> Toast.makeText(getContext(), "Saving! (not really)", Toast.LENGTH_SHORT).show());
 
+        Bundle args = getArguments();
+        if (initialItem == null) {
+            isEditing = false;
+            // TODO: set to a unique Lot number.
+            textViewLotNumber.setText("Temp Lot Num.");
+        } else {
+            isEditing = true;
+            Item initial = initialItem;
+            textViewLotNumber.setText(initial.getLotNumber());
+            editTextName.setText(initial.getArtifactName());
+            editTextArtifactDescription.setText(initial.getDescription());
+            editTextCulturalOrigin.setText(initial.getCulturalOrigin());
+            editTextDimensions.setText(initial.getDimensions());
+            editTextConditionReport.setText(initial.getConditionReport());
+            editTextCurrentLocation.setText(initial.getCurrentLocation());
+            editTextAcquisitionMethod.setText(initial.getAcquisitionMethod());
+            editTextProvenance.setText(initial.getProvenance());
+            editTextAccessionNumber.setText(initial.getAccessionNumber());
+            editTextNotes.setText(initial.getNotes());
+
+            if (!trySetSelection(spinnerArtifactCategory, categoryAdapter, initial.getCategory()))
+                Toast.makeText(getContext(), "Invalid category value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
+            if (!trySetSelection(spinnerArtifactMaterial, materialAdapter, initial.getMaterial()))
+                Toast.makeText(getContext(), "Invalid category value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
+            if (!trySetSelection(spinnerDynasty, dynastyAdapter, initial.getDynastyPeriod()))
+                Toast.makeText(getContext(), "Invalid category value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
+        }
 
         return view;
     }

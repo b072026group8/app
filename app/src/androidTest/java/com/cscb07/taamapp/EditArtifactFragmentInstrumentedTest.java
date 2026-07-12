@@ -92,4 +92,44 @@ public class EditArtifactFragmentInstrumentedTest {
             });
         }
     }
+
+    @Test
+    public void fragmentCreation_EditModeInvalidSpinnerValues_SetsSpinnersToDefault() {
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        final String sampleCategory = "invalid";
+        final String sampleMaterial = "invalid";
+        final String sampleDynasty = "invalid";
+        Item inputItem = new Item("A01231",
+                "Shield",
+                "very brittle old shield.",
+                sampleCategory, sampleMaterial, sampleDynasty,
+                "Some group",
+                "40cm x 40cm disk",
+                "edges heavily chipped",
+                "Museum",
+                "Donated",
+                "Some specific location",
+                "138918234",
+                "Very curious notes here",
+                ""
+        );
+        FragmentFactory factory = new FragmentFactory() {
+            @NonNull
+            @Override
+            public Fragment instantiate(@NonNull ClassLoader classLoader, @NonNull String className) {
+                return new EditArtifactFragment(inputItem);
+            }
+        };
+
+
+        try (FragmentScenario<EditArtifactFragment> scenario = FragmentScenario.launch(EditArtifactFragment.class, null, factory)) {
+            scenario.onFragment(f -> {
+
+
+                assertEquals(EditArtifactFragment.SPINNER_DEFAULT_CATEGORY, f.spinnerCategoryValue);
+                assertEquals(EditArtifactFragment.SPINNER_DEFAULT_MATERIAL, f.spinnerMaterialValue);
+                assertEquals(EditArtifactFragment.SPINNER_DEFAULT_DYNASTY, f.spinnerDynastyValue);
+            });
+        }
+    }
 }

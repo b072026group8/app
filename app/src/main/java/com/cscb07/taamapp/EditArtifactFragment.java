@@ -167,9 +167,9 @@ public class EditArtifactFragment extends Fragment {
             if (!trySetSelection(spinnerArtifactCategory, categoryAdapter, initial.getCategory()))
                 Toast.makeText(getContext(), "Invalid category value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
             if (!trySetSelection(spinnerArtifactMaterial, materialAdapter, initial.getMaterial()))
-                Toast.makeText(getContext(), "Invalid category value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Invalid material value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
             if (!trySetSelection(spinnerDynasty, dynastyAdapter, initial.getDynastyPeriod()))
-                Toast.makeText(getContext(), "Invalid category value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Invalid dynasty value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
         }
 
         return view;

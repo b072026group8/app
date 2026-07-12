@@ -1,6 +1,7 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class EditArtifactFragment extends Fragment {
+    private static final String TAG = "EditArtifactFragment";
     private boolean isEditing;
     private boolean isModeAdd() { return !isEditing; }
 
@@ -73,6 +75,7 @@ public class EditArtifactFragment extends Fragment {
         int idx = adapter.getPosition(value);
         if (idx == -1)
         {
+            Log.w(TAG, "invalid value '" + value + "' set to spinner id: " + spin.getId());
             return false;
         }
         spin.setSelection(idx);
@@ -106,6 +109,7 @@ public class EditArtifactFragment extends Fragment {
         spinnerArtifactCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d(TAG, "Category set to: " + i);
                 spinnerCategoryValue = (String)adapterView.getItemAtPosition(i);
             }
 
@@ -117,6 +121,7 @@ public class EditArtifactFragment extends Fragment {
         spinnerArtifactMaterial.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d(TAG, "Material set to: " + i);
                 spinnerMaterialValue = (String) adapterView.getItemAtPosition(i);
             }
 
@@ -128,6 +133,7 @@ public class EditArtifactFragment extends Fragment {
         spinnerDynasty.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d(TAG, "Dynasty set to: " + i);
                 spinnerDynastyValue = (String) adapterView.getItemAtPosition(i);
             }
 
@@ -164,12 +170,17 @@ public class EditArtifactFragment extends Fragment {
             editTextAccessionNumber.setText(initial.getAccessionNumber());
             editTextNotes.setText(initial.getNotes());
 
+            // fields are set primarily for the instrumented test.
+            // they're only when they would have been set anyway.
             if (!trySetSelection(spinnerArtifactCategory, categoryAdapter, initial.getCategory()))
                 Toast.makeText(getContext(), "Invalid category value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
+            else spinnerCategoryValue = initial.getCategory();
             if (!trySetSelection(spinnerArtifactMaterial, materialAdapter, initial.getMaterial()))
                 Toast.makeText(getContext(), "Invalid material value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
+            else spinnerMaterialValue = initial.getMaterial();
             if (!trySetSelection(spinnerDynasty, dynastyAdapter, initial.getDynastyPeriod()))
                 Toast.makeText(getContext(), "Invalid dynasty value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
+            else spinnerDynastyValue = initial.getDynastyPeriod();
         }
 
         return view;

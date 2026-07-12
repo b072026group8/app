@@ -4,7 +4,6 @@ public class Item {
 
     private String lotNumber;
     private String artifactName;
-    private String title;
     private String description;
     private String category;
     private String material;
@@ -20,10 +19,9 @@ public class Item {
     // no idea how to store images right now, assume grabbed from supabase with url
     private String image;
 
-    public Item(String lotNumber, String artifactName, String title, String description, String category, String material, String dynastyPeriod, String culturalOrigin, String dimensions, String conditionReport, String currentLocation, String acquisitionMethod, String provenance, String accessionNumber, String notes, String image) {
+    public Item(String lotNumber, String artifactName, String description, String category, String material, String dynastyPeriod, String culturalOrigin, String dimensions, String conditionReport, String currentLocation, String acquisitionMethod, String provenance, String accessionNumber, String notes, String image) {
         this.lotNumber = lotNumber;
         this.artifactName = artifactName;
-        this.title = title;
         this.description = description;
         this.category = category;
         this.material = material;
@@ -42,8 +40,6 @@ public class Item {
     // Getters and setters
     public String getArtifactName() { return artifactName; }
     public void setArtifactName(String artifactName) { this.artifactName = artifactName; }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
     public String getMaterial() { return material; }
     public void setMaterial(String material) { this.material = material; }
     public String getCategory() { return category; }

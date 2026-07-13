@@ -102,4 +102,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/SignupEmailAddress"
         tools:text="Password:" />
+
+    <Button
+        android:id="@+id/LoginButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="75dp"
+        android:layout_marginEnd="32dp"
+        android:backgroundTint="#B59C6C"
+        android:text="Login"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SignupPassword" />
 </androidx.constraintlayout.widget.ConstraintLayout>

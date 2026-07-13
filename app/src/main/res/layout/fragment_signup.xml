@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     android:background="#161515">
 
+    <Button
+        android:id="@+id/SignupButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:backgroundTint="#B59C6C"
+        android:text="Signup"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SignupPassword" />
+
     <TextView
         android:id="@+id/NameText"
         android:layout_width="110dp"

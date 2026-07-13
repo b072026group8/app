@@ -7,7 +7,7 @@
     android:background="#161515">
 
     <EditText
-        android:id="@+id/LoginPassword"
+        android:id="@+id/SignupPassword"
         android:layout_width="0dp"
         android:layout_height="59dp"
         android:layout_marginStart="32dp"
@@ -24,7 +24,7 @@
         app:layout_constraintTop_toBottomOf="@+id/PasswordText" />
 
     <EditText
-        android:id="@+id/LoginEmailAddress"
+        android:id="@+id/SignupEmailAddress"
         android:layout_width="0dp"
         android:layout_height="67dp"
         android:layout_marginStart="32dp"
@@ -100,6 +100,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LoginEmailAddress"
+        app:layout_constraintTop_toBottomOf="@+id/SignupEmailAddress"
         tools:text="Password:" />
 </androidx.constraintlayout.widget.ConstraintLayout>

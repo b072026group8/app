@@ -7,7 +7,7 @@
     android:background="#161515">
 
     <EditText
-        android:id="@+id/SignupPassword"
+        android:id="@+id/LoginPassword"
         android:layout_width="0dp"
         android:layout_height="59dp"
         android:layout_marginStart="32dp"
@@ -21,10 +21,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.057"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PasswordText" />
+        app:layout_constraintTop_toBottomOf="@+id/LoginPasswordText" />
 
     <EditText
-        android:id="@+id/SignupEmailAddress"
+        android:id="@+id/LoginEmailAddress"
         android:layout_width="0dp"
         android:layout_height="67dp"
         android:layout_marginStart="32dp"
@@ -38,10 +38,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EmailText" />
+        app:layout_constraintTop_toBottomOf="@+id/LoginEmailText" />
 
     <TextView
-        android:id="@+id/EmailText"
+        android:id="@+id/LoginEmailText"
         android:layout_width="110dp"
         android:layout_height="31dp"
         android:layout_marginStart="32dp"
@@ -70,11 +70,11 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/LoginImageView"
         tools:text="Login" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/LoginImageView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -87,7 +87,7 @@
         app:srcCompat="@drawable/taamlogo" />
 
     <TextView
-        android:id="@+id/PasswordText"
+        android:id="@+id/LoginPasswordText"
         android:layout_width="110dp"
         android:layout_height="31dp"
         android:layout_marginStart="32dp"
@@ -100,7 +100,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SignupEmailAddress"
+        app:layout_constraintTop_toBottomOf="@+id/LoginEmailAddress"
         tools:text="Password:" />
 
     <Button
@@ -115,5 +115,5 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SignupPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/LoginPassword" />
 </androidx.constraintlayout.widget.ConstraintLayout>

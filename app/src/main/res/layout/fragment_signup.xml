@@ -21,11 +21,11 @@
         app:layout_constraintTop_toBottomOf="@+id/SignupPassword" />
 
     <TextView
-        android:id="@+id/NameText"
+        android:id="@+id/SignupNameText"
         android:layout_width="110dp"
         android:layout_height="31dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:text="TextView"
         android:textColor="#B59C6C"
@@ -34,7 +34,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LoginText"
+        app:layout_constraintTop_toBottomOf="@+id/SignupText"
         tools:text="Name:" />
 
     <EditText
@@ -52,7 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.057"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PasswordText" />
+        app:layout_constraintTop_toBottomOf="@+id/SignupPasswordText" />
 
     <EditText
         android:id="@+id/SignupEmailAddress"
@@ -69,10 +69,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EmailText" />
+        app:layout_constraintTop_toBottomOf="@+id/SignupEmailText" />
 
     <TextView
-        android:id="@+id/EmailText"
+        android:id="@+id/SignupEmailText"
         android:layout_width="110dp"
         android:layout_height="31dp"
         android:layout_marginStart="32dp"
@@ -89,7 +89,7 @@
         tools:text="Email:" />
 
     <TextView
-        android:id="@+id/LoginText"
+        android:id="@+id/SignupText"
         android:layout_width="504dp"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"
@@ -101,11 +101,11 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/SignupImageView"
         tools:text="Signup" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/SignupImageView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -118,7 +118,7 @@
         app:srcCompat="@drawable/taamlogo" />
 
     <TextView
-        android:id="@+id/PasswordText"
+        android:id="@+id/SignupPasswordText"
         android:layout_width="110dp"
         android:layout_height="31dp"
         android:layout_marginStart="32dp"
@@ -149,5 +149,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/NameText" />
+        app:layout_constraintTop_toBottomOf="@+id/SignupNameText" />
 </androidx.constraintlayout.widget.ConstraintLayout>

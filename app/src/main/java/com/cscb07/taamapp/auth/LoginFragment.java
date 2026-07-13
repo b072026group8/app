@@ -12,16 +12,23 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.cscb07.taamapp.R;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginFragment extends Fragment {
 
     private EditText editTextEmail, editTextPassword;
     private Button loginButton;
+    private FirebaseDatabase db;
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
-        editTextEmail = view.findViewById(R.id.Login)
+        editTextEmail = view.findViewById(R.id.LoginEmailAddress);
+        editTextPassword = view.findViewById(R.id.LoginPassword);
+        loginButton = view.findViewById(R.id.LoginButton);
+
+        db = FirebaseDatabase.getInstance("https://b07-g8-project-default-rtdb.firebaseio.com/");
 
         return view;
     }

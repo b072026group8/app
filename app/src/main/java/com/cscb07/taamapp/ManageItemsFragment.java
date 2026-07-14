@@ -1,5 +1,6 @@
 package com.cscb07.taamapp;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +24,30 @@ public class ManageItemsFragment extends Fragment {
         buttonAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadFragment(new AddItemFragment());
+                loadFragment(new EditArtifactFragment());
             }
         });
+
+        // TODO: this is temporary, to test editing feature of `EditArtifactFragment`
+        String sampleCategory = getResources().getStringArray(R.array.categories_array)[2];
+        String sampleMaterial = getResources().getStringArray(R.array.material_array)[2];
+        String sampleDynasty = getResources().getStringArray(R.array.dynasty_period_array)[2];
+        view.findViewById(R.id.buttonEditItem).setOnClickListener(
+                v -> loadFragment(
+                        new EditArtifactFragment(new Item("A01231",
+                                "Shield",
+                                "very brittle old shield.",
+                                sampleCategory, sampleMaterial, sampleDynasty,
+                                "Some group",
+                                "40cm x 40cm disk",
+                                "edges heavily chipped",
+                                "Museum",
+                                "Donated",
+                                "Some specific location",
+                                "138918234",
+                                "Very curious notes here" ,
+                                ""
+                        ))));
 
         buttonDeleteItem.setOnClickListener(v -> loadFragment(new DeleteItemFragment()));
 

@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -127,7 +126,6 @@ public class EditArtifactFragment extends Fragment {
         // TODO: set up save button behaviour.
         buttonSave.setOnClickListener(v -> Toast.makeText(getContext(), "Saving! (not really)", Toast.LENGTH_SHORT).show());
 
-        Bundle args = getArguments();
         if (initialItem == null) {
             isEditing = false;
             // TODO: set to a unique Lot number.

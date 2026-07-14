@@ -12,23 +12,30 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.cscb07.taamapp.R;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class SignupFragment extends Fragment {
     private EditText editTextName, editTextEmail, editTextPassword;
     private Button signupButton;
-    private FirebaseDatabase db;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_signup, container, false);
 
+        // Sign up input fields
         editTextName = view.findViewById(R.id.SignupName);
         editTextEmail = view.findViewById(R.id.SignupEmailAddress);
         editTextPassword = view.findViewById(R.id.SignupPassword);
         signupButton = view.findViewById(R.id.SignupButton);
 
-        db = FirebaseDatabase.getInstance("https://b07-g8-project-default-rtdb.firebaseio.com/");
+        // Signup button input
+        signupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = editTextName.getText().toString().trim();
+                String email = editTextEmail.getText().toString().trim();
+                String password = editTextPassword.getText().toString().trim();
+            }
+        });
 
         return view;
     }

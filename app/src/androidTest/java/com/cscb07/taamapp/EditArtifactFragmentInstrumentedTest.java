@@ -78,9 +78,9 @@ public class EditArtifactFragmentInstrumentedTest {
 
                 assertEquals(inputItem.getLotNumber(), f.textViewLotNumber.getText());
                 assertEquals(inputItem.getDescription(), f.editTextArtifactDescription.getText().toString());
-                assertEquals(inputItem.getCategory(), f.spinnerCategoryValue);
-                assertEquals(inputItem.getMaterial(), f.spinnerMaterialValue);
-                assertEquals(inputItem.getDynastyPeriod(), f.spinnerDynastyValue);
+                assertEquals(inputItem.getCategory(), f.getSpinnerCategory());
+                assertEquals(inputItem.getMaterial(), f.getSpinnerMaterial());
+                assertEquals(inputItem.getDynastyPeriod(), f.getSpinnerDynasty());
                 assertEquals(inputItem.getCulturalOrigin(), f.editTextCulturalOrigin.getText().toString());
                 assertEquals(inputItem.getDimensions(), f.editTextDimensions.getText().toString());
                 assertEquals(inputItem.getConditionReport(), f.editTextConditionReport.getText().toString());
@@ -95,7 +95,6 @@ public class EditArtifactFragmentInstrumentedTest {
 
     @Test
     public void fragmentCreation_EditModeInvalidSpinnerValues_SetsSpinnersToDefault() {
-        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final String sampleCategory = "invalid";
         final String sampleMaterial = "invalid";
         final String sampleDynasty = "invalid";
@@ -126,9 +125,9 @@ public class EditArtifactFragmentInstrumentedTest {
             scenario.onFragment(f -> {
 
 
-                assertEquals(EditArtifactFragment.SPINNER_DEFAULT_CATEGORY, f.spinnerCategoryValue);
-                assertEquals(EditArtifactFragment.SPINNER_DEFAULT_MATERIAL, f.spinnerMaterialValue);
-                assertEquals(EditArtifactFragment.SPINNER_DEFAULT_DYNASTY, f.spinnerDynastyValue);
+                assertEquals(EditArtifactFragment.SPINNER_DEFAULT_CATEGORY, f.getSpinnerCategory());
+                assertEquals(EditArtifactFragment.SPINNER_DEFAULT_MATERIAL, f.getSpinnerMaterial());
+                assertEquals(EditArtifactFragment.SPINNER_DEFAULT_DYNASTY, f.getSpinnerDynasty());
             });
         }
     }

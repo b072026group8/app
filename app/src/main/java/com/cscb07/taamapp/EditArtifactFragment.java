@@ -26,7 +26,7 @@ public class EditArtifactFragment extends Fragment {
     private boolean isEditing;
     private boolean isModeAdd() { return !isEditing; }
 
-    @Nullable private Item initialItem;
+    @Nullable private final Item initialItem;
     TextView textViewLotNumber;
     EditText
             editTextName,
@@ -44,10 +44,23 @@ public class EditArtifactFragment extends Fragment {
             spinnerArtifactCategory,
             spinnerArtifactMaterial,
             spinnerDynasty;
-    String
-            spinnerCategoryValue = SPINNER_DEFAULT_CATEGORY,
-            spinnerMaterialValue = SPINNER_DEFAULT_MATERIAL,
-            spinnerDynastyValue = SPINNER_DEFAULT_DYNASTY;
+
+    private Object getSelectOrDefault(Spinner spinner, Object defaultValue)
+    {
+        int position = spinner.getSelectedItemPosition();
+        return position == Spinner.INVALID_POSITION ? defaultValue
+                                                    : spinner.getAdapter().getItem(position);
+    }
+    public String getSpinnerCategory() {
+        return getSelectOrDefault(spinnerArtifactCategory, SPINNER_DEFAULT_CATEGORY).toString();
+    }
+    public String getSpinnerMaterial() {
+        return getSelectOrDefault(spinnerArtifactMaterial, SPINNER_DEFAULT_MATERIAL).toString();
+    }
+    public String getSpinnerDynasty() {
+        return getSelectOrDefault(spinnerDynasty, SPINNER_DEFAULT_DYNASTY).toString();
+    }
+
     public static final String SPINNER_DEFAULT_CATEGORY = "select category:";
     public static final String SPINNER_DEFAULT_MATERIAL = "select material:";
     public static final String SPINNER_DEFAULT_DYNASTY = "select dynasty/period:";
@@ -106,42 +119,6 @@ public class EditArtifactFragment extends Fragment {
         ArrayAdapter<CharSequence> categoryAdapter = initSpinner(spinnerArtifactCategory, SPINNER_DEFAULT_CATEGORY, R.array.categories_array);
         ArrayAdapter<CharSequence> materialAdapter = initSpinner(spinnerArtifactMaterial, SPINNER_DEFAULT_MATERIAL, R.array.material_array);
         ArrayAdapter<CharSequence> dynastyAdapter = initSpinner(spinnerDynasty, SPINNER_DEFAULT_DYNASTY, R.array.dynasty_period_array);
-        spinnerArtifactCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d(TAG, "Category set to: " + i);
-                spinnerCategoryValue = (String)adapterView.getItemAtPosition(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                spinnerCategoryValue = SPINNER_DEFAULT_CATEGORY;
-            }
-        });
-        spinnerArtifactMaterial.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d(TAG, "Material set to: " + i);
-                spinnerMaterialValue = (String) adapterView.getItemAtPosition(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                spinnerMaterialValue = SPINNER_DEFAULT_MATERIAL;
-            }
-        });
-        spinnerDynasty.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d(TAG, "Dynasty set to: " + i);
-                spinnerDynastyValue = (String) adapterView.getItemAtPosition(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                spinnerDynastyValue = SPINNER_DEFAULT_DYNASTY;
-            }
-        });
 
         Button buttonCancel = view.findViewById(R.id.buttonCancel);
         Button buttonSave = view.findViewById(R.id.buttonSave);
@@ -170,17 +147,12 @@ public class EditArtifactFragment extends Fragment {
             editTextAccessionNumber.setText(initial.getAccessionNumber());
             editTextNotes.setText(initial.getNotes());
 
-            // fields are set primarily for the instrumented test.
-            // they're only when they would have been set anyway.
             if (!trySetSelection(spinnerArtifactCategory, categoryAdapter, initial.getCategory()))
                 Toast.makeText(getContext(), "Invalid category value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
-            else spinnerCategoryValue = initial.getCategory();
             if (!trySetSelection(spinnerArtifactMaterial, materialAdapter, initial.getMaterial()))
                 Toast.makeText(getContext(), "Invalid material value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
-            else spinnerMaterialValue = initial.getMaterial();
             if (!trySetSelection(spinnerDynasty, dynastyAdapter, initial.getDynastyPeriod()))
                 Toast.makeText(getContext(), "Invalid dynasty value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
-            else spinnerDynastyValue = initial.getDynastyPeriod();
         }
 
         return view;

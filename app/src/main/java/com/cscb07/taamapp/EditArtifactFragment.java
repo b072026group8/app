@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import kotlinx.coroutines.DelicateCoroutinesApi;
+
 public class EditArtifactFragment extends Fragment {
     private static final String TAG = "EditArtifactFragment";
     private boolean isEditing;
@@ -124,7 +126,7 @@ public class EditArtifactFragment extends Fragment {
 
         buttonCancel.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         // TODO: set up save button behaviour.
-        buttonSave.setOnClickListener(v -> Toast.makeText(getContext(), "Saving! (not really)", Toast.LENGTH_SHORT).show());
+        buttonSave.setOnClickListener(v -> onSave());
 
         if (initialItem == null) {
             isEditing = false;
@@ -155,4 +157,45 @@ public class EditArtifactFragment extends Fragment {
 
         return view;
     }
+
+    private void errorEmptyField(String fieldName) {
+        Toast.makeText(getContext(), "Please give a " + fieldName, Toast.LENGTH_SHORT).show();
+    }
+    private void errorUnsetSpinner(String spinnerName) {
+        Toast.makeText(getContext(), "Please select a " + spinnerName, Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean validateFields() {
+        if (editTextName.getText().toString().trim().isEmpty()) {
+            errorEmptyField("Name");
+            return false;
+        }
+        if (editTextArtifactDescription.getText().toString().trim().isEmpty()) {
+            errorEmptyField("Description");
+            return false;
+        }
+        if (SPINNER_DEFAULT_CATEGORY.equals(getSpinnerCategory())) {
+            errorUnsetSpinner("Category");
+            return false;
+        }
+        if (SPINNER_DEFAULT_MATERIAL.equals(getSpinnerMaterial())) {
+            errorUnsetSpinner("Material");
+            return false;
+        }
+        if (SPINNER_DEFAULT_DYNASTY.equals(getSpinnerDynasty())) {
+            errorUnsetSpinner("Dynasty/Period");
+            return false;
+        }
+        return true;
+    }
+
+
+    private void onSave() {
+        if (!validateFields())
+        {
+            return;
+        }
+        Toast.makeText(getContext(), "Saving! (not really)", Toast.LENGTH_SHORT).show();
+    }
+
 }

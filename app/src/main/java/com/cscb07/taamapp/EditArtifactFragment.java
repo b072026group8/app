@@ -28,6 +28,7 @@ public class EditArtifactFragment extends Fragment {
     private boolean isModeAdd() { return !isEditing; }
 
     @Nullable private final Item initialItem;
+    private final DbEditorAccess dbAccess;
     TextView textViewLotNumber;
     EditText
             editTextName,
@@ -70,9 +71,15 @@ public class EditArtifactFragment extends Fragment {
     {
         this(null);
     }
-    public EditArtifactFragment(@Nullable Item initialItem)
-    {
+    public EditArtifactFragment(@Nullable Item initialItem) {
+        this(initialItem, null);
+    }
+    public EditArtifactFragment(@Nullable Item initialItem, DbEditorAccess dbAccess) {
         this.initialItem = initialItem;
+        this.dbAccess = dbAccess;
+        if (dbAccess == null) {
+            Log.e(TAG, "instantiated with a null dbAccess instance.");
+        }
     }
     private ArrayAdapter<CharSequence> initSpinner(Spinner spin, String default_value, int arrayId)
     {
@@ -124,14 +131,20 @@ public class EditArtifactFragment extends Fragment {
         Button buttonCancel = view.findViewById(R.id.buttonCancel);
         Button buttonSave = view.findViewById(R.id.buttonSave);
 
-        buttonCancel.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+        buttonCancel.setOnClickListener(v -> exitEditArtifact());
         // TODO: set up save button behaviour.
         buttonSave.setOnClickListener(v -> onSave());
 
         if (initialItem == null) {
             isEditing = false;
+
             // TODO: set to a unique Lot number.
-            textViewLotNumber.setText("Temp Lot Num.");
+            if (dbAccess == null) {
+                textViewLotNumber.setText("Config Error");
+            } else {
+                textViewLotNumber.setText(dbAccess.getUniqueLotNumber());
+            }
+
         } else {
             isEditing = true;
             Item initial = initialItem;
@@ -189,13 +202,36 @@ public class EditArtifactFragment extends Fragment {
         return true;
     }
 
-
+    private void exitEditArtifact() {
+        getParentFragmentManager().popBackStack();
+    }
     private void onSave() {
         if (!validateFields())
         {
             return;
         }
-        Toast.makeText(getContext(), "Saving! (not really)", Toast.LENGTH_SHORT).show();
+        if (dbAccess == null) {
+            Toast.makeText(getContext(), "App config error\nNull DbAccess", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "Cannot access Db: DbEditAccess instance is null");
+            return;
+        }
+        DbEditorAccessResult result;
+        if (isEditing) {
+            result = dbAccess.editItem(null);
+        } else {
+            result = dbAccess.addNewItem(null);
+        }
+        switch (result) {
+            case SUCCESS:
+                exitEditArtifact();
+                return;
+            case ERROR:
+                Toast.makeText(getContext(), "Error saving\nPlease try again later", Toast.LENGTH_LONG).show();
+                break;
+            case DUPLICATE_LOT_NUMBER:
+                textViewLotNumber.setText(dbAccess.getUniqueLotNumber());
+                Toast.makeText(getContext(), "Error: duplicate LOT\nPlease try again", Toast.LENGTH_LONG).show();
+                break;
+        }
     }
-
 }

@@ -178,6 +178,26 @@ public class EditArtifactFragment extends Fragment {
         Toast.makeText(getContext(), "Please select a " + spinnerName, Toast.LENGTH_SHORT).show();
     }
 
+    private String getTextViewValue(TextView view) { return view.getText().toString().trim(); }
+    Item createItem() {
+        return new Item(
+                getTextViewValue(textViewLotNumber),
+                getTextViewValue(editTextName),
+                getTextViewValue(editTextArtifactDescription),
+                getSpinnerCategory(),
+                getSpinnerMaterial(),
+                getSpinnerDynasty(),
+                getTextViewValue(editTextCulturalOrigin),
+                getTextViewValue(editTextDimensions),
+                getTextViewValue(editTextConditionReport),
+                getTextViewValue(editTextCurrentLocation),
+                getTextViewValue(editTextAcquisitionMethod),
+                getTextViewValue(editTextProvenance),
+                getTextViewValue(editTextAccessionNumber),
+                getTextViewValue(editTextNotes),
+                "" // TODO: image here.
+        );
+    }
     private boolean validateFields() {
         if (editTextName.getText().toString().trim().isEmpty()) {
             errorEmptyField("Name");
@@ -217,9 +237,9 @@ public class EditArtifactFragment extends Fragment {
         }
         DbEditorAccessResult result;
         if (isEditing) {
-            result = dbAccess.editItem(null);
+            result = dbAccess.editItem(createItem());
         } else {
-            result = dbAccess.addNewItem(null);
+            result = dbAccess.addNewItem(createItem());
         }
         switch (result) {
             case SUCCESS:

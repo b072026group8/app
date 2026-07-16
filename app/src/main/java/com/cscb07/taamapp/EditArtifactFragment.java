@@ -1,7 +1,6 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,9 @@ import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.cscb07.taamapp.util.DefaultLogger;
+import com.cscb07.taamapp.util.Logger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +31,7 @@ public class EditArtifactFragment extends Fragment {
 
     @Nullable private final Item initialItem;
     private final DbEditorAccess dbAccess;
+    private final Logger log;
     TextView textViewLotNumber;
     EditText
             editTextName,
@@ -67,18 +70,24 @@ public class EditArtifactFragment extends Fragment {
     public static final String SPINNER_DEFAULT_MATERIAL = "select material:";
     public static final String SPINNER_DEFAULT_DYNASTY = "select dynasty/period:";
 
+    /** @deprecated */
     public EditArtifactFragment()
     {
-        this(null);
+        this(null, null);
     }
+    /** @deprecated */
     public EditArtifactFragment(@Nullable Item initialItem) {
         this(initialItem, null);
     }
     public EditArtifactFragment(@Nullable Item initialItem, DbEditorAccess dbAccess) {
+        this(initialItem, dbAccess, new DefaultLogger());
+    }
+    public EditArtifactFragment(@Nullable Item initialItem, DbEditorAccess dbAccess, Logger log) {
         this.initialItem = initialItem;
         this.dbAccess = dbAccess;
+        this.log = log;
         if (dbAccess == null) {
-            Log.e(TAG, "instantiated with a null dbAccess instance.");
+            log.e(TAG, "instantiated with a null dbAccess instance.");
         }
     }
     private ArrayAdapter<CharSequence> initSpinner(Spinner spin, String default_value, int arrayId)
@@ -96,7 +105,7 @@ public class EditArtifactFragment extends Fragment {
         int idx = adapter.getPosition(value);
         if (idx == -1)
         {
-            Log.w(TAG, "invalid value '" + value + "' set to spinner id: " + spin.getId());
+            log.w(TAG, "invalid value '" + value + "' set to spinner id: " + spin.getId());
             return false;
         }
         spin.setSelection(idx);
@@ -232,7 +241,7 @@ public class EditArtifactFragment extends Fragment {
         }
         if (dbAccess == null) {
             Toast.makeText(getContext(), "App config error\nNull DbAccess", Toast.LENGTH_LONG).show();
-            Log.e(TAG, "Cannot access Db: DbEditAccess instance is null");
+            log.e(TAG, "Cannot access Db: DbEditAccess instance is null");
             return;
         }
         DbEditorAccessResult result;

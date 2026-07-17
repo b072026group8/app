@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import kotlinx.coroutines.DelicateCoroutinesApi;
-
 public class EditArtifactFragment extends Fragment {
     private static final String TAG = "EditArtifactFragment";
     private boolean isEditing;

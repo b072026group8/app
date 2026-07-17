@@ -240,4 +240,36 @@ public class EditArtifactFragmentTest {
         verify(sut.textViewLotNumber, never()).setText(any(CharSequence.class));
         verify(access, atLeastOnce()).editItem(any());
     }
+
+    @Test
+    public void onCancel_InAddMode_RequestsAddCancellationAndTryExit() {
+        final String Lot = "sample-lot-123";
+        DbEditorAccess access = mock(DbEditorAccess.class);
+        EditArtifactFragment sut = new EditArtifactFragment(null, access, new TestLogger());
+        sut.textViewLotNumber = mock(TextView.class);
+        when(sut.textViewLotNumber.getText()).thenReturn(Lot);
+
+        ThrowingRunnable testedAction = sut::onCancel;
+
+        // occurs because it tries to get the fragment manager
+        assertThrows(IllegalStateException.class, testedAction);
+        verify(access, times(1)).cancelAdd(Lot);
+        // i.e. the above was the *only* invocation.
+        verify(access, times(1)).cancelAdd(any());
+    }
+
+    @Test
+    public void onCancel_inEditMode_DoNotRequestAddCancellationAndTryExit() {
+        DbEditorAccess access = mock(DbEditorAccess.class);
+        Item someItem = getDefaultItem();
+        EditArtifactFragment sut = new EditArtifactFragment(someItem, access, new TestLogger());
+        sut.textViewLotNumber = mock(TextView.class);
+        when(sut.textViewLotNumber.getText()).thenReturn(someItem.getLotNumber());
+
+        ThrowingRunnable testedAction = sut::onCancel;
+
+        // occurs because it tries to get the fragment manager
+        assertThrows(IllegalStateException.class, testedAction);
+        verify(access, never()).cancelAdd(any());
+    }
 }

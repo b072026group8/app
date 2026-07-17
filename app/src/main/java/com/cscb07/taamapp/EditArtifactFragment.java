@@ -139,11 +139,9 @@ public class EditArtifactFragment extends Fragment {
         Button buttonSave = view.findViewById(R.id.buttonSave);
 
         buttonCancel.setOnClickListener(v -> onCancel());
-        // TODO: set up save button behaviour.
         buttonSave.setOnClickListener(v -> onSave());
 
         if (initialItem == null) {
-            // TODO: set to a unique Lot number.
             if (dbAccess == null) {
                 log.wtf(TAG, "dbAccess is null");
                 textViewLotNumber.setText("Config Error");
@@ -236,6 +234,7 @@ public class EditArtifactFragment extends Fragment {
         if (isAdding()) {
             dbAccess.cancelAdd(textViewLotNumber.getText().toString().trim());
         }
+        exitEditArtifact();
     }
     void onSave() {
         if (!validateFields())

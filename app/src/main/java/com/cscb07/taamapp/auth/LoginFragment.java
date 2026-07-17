@@ -13,10 +13,11 @@ import androidx.fragment.app.Fragment;
 
 import com.cscb07.taamapp.R;
 
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment implements Auth.View {
 
     private EditText editTextEmail, editTextPassword;
     private Button loginButton;
+    private AuthPresenter presenter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -27,12 +28,15 @@ public class LoginFragment extends Fragment {
         editTextPassword = view.findViewById(R.id.LoginPassword);
         loginButton = view.findViewById(R.id.LoginButton);
 
+        presenter = new AuthPresenter(this);
+
         // Login button input
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = editTextEmail.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
+                presenter.login(email, password);
             }
         });
 

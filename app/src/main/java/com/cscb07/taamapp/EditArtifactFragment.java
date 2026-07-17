@@ -179,10 +179,12 @@ public class EditArtifactFragment extends Fragment {
     }
 
     private void errorEmptyField(String fieldName) {
-        Toast.makeText(getContext(), "Please give a " + fieldName, Toast.LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), "Please give a " + fieldName, Toast.LENGTH_SHORT).show();
     }
     private void errorUnsetSpinner(String spinnerName) {
-        Toast.makeText(getContext(), "Please select a " + spinnerName, Toast.LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), "Please select a " + spinnerName, Toast.LENGTH_SHORT).show();
     }
 
     private String getTextViewValue(TextView view) { return view.getText().toString().trim(); }
@@ -205,7 +207,7 @@ public class EditArtifactFragment extends Fragment {
                 "" // TODO: image here.
         );
     }
-    private boolean validateFields() {
+     boolean validateFields() {
         if (editTextName.getText().toString().trim().isEmpty()) {
             errorEmptyField("Name");
             return false;

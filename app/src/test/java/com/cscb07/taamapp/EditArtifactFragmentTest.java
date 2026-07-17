@@ -1,6 +1,6 @@
 package com.cscb07.taamapp;
 
-import static org.junit.Assert.assertEquals;
+import com.cscb07.taamapp.util.TestLogger;
 
 import android.text.Editable;
 import android.widget.EditText;
@@ -8,15 +8,15 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-
 import androidx.annotation.NonNull;
-
-import com.cscb07.taamapp.util.TestLogger;
 
 import org.junit.runner.RunWith;
 import org.junit.Test;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Strict.class)
@@ -69,7 +69,10 @@ public class EditArtifactFragmentTest {
         }
     }
 
-    private void stubReturnItem(EditArtifactFragment f, Item item) {
+    /**
+     * Set up mocks of the value fields of the fragment f, using param item for the values.
+     */
+    private void stubFields(EditArtifactFragment f, Item item) {
         f.textViewLotNumber = mock(TextView.class);
         when(f.textViewLotNumber.getText()).thenReturn(item.getLotNumber());
         f.editTextName = new MockableEditText(item.getArtifactName());
@@ -91,7 +94,7 @@ public class EditArtifactFragmentTest {
     public void createItem_InitialFilledItem_EqualItem() {
         Item inputItem = getDefaultItem();
         EditArtifactFragment sut = new EditArtifactFragment(null, null, new TestLogger());
-        stubReturnItem(sut, inputItem);
+        stubFields(sut, inputItem);
 
         Item result = sut.createItem();
 
@@ -112,7 +115,69 @@ public class EditArtifactFragmentTest {
         assertEquals(inputItem.getImage(), result.getImage());
     }
 
+    @Test
+    public void validateFields_1MissingField_ReturnsFalse()
+    {
+        // Using a loop because JUnit 4 doesn't (really) support parameterized tests.
+        System.out.println("Parameterized Test:");
+        for (int i = 0; i < 5; i++)
+        {
+            Item inputItem = getDefaultItem();
+            switch (i) {
+                case 0:
+                    inputItem.setArtifactName("");
+                    System.out.println("\tmissing Name");
+                    break;
+                case 1:
+                    inputItem.setDescription("");
+                    System.out.println("\tmissing Description");
+                    break;
+                case 2:
+                    inputItem.setCategory(EditArtifactFragment.SPINNER_DEFAULT_CATEGORY);
+                    System.out.println("\tmissing Category");
+                    break;
+                case 3:
+                    inputItem.setMaterial(EditArtifactFragment.SPINNER_DEFAULT_MATERIAL);
+                    System.out.println("\tmissing Material");
+                    break;
+                case 4:
+                    inputItem.setDynastyPeriod(EditArtifactFragment.SPINNER_DEFAULT_DYNASTY);
+                    System.out.println("\tmissing Dynasty/Period");
+                    break;
+            }
+            EditArtifactFragment sut = new EditArtifactFragment(null, null, new TestLogger());
+            stubFields(sut, inputItem);
 
+            boolean result = sut.validateFields();
 
+            assertFalse(result);
+        }
+    }
 
+    @Test
+    public void validateFields_FilledItem_ReturnsTrue() {
+        Item inputItem = new Item(
+                "",
+                "name",
+                "description",
+                "category",
+                "material",
+                "dynasty",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+        );
+        EditArtifactFragment sut = new EditArtifactFragment(null, null, new TestLogger());
+        stubFields(sut, inputItem);
+
+        boolean result = sut.validateFields();
+
+        assertTrue(result);
+    }
 }

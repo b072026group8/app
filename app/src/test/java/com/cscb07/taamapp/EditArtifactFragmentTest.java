@@ -10,12 +10,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import org.junit.function.ThrowingRunnable;
 import org.junit.runner.RunWith;
 import org.junit.Test;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -179,5 +181,90 @@ public class EditArtifactFragmentTest {
         boolean result = sut.validateFields();
 
         assertTrue(result);
+    }
+
+    @Test
+    public void onSave_SuccessfulAddWrite_ErrorsByExiting() {
+        parameterized_onSave_SuccessfulWrite_ErrorsByExiting(0);
+    }
+    @Test
+    public void onSave_SuccessfulEditWrite_ErrorsByExiting() {
+        parameterized_onSave_SuccessfulWrite_ErrorsByExiting(1);
+    }
+    private void parameterized_onSave_SuccessfulWrite_ErrorsByExiting(int i)
+    {
+        Item item = getDefaultItem();
+        DbEditorAccess access = mock(DbEditorAccess.class, withSettings().defaultAnswer(invo -> DbEditorAccessResult.SUCCESS));
+        EditArtifactFragment sut;
+        if (i == 0) {
+            System.out.println("\t[Add mode]");
+            sut = new EditArtifactFragment(null, access, new TestLogger());
+        } else {
+            System.out.println("\t[Edit mode");
+            sut = new EditArtifactFragment(item, access, new TestLogger());
+        }
+        stubFields(sut, item);
+
+        ThrowingRunnable action = sut::onSave;
+
+        // occurs because it tries to get the fragment manager
+        assertThrows(IllegalStateException.class, action);
+        if (i == 0) {
+            verify(access).addNewItem(any());
+            verify(access, never()).editItem(any());
+        } else {
+            verify(access, never()).addNewItem(any());
+            verify(access).editItem(any());
+        }
+    }
+
+    @Test
+    public void onSave_NonUniqueLot_TriesSetLotNumber() {
+        final Item item = getDefaultItem();
+        final String newLotNumber = "129543";
+        DbEditorAccess access = mock(DbEditorAccess.class);
+        when(access.addNewItem(any())).thenReturn(DbEditorAccessResult.DUPLICATE_LOT_NUMBER);
+        when(access.getUniqueLotNumber()).thenReturn(newLotNumber);
+        EditArtifactFragment sut = new EditArtifactFragment(null, access, new TestLogger());
+        stubFields(sut, item);
+
+        sut.onSave();
+
+        verify(sut.textViewLotNumber).setText(newLotNumber);
+    }
+
+    @Test
+    public void onSave_AddWriteError_NothingHappens() {
+        parameterized_onSave_WriteError_NothingHappens(0);
+    }
+    @Test
+    public void onSave_EditWriteError_NothingHappens() {
+        parameterized_onSave_WriteError_NothingHappens(1);
+    }
+    public void parameterized_onSave_WriteError_NothingHappens(int i) {
+        Item item = getDefaultItem();
+        DbEditorAccess access = mock(DbEditorAccess.class);
+        EditArtifactFragment sut;
+        if (i == 0) {
+            System.out.println("\t[Add mode]");
+            sut = new EditArtifactFragment(null, access, new TestLogger());
+            when(access.addNewItem(any())).thenReturn(DbEditorAccessResult.ERROR);
+        } else {
+            System.out.println("\t[Edit mode]");
+            sut = new EditArtifactFragment(item, access, new TestLogger());
+            when(access.editItem(any())).thenReturn(DbEditorAccessResult.ERROR);
+        }
+        stubFields(sut, item);
+
+        sut.onSave();
+
+        verify(sut.textViewLotNumber, never()).setText(any(CharSequence.class));
+        if (i == 0) {
+            verify(access).addNewItem(any());
+            verify(access, never()).editItem(any());
+        } else {
+            verify(access, never()).addNewItem(any());
+            verify(access).editItem(any());
+        }
     }
 }

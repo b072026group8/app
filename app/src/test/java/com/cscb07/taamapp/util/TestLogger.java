@@ -8,9 +8,12 @@ import java.util.ArrayList;
 public class TestLogger implements Logger{
     public ArrayList<String> messages = new ArrayList<>();
 
-    private void log(Character level, String tag, String msg, Throwable tr)
+    private void log(Character level, String tag, String msg, Throwable tr) {
+        log(level.toString(), tag, msg, tr);
+    }
+    private void log(String level, String tag, String msg, Throwable tr)
     {
-        String message = level.toString() + " - " + tag + ": " + msg + " | " + tr;
+        String message = level + " - " + tag + ": " + msg + " | " + tr;
         messages.add(message);
         System.out.println(message);
     }
@@ -32,6 +35,10 @@ public class TestLogger implements Logger{
     @Override
     public void w(String tag, String msg) {
         w(tag, msg, null);
+    }
+    @Override
+    public void wtf(String tag, String msg) {
+        wtf(tag, msg, null);
     }
 
     @Override
@@ -62,5 +69,9 @@ public class TestLogger implements Logger{
     @Override
     public void e(String tag, String msg, Throwable tr) {
         log('E', tag, msg, tr);
+    }
+    @Override
+    public void wtf(String tag, String msg, Throwable tr) {
+        log("WTF", tag, msg, tr);
     }
 }

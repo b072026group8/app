@@ -1,7 +1,6 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +78,7 @@ public class EditArtifactFragment extends Fragment {
         this(initialItem, null);
     }
     public EditArtifactFragment(@Nullable Item initialItem, DbEditorAccess dbAccess) {
-        this(initialItem, dbAccess, new DefaultLogger());
+        this(initialItem, dbAccess, DefaultLogger.Instance());
     }
     public EditArtifactFragment(@Nullable Item initialItem, DbEditorAccess dbAccess, Logger log) {
         this.initialItem = initialItem;
@@ -146,7 +145,7 @@ public class EditArtifactFragment extends Fragment {
         if (initialItem == null) {
             // TODO: set to a unique Lot number.
             if (dbAccess == null) {
-                Log.wtf(TAG, "dbAccess is null");
+                log.wtf(TAG, "dbAccess is null");
                 textViewLotNumber.setText("Config Error");
             } else {
                 textViewLotNumber.setText(dbAccess.getUniqueLotNumber());
@@ -245,7 +244,7 @@ public class EditArtifactFragment extends Fragment {
         }
         if (dbAccess == null) {
             Toast.makeText(getContext(), "App config error\nNull DbAccess", Toast.LENGTH_LONG).show();
-            Log.wtf(TAG, "Cannot access Db: DbEditAccess instance is null");
+            log.wtf(TAG, "Cannot access Db: DbEditAccess instance is null");
             return;
         }
         DbEditorAccessResult result = dbAccess.editItem(createItem());

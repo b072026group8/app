@@ -6,6 +6,15 @@ import android.util.Log;
  * A logger that delegates to {@link Log} methods.
  */
 public class DefaultLogger implements Logger {
+    static DefaultLogger log = null;
+    public static DefaultLogger Instance() {
+        if (log == null)
+            log = new DefaultLogger();
+        return log;
+    }
+
+    private DefaultLogger() {
+    }
 
     @Override
     public void v(String tag, String msg) {
@@ -31,6 +40,10 @@ public class DefaultLogger implements Logger {
     public void e(String tag, String msg) {
         Log.e(tag, msg);
     }
+    @Override
+    public void wtf(String tag, String msg) {
+        Log.wtf(tag, msg);
+    }
 
     @Override
     public void v(String tag, String msg, Throwable tr) {
@@ -55,5 +68,9 @@ public class DefaultLogger implements Logger {
     @Override
     public void e(String tag, String msg, Throwable tr) {
         Log.e(tag, msg, tr);
+    }
+    @Override
+    public void wtf(String tag, String msg, Throwable tr) {
+        Log.wtf(tag, msg, tr);
     }
 }

@@ -194,7 +194,8 @@ public class EditArtifactFragmentTest {
     private void parameterized_onSave_SuccessfulWrite_ErrorsByExiting(int i)
     {
         Item item = getDefaultItem();
-        DbEditorAccess access = mock(DbEditorAccess.class, withSettings().defaultAnswer(invo -> DbEditorAccessResult.SUCCESS));
+        DbEditorAccess access = mock(DbEditorAccess.class);
+        when(access.editItem(any())).thenReturn(DbEditorAccessResult.SUCCESS);
         EditArtifactFragment sut;
         if (i == 0) {
             System.out.println("\t[Add mode]");
@@ -209,28 +210,7 @@ public class EditArtifactFragmentTest {
 
         // occurs because it tries to get the fragment manager
         assertThrows(IllegalStateException.class, action);
-        if (i == 0) {
-            verify(access).addNewItem(any());
-            verify(access, never()).editItem(any());
-        } else {
-            verify(access, never()).addNewItem(any());
-            verify(access).editItem(any());
-        }
-    }
-
-    @Test
-    public void onSave_NonUniqueLot_TriesSetLotNumber() {
-        final Item item = getDefaultItem();
-        final String newLotNumber = "129543";
-        DbEditorAccess access = mock(DbEditorAccess.class);
-        when(access.addNewItem(any())).thenReturn(DbEditorAccessResult.DUPLICATE_LOT_NUMBER);
-        when(access.getUniqueLotNumber()).thenReturn(newLotNumber);
-        EditArtifactFragment sut = new EditArtifactFragment(null, access, new TestLogger());
-        stubFields(sut, item);
-
-        sut.onSave();
-
-        verify(sut.textViewLotNumber).setText(newLotNumber);
+        verify(access, atLeastOnce()).editItem(any());
     }
 
     @Test
@@ -244,27 +224,20 @@ public class EditArtifactFragmentTest {
     public void parameterized_onSave_WriteError_NothingHappens(int i) {
         Item item = getDefaultItem();
         DbEditorAccess access = mock(DbEditorAccess.class);
+        when(access.editItem(any())).thenReturn(DbEditorAccessResult.ERROR);
         EditArtifactFragment sut;
         if (i == 0) {
             System.out.println("\t[Add mode]");
             sut = new EditArtifactFragment(null, access, new TestLogger());
-            when(access.addNewItem(any())).thenReturn(DbEditorAccessResult.ERROR);
         } else {
             System.out.println("\t[Edit mode]");
             sut = new EditArtifactFragment(item, access, new TestLogger());
-            when(access.editItem(any())).thenReturn(DbEditorAccessResult.ERROR);
         }
         stubFields(sut, item);
 
         sut.onSave();
 
         verify(sut.textViewLotNumber, never()).setText(any(CharSequence.class));
-        if (i == 0) {
-            verify(access).addNewItem(any());
-            verify(access, never()).editItem(any());
-        } else {
-            verify(access, never()).addNewItem(any());
-            verify(access).editItem(any());
-        }
+        verify(access, atLeastOnce()).editItem(any());
     }
 }

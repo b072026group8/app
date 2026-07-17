@@ -5,31 +5,25 @@ package com.cscb07.taamapp;
  */
 public interface DbEditorAccess {
     /**
-     * Retrieve a Lot number that is currently not in use in the database.
-     * <p>
-     * The value doesn't have to be reserved. That is, it may later be invalid.
-     * It is the responsibility of {@link DbEditorAccess#addNewItem} to check that it is unique.
+     * gets a Lot number that is currently not in use in the database,
+     * and reserves it to potentially be later edited.
      * @return A unique Lot number that currently isn't in use in the database.
      */
     public String getUniqueLotNumber();
 
     /**
-     * Attempt to edit the item in the database with the matching Lot number, and return whether it
-     * is successful.
+     * Attempt to edit the item in the database with the matching Lot number, and return whether
+     * the operation was successful.
      * @param item The item to edit.
-     * @return {@link DbEditorAccessResult#SUCCESS} if the database was successfully edited,
+     * @return {@link DbEditorAccessResult#SUCCESS} if the database was successfully edited,<br/>
      *         {@link DbEditorAccessResult#ERROR} otherwise
      */
     public DbEditorAccessResult editItem(Item item);
 
     /**
-     * Attempt to add the item into the database, given its LOT number is unique,
-     * and return whether the Lot number is unique and the operation is successful.
-     * @param item The item to add.
-     * @return {@link DbEditorAccessResult#DUPLICATE_LOT_NUMBER} if the item's LOT value is
-     *         already used in the database,
-     *         {@link DbEditorAccessResult#SUCCESS} if the item was successfully added,
-     *         {@link DbEditorAccessResult#ERROR} otherwise.
+     * Removes the entry in the database that was reserved by
+     * {@link DbEditorAccess#getUniqueLotNumber}.
+     * @param lotNumber The Lot value of the reserved entry to remove.
      */
-    public DbEditorAccessResult addNewItem(Item item);
+    public void cancelAdd(String lotNumber);
 }

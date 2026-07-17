@@ -1,6 +1,7 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +25,10 @@ import java.util.List;
 
 public class EditArtifactFragment extends Fragment {
     private static final String TAG = "EditArtifactFragment";
-    private boolean isEditing() { return initialItem != null; }
-    private boolean isModeAdd() { return initialItem == null; }
 
     @Nullable private final Item initialItem;
+    private final boolean isEditing() { return initialItem != null; }
+    private final boolean isAdding() { return initialItem == null; }
     private final DbEditorAccess dbAccess;
     private final Logger log;
     TextView textViewLotNumber;
@@ -138,13 +139,14 @@ public class EditArtifactFragment extends Fragment {
         Button buttonCancel = view.findViewById(R.id.buttonCancel);
         Button buttonSave = view.findViewById(R.id.buttonSave);
 
-        buttonCancel.setOnClickListener(v -> exitEditArtifact());
+        buttonCancel.setOnClickListener(v -> onCancel());
         // TODO: set up save button behaviour.
         buttonSave.setOnClickListener(v -> onSave());
 
         if (initialItem == null) {
             // TODO: set to a unique Lot number.
             if (dbAccess == null) {
+                Log.wtf(TAG, "dbAccess is null");
                 textViewLotNumber.setText("Config Error");
             } else {
                 textViewLotNumber.setText(dbAccess.getUniqueLotNumber());
@@ -231,7 +233,11 @@ public class EditArtifactFragment extends Fragment {
     private void exitEditArtifact() {
         getParentFragmentManager().popBackStack();
     }
-    // internal for testing purposes only.
+    void onCancel() {
+        if (isAdding()) {
+            dbAccess.cancelAdd(textViewLotNumber.getText().toString().trim());
+        }
+    }
     void onSave() {
         if (!validateFields())
         {
@@ -239,15 +245,11 @@ public class EditArtifactFragment extends Fragment {
         }
         if (dbAccess == null) {
             Toast.makeText(getContext(), "App config error\nNull DbAccess", Toast.LENGTH_LONG).show();
-            log.e(TAG, "Cannot access Db: DbEditAccess instance is null");
+            Log.wtf(TAG, "Cannot access Db: DbEditAccess instance is null");
             return;
         }
-        DbEditorAccessResult result;
-        if (isEditing()) {
-            result = dbAccess.editItem(createItem());
-        } else {
-            result = dbAccess.addNewItem(createItem());
-        }
+        DbEditorAccessResult result = dbAccess.editItem(createItem());
+
         switch (result) {
             case SUCCESS:
                 exitEditArtifact();
@@ -255,11 +257,6 @@ public class EditArtifactFragment extends Fragment {
             case ERROR:
                 if (getContext() != null)
                     Toast.makeText(getContext(), "Error saving\nPlease try again later", Toast.LENGTH_LONG).show();
-                break;
-            case DUPLICATE_LOT_NUMBER:
-                textViewLotNumber.setText(dbAccess.getUniqueLotNumber());
-                if (getContext() != null)
-                    Toast.makeText(getContext(), "Error: duplicate LOT\nPlease try again", Toast.LENGTH_LONG).show();
                 break;
         }
     }

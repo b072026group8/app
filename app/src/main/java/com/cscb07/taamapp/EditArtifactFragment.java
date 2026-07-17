@@ -24,8 +24,8 @@ import java.util.List;
 
 public class EditArtifactFragment extends Fragment {
     private static final String TAG = "EditArtifactFragment";
-    private boolean isEditing;
-    private boolean isModeAdd() { return !isEditing; }
+    private boolean isEditing() { return initialItem != null; }
+    private boolean isModeAdd() { return initialItem == null; }
 
     @Nullable private final Item initialItem;
     private final DbEditorAccess dbAccess;
@@ -143,8 +143,6 @@ public class EditArtifactFragment extends Fragment {
         buttonSave.setOnClickListener(v -> onSave());
 
         if (initialItem == null) {
-            isEditing = false;
-
             // TODO: set to a unique Lot number.
             if (dbAccess == null) {
                 textViewLotNumber.setText("Config Error");
@@ -153,7 +151,6 @@ public class EditArtifactFragment extends Fragment {
             }
 
         } else {
-            isEditing = true;
             Item initial = initialItem;
             textViewLotNumber.setText(initial.getLotNumber());
             editTextName.setText(initial.getArtifactName());
@@ -234,7 +231,8 @@ public class EditArtifactFragment extends Fragment {
     private void exitEditArtifact() {
         getParentFragmentManager().popBackStack();
     }
-    private void onSave() {
+    // internal for testing purposes only.
+    void onSave() {
         if (!validateFields())
         {
             return;
@@ -245,7 +243,7 @@ public class EditArtifactFragment extends Fragment {
             return;
         }
         DbEditorAccessResult result;
-        if (isEditing) {
+        if (isEditing()) {
             result = dbAccess.editItem(createItem());
         } else {
             result = dbAccess.addNewItem(createItem());
@@ -255,11 +253,13 @@ public class EditArtifactFragment extends Fragment {
                 exitEditArtifact();
                 return;
             case ERROR:
-                Toast.makeText(getContext(), "Error saving\nPlease try again later", Toast.LENGTH_LONG).show();
+                if (getContext() != null)
+                    Toast.makeText(getContext(), "Error saving\nPlease try again later", Toast.LENGTH_LONG).show();
                 break;
             case DUPLICATE_LOT_NUMBER:
                 textViewLotNumber.setText(dbAccess.getUniqueLotNumber());
-                Toast.makeText(getContext(), "Error: duplicate LOT\nPlease try again", Toast.LENGTH_LONG).show();
+                if (getContext() != null)
+                    Toast.makeText(getContext(), "Error: duplicate LOT\nPlease try again", Toast.LENGTH_LONG).show();
                 break;
         }
     }

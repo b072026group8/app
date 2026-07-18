@@ -37,6 +37,7 @@ public class AuthModel {
                                 saveUserRTDB(user.getUid(), name, email);
                                 System.out.println("Signup success");
                                 // TODO Update UI after signing up (Home page)
+                                System.out.println(user.getUid());
                             }
                         } else {
                             System.out.println("Signup failed");

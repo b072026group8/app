@@ -25,6 +25,7 @@ public class AuthModel {
     }
 
     public void registerUser(String name, String email, String password) {
+        // Firebase authentication documentation
         mAuth.createUserWithEmailAndPassword(email, password)  // Create user
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -33,10 +34,12 @@ public class AuthModel {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {
-                                pres
+                                saveUserRTDB(user.getUid(), name, email);
+                                System.out.println("Signup success");
+                                // TODO Update UI after signing up (Home page)
                             }
                         } else {
-
+                            System.out.println("Signup failed");
                         }
                     }
                 });
@@ -51,6 +54,23 @@ public class AuthModel {
         // Put in RTDB. Firebase RTDB documentation
         DatabaseReference mDatabase = db.getReference();
         mDatabase.child("users").child(userID).setValue(user);
+    }
+
+    public void loginUser(String email, String password) {
+        // Firebase authentication documentation
+        mAuth.signInWithEmailAndPassword(email, password)  // Sign in
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            System.out.println("Login success");
+                            // TODO Update UI after logging in
+                        } else {
+                            System.out.println("Login failed");
+                        }
+                    }
+                });
     }
 
 }

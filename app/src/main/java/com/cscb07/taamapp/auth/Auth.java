@@ -2,7 +2,7 @@ package com.cscb07.taamapp.auth;
 
 public interface Auth {
     interface View {
-        public void loadHome();
+        //public void loadHome();
     }
     interface Presenter {
         public void login(String email, String password);

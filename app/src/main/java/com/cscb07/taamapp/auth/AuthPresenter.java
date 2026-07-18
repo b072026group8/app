@@ -1,10 +1,5 @@
 package com.cscb07.taamapp.auth;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
-import com.cscb07.taamapp.R;
-
 public class AuthPresenter implements Auth.Presenter {
     private Auth.View view;
     private AuthModel model;
@@ -16,11 +11,11 @@ public class AuthPresenter implements Auth.Presenter {
 
     @Override
     public void signup(String name, String email, String password) {
-
+        model.registerUser(name, email, password);
     }
 
     @Override
     public void login(String email, String password) {
-
+        model.loginUser(email, password);
     }
 }

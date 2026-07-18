@@ -232,7 +232,10 @@ public class EditArtifactFragment extends Fragment {
     }
     void onCancel() {
         if (isAdding()) {
-            dbAccess.cancelAdd(textViewLotNumber.getText().toString().trim());
+            if (dbAccess == null)
+                log.wtf(TAG, "dbAccess is null, can't cancel addition");
+            else
+                dbAccess.cancelAdd(textViewLotNumber.getText().toString().trim());
         }
         exitEditArtifact();
     }

@@ -26,7 +26,7 @@ public class SignupFragment extends Fragment implements Auth.View {
         editTextName = view.findViewById(R.id.SignupName);
         editTextEmail = view.findViewById(R.id.SignupEmailAddress);
         editTextPassword = view.findViewById(R.id.SignupPassword);
-        signupButton = view.findViewById(R.id.SignupButton);
+        signupButton = view.findViewById(R.id.signupButton);
 
         presenter = new AuthPresenter(this);
 

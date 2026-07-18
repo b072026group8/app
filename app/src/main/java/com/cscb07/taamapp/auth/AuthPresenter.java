@@ -11,11 +11,13 @@ public class AuthPresenter implements Auth.Presenter {
 
     @Override
     public void signup(String name, String email, String password) {
+        // User signup
         model.registerUser(name, email, password);
     }
 
     @Override
     public void login(String email, String password) {
+        // User login
         model.loginUser(email, password);
     }
 }

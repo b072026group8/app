@@ -21,6 +21,9 @@ public class Item {
     // no idea how to store images right now, assume grabbed from supabase with url
     private String image;
 
+    public Item() {
+
+    }
     public Item(String lotNumber, String artifactName, String description, String category, String material, String dynastyPeriod, String culturalOrigin, String dimensions, String conditionReport, String currentLocation, String acquisitionMethod, String provenance, String accessionNumber, String notes, String image) {
         this.lotNumber = lotNumber;
         this.artifactName = artifactName;

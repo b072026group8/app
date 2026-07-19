@@ -45,7 +45,11 @@ public class HomeFragment extends Fragment {
         buttonRecyclerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadFragment(new RecyclerViewFragment());
+                if (buttonRecyclerView.getText().equals(getString(R.string.show_saved))) {
+                    buttonRecyclerView.setText(R.string.show_all);
+                } else {
+                    buttonRecyclerView.setText(R.string.show_saved);
+                }
             }
         });
 

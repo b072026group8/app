@@ -14,8 +14,11 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +40,8 @@ public class HomeFragment extends Fragment {
 
         itemList = new ArrayList<>();
         itemAdapter = new ItemAdapter(itemList);
-        itemList.add(new Item("hello", "hi", "god knows", "if this works", "", "", "", "", "", "", "", "", "", "", ""));
-        itemList.add(new Item("hello", "hi", "god knows", "if this works", "", "", "", "", "", "", "", "", "", "", ""));
-        itemList.add(new Item("hello", "hi", "god knows", "if this works", "", "", "", "", "", "", "", "", "", "", ""));
-        itemList.add(new Item("hello", "hi", "god knows", "if this works", "", "", "", "", "", "", "", "", "", "", ""));
+        db = FirebaseDatabase.getInstance();
+        fetchItemsFromDatabase(false);
 
         buttonRecyclerView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,5 +70,24 @@ public class HomeFragment extends Fragment {
         transaction.replace(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+    private void fetchItemsFromDatabase(boolean saved) {
+        itemsRef = db.getReference("artifacts");
+        itemsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                itemList.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Item item = snapshot.getValue(Item.class);
+                    itemList.add(item);
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle possible errors
+            }
+        });
     }
 }

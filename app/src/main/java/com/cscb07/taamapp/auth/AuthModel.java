@@ -33,7 +33,7 @@ public class AuthModel {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
-                            if (user != null) {
+                            if (user != null) {  // Null check
                                 saveUserRTDB(user.getUid(), name, email);
                                 System.out.println("Signup success");
                                 // TODO Update UI after signing up (Home page)
@@ -65,9 +65,13 @@ public class AuthModel {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
-                            System.out.println("Login success");
-                            System.out.println(user.getUid());
-                            // TODO Update UI after logging in
+                            if (user != null) {  // Null check
+                                System.out.println("Login success");
+                                System.out.println(user.getUid());
+                                // TODO Update UI after logging in (Home page)
+                            } else {
+                                System.out.println("Login success, user is null");
+                            }
                         } else {
                             System.out.println("Login failed");
                         }

@@ -263,8 +263,6 @@ public class EditArtifactFragmentTest {
         DbEditorAccess access = mock(DbEditorAccess.class);
         Item someItem = getDefaultItem();
         EditArtifactFragment sut = new EditArtifactFragment(someItem, access, new TestLogger());
-        sut.textViewLotNumber = mock(TextView.class);
-        when(sut.textViewLotNumber.getText()).thenReturn(someItem.getLotNumber());
 
         ThrowingRunnable testedAction = sut::onCancel;
 

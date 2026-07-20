@@ -32,7 +32,7 @@ android {
 dependencies {
 
     implementation(libs.appcompat)
-    implementation(libs.fragment.testing)
+    implementation(libs.cardview)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)

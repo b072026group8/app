@@ -1,5 +1,7 @@
 package com.cscb07.taamapp;
 
+import java.util.Objects;
+
 public class Item {
 
     private String lotNumber;
@@ -35,6 +37,27 @@ public class Item {
         this.accessionNumber = accessionNumber;
         this.notes = notes;
         this.image = image;
+    }
+
+    /**
+     * default ctor, to be used with FirebaseDatabase (<c>DataSnapshot.get()</c>).
+     */
+    public Item() {
+        this.lotNumber = "";
+        this.artifactName = "";
+        this.description = "";
+        this.category = "";
+        this.material = "";
+        this.dynastyPeriod = "";
+        this.culturalOrigin = "";
+        this.dimensions = "";
+        this.conditionReport = "";
+        this.currentLocation = "";
+        this.acquisitionMethod = "";
+        this.provenance = "";
+        this.accessionNumber = "";
+        this.notes = "";
+        this.image = "";
     }
 
     // Getters and setters
@@ -133,5 +156,31 @@ public class Item {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Item)) return false;
+        Item item = (Item) o;
+        return     Objects.equals(lotNumber, item.lotNumber)
+                && Objects.equals(artifactName, item.artifactName)
+                && Objects.equals(description, item.description)
+                && Objects.equals(category, item.category)
+                && Objects.equals(material, item.material)
+                && Objects.equals(dynastyPeriod, item.dynastyPeriod)
+                && Objects.equals(culturalOrigin, item.culturalOrigin)
+                && Objects.equals(dimensions, item.dimensions)
+                && Objects.equals(conditionReport, item.conditionReport)
+                && Objects.equals(currentLocation, item.currentLocation)
+                && Objects.equals(acquisitionMethod, item.acquisitionMethod)
+                && Objects.equals(provenance, item.provenance)
+                && Objects.equals(accessionNumber, item.accessionNumber)
+                && Objects.equals(notes, item.notes)
+                && Objects.equals(image, item.image);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(lotNumber);
     }
 }

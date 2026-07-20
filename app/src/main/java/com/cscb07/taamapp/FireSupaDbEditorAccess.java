@@ -80,6 +80,7 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
 
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
+            Log.i(TAG, "Added item updated");
             wasChanged = true;
         }
 

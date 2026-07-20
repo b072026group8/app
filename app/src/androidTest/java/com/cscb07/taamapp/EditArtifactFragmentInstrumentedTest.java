@@ -1,8 +1,10 @@
 package com.cscb07.taamapp;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
@@ -10,12 +12,21 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Test;
+import org.junit.function.ThrowingRunnable;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 @RunWith(AndroidJUnit4.class)
 public class EditArtifactFragmentInstrumentedTest {
+    @Nullable
+    private DataSnapshot snapshot = null;
     @Test
     public void fragmentCreation_AddMode_SetsUiFields() {
         // no setup
@@ -42,14 +53,12 @@ public class EditArtifactFragmentInstrumentedTest {
         }
     }
 
-    @Test
-    public void fragmentCreation_EditMode_SetsFieldsAsProvidedItem()
-    {
+    private Item getExampleItem() {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final String sampleCategory = appContext.getResources().getStringArray(R.array.categories_array)[2];
         final String sampleMaterial = appContext.getResources().getStringArray(R.array.material_array)[2];
         final String sampleDynasty = appContext.getResources().getStringArray(R.array.dynasty_period_array)[2];
-        Item inputItem = new Item("A01231",
+        return new Item("1-2333-1231",
                 "Shield",
                 "very brittle old shield.",
                 sampleCategory, sampleMaterial, sampleDynasty,
@@ -63,6 +72,12 @@ public class EditArtifactFragmentInstrumentedTest {
                 "Very curious notes here" ,
                 ""
         );
+    }
+
+    @Test
+    public void fragmentCreation_EditMode_SetsFieldsAsProvidedItem()
+    {
+        Item inputItem = getExampleItem();
         FragmentFactory factory = new FragmentFactory() {
             @NonNull
             @Override
@@ -157,5 +172,49 @@ public class EditArtifactFragmentInstrumentedTest {
                 assertEquals(someLot, f.textViewLotNumber.getText().toString());
             });
         }
+    }
+
+    private void runIsolatedDb(ThrowingRunnable action) throws Throwable {
+        FirebaseDatabase.getInstance().goOffline();
+        try {
+            action.run();
+        } finally {
+            FirebaseDatabase.getInstance().purgeOutstandingWrites();
+        }
+    }
+
+    @Test
+    public void editingItem_CreatesAndUploads_ReflectedInDb() throws Throwable {
+        runIsolatedDb(() -> {
+            Item item = getExampleItem();
+            final String newName = "Sword";
+            FirebaseDatabase.getInstance().getReference("artifacts").child(item.getLotNumber()).setValue(item);
+            FragmentFactory factory = new FragmentFactory() {
+                @NonNull @Override public Fragment instantiate(@NonNull ClassLoader classLoader, @NonNull String className) {
+                    return new EditArtifactFragment(item, new FireSupaDbEditorAccess());
+                }
+            };
+            try (FragmentScenario<EditArtifactFragment> scenario = FragmentScenario.launch(EditArtifactFragment.class, null, factory)){
+                scenario.onFragment(f -> {
+                   f.editTextName.setText(newName);
+
+
+                   f.onSave();
+                });
+            }
+
+            Thread.sleep(2500);
+            CountDownLatch latch = new CountDownLatch(1);
+            FirebaseDatabase.getInstance().getReference("artifacts/"+item.getLotNumber()).get()
+                    .addOnSuccessListener(data -> {
+                        snapshot = data;
+                        latch.countDown();
+                    });
+            assertTrue(latch.await(5, TimeUnit.SECONDS));
+            assertNotNull(snapshot);
+            Item newItem = snapshot.getValue(Item.class);
+            assertNotNull(newItem);
+            assertEquals(newName, newItem.getArtifactName());
+        });
     }
 }

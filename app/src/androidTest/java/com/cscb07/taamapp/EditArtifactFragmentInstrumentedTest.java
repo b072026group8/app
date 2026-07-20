@@ -11,8 +11,10 @@ import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
+import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
@@ -216,5 +218,56 @@ public class EditArtifactFragmentInstrumentedTest {
             assertNotNull(newItem);
             assertEquals(newName, newItem.getArtifactName());
         });
+    }
+
+    @Ignore("Test modifies actual database.")
+    @Test
+    public void addingItem_CreatesAndUploads_ReflectedInDb() throws Throwable {
+        Item item = new Item();
+        try {
+            item.setArtifactName("Some Name!");
+            item.setDescription("Some description");
+            FragmentFactory factory = new FragmentFactory() {
+                @NonNull @Override public Fragment instantiate(@NonNull ClassLoader classLoader, @NonNull String className) {
+                    return new EditArtifactFragment(null, new FireSupaDbEditorAccess());
+                }
+            };
+            try (FragmentScenario<EditArtifactFragment> scenario = FragmentScenario.launch(EditArtifactFragment.class, null, factory)){
+                scenario.onFragment(f -> {
+                    item.setLotNumber(f.textViewLotNumber.getText().toString());
+                    f.editTextName.setText(item.getArtifactName());
+                    f.editTextName.setText(item.getArtifactName());
+                    f.editTextArtifactDescription.setText(item.getDescription());
+                    f.spinnerDynasty.setSelection(1);
+                    item.setDynastyPeriod(f.getSpinnerDynasty());
+                    f.spinnerArtifactCategory.setSelection(1);
+                    item.setCategory(f.getSpinnerCategory());
+                    f.spinnerArtifactMaterial.setSelection(1);
+                    item.setMaterial(f.getSpinnerMaterial());
+                    Log.i("Test", "" + f.validateFields());
+
+
+                    f.onSave();
+                });
+            }
+
+            Thread.sleep(2500);
+            Log.i("Test", item.getLotNumber());
+            CountDownLatch latch = new CountDownLatch(1);
+            FirebaseDatabase.getInstance().getReference("artifacts").get()
+                    .addOnSuccessListener(data -> {
+                        snapshot = data;
+                        latch.countDown();
+                    });
+            assertTrue(latch.await(3, TimeUnit.SECONDS));
+            assertNotNull(snapshot);
+            assertTrue(snapshot.hasChild(item.getLotNumber()));
+            Item newItem = snapshot.child(item.getLotNumber()).getValue(Item.class);
+            assertEquals(item, newItem);
+        } finally {
+            if (!item.getLotNumber().isEmpty()) {
+                FirebaseDatabase.getInstance().getReference("artifacts").child(item.getLotNumber()).setValue(null);
+            }
+        }
     }
 }

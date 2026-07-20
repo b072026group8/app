@@ -53,6 +53,7 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
 
     @Override
     public DbEditorAccessResult editItem(Item item) {
+        Log.d(TAG, "editing item, LOT: " + item.getLotNumber());
         Task<Void> task = dbRef.child(item.getLotNumber()).setValue(item);
         task.addOnSuccessListener(v -> Log.i(TAG, "Updated item. LOT: " + item.getLotNumber()));
         return DbEditorAccessResult.SUCCESS;

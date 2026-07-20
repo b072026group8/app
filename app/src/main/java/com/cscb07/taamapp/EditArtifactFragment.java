@@ -256,6 +256,7 @@ public class EditArtifactFragment extends Fragment {
                 exitEditArtifact();
                 return;
             case ERROR:
+                log.i(TAG, "error uploading to db.");
                 if (getContext() != null)
                     Toast.makeText(getContext(), "Error saving\nPlease try again later", Toast.LENGTH_LONG).show();
                 break;

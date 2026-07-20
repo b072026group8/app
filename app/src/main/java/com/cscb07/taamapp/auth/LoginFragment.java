@@ -26,7 +26,7 @@ public class LoginFragment extends Fragment implements Auth.View {
         // Login  input fields
         editTextEmail = view.findViewById(R.id.LoginEmailAddress);
         editTextPassword = view.findViewById(R.id.LoginPassword);
-        loginButton = view.findViewById(R.id.newAccountButton);
+        loginButton = view.findViewById(R.id.LoginButton);
 
         presenter = new AuthPresenter(this);
 

@@ -7,7 +7,7 @@
     android:background="#161515">
 
     <Button
-        android:id="@+id/signupButton"
+        android:id="@+id/SignupButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toBottomOf="@+id/SignupPassword" />
 
     <Button
-        android:id="@+id/loginInsteadButton"
+        android:id="@+id/LoginInsteadButton"
         style="@android:style/Widget.Holo.Light.Button.Borderless.Small"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signupButton" />
+        app:layout_constraintTop_toBottomOf="@+id/SignupButton" />
 
     <TextView
         android:id="@+id/SignupNameText"

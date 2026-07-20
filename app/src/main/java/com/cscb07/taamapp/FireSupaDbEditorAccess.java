@@ -27,6 +27,7 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
     public FireSupaDbEditorAccess() {
         db = FirebaseDatabase.getInstance();
         dbRef = db.getReference("artifacts/");
+        Log.i(TAG, dbRef.getKey());
     }
 
     private void removeAddedKey() {
@@ -56,6 +57,8 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
         Log.d(TAG, "editing item, LOT: " + item.getLotNumber());
         Task<Void> task = dbRef.child(item.getLotNumber()).setValue(item);
         task.addOnSuccessListener(v -> Log.i(TAG, "Updated item. LOT: " + item.getLotNumber()));
+        task.addOnFailureListener(e -> Log.i(TAG, "exception:", e));
+        task.addOnCanceledListener(() -> Log.i(TAG, "canceled"));
         return DbEditorAccessResult.SUCCESS;
     }
 

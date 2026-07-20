@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.cscb07.taamapp.auth.LoginFragment;
 import com.cscb07.taamapp.auth.SignupFragment;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -27,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             //loadFragment(new HomeFragment());
-            loadFragment(new SignupFragment());  // Signup test
+            //loadFragment(new SignupFragment());  // Signup test
+            loadFragment(new LoginFragment());  // Login test
         }
     }
 

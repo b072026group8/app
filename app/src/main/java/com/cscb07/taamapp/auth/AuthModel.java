@@ -66,6 +66,7 @@ public class AuthModel {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             System.out.println("Login success");
+                            System.out.println(user.getUid());
                             // TODO Update UI after logging in
                         } else {
                             System.out.println("Login failed");

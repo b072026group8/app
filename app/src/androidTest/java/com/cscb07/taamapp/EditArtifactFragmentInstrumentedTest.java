@@ -176,6 +176,9 @@ public class EditArtifactFragmentInstrumentedTest {
         }
     }
 
+    /**
+     * Doesn't always work.
+     */
     private void runIsolatedDb(ThrowingRunnable action) throws Throwable {
         FirebaseDatabase.getInstance().goOffline();
         try {

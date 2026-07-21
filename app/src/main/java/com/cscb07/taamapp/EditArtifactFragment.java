@@ -1,7 +1,6 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +15,21 @@ import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.cscb07.taamapp.util.DefaultLogger;
+import com.cscb07.taamapp.util.Logger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class EditArtifactFragment extends Fragment {
     private static final String TAG = "EditArtifactFragment";
-    private boolean isEditing;
-    private boolean isModeAdd() { return !isEditing; }
 
     @Nullable private final Item initialItem;
+    private final boolean isEditing() { return initialItem != null; }
+    private final boolean isAdding() { return initialItem == null; }
+    private final DbEditorAccess dbAccess;
+    private final Logger log;
     TextView textViewLotNumber;
     EditText
             editTextName,
@@ -64,13 +68,25 @@ public class EditArtifactFragment extends Fragment {
     public static final String SPINNER_DEFAULT_MATERIAL = "select material:";
     public static final String SPINNER_DEFAULT_DYNASTY = "select dynasty/period:";
 
+    /** @deprecated */
     public EditArtifactFragment()
     {
-        this(null);
+        this(null, null);
     }
-    public EditArtifactFragment(@Nullable Item initialItem)
-    {
+    /** @deprecated */
+    public EditArtifactFragment(@Nullable Item initialItem) {
+        this(initialItem, null);
+    }
+    public EditArtifactFragment(@Nullable Item initialItem, DbEditorAccess dbAccess) {
+        this(initialItem, dbAccess, DefaultLogger.Instance());
+    }
+    public EditArtifactFragment(@Nullable Item initialItem, DbEditorAccess dbAccess, Logger log) {
         this.initialItem = initialItem;
+        this.dbAccess = dbAccess;
+        this.log = log;
+        if (dbAccess == null) {
+            log.e(TAG, "instantiated with a null dbAccess instance.");
+        }
     }
     private ArrayAdapter<CharSequence> initSpinner(Spinner spin, String default_value, int arrayId)
     {
@@ -87,7 +103,7 @@ public class EditArtifactFragment extends Fragment {
         int idx = adapter.getPosition(value);
         if (idx == -1)
         {
-            Log.w(TAG, "invalid value '" + value + "' set to spinner id: " + spin.getId());
+            log.w(TAG, "invalid value '" + value + "' set to spinner id: " + spin.getId());
             return false;
         }
         spin.setSelection(idx);
@@ -122,16 +138,18 @@ public class EditArtifactFragment extends Fragment {
         Button buttonCancel = view.findViewById(R.id.buttonCancel);
         Button buttonSave = view.findViewById(R.id.buttonSave);
 
-        buttonCancel.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        // TODO: set up save button behaviour.
-        buttonSave.setOnClickListener(v -> Toast.makeText(getContext(), "Saving! (not really)", Toast.LENGTH_SHORT).show());
+        buttonCancel.setOnClickListener(v -> onCancel());
+        buttonSave.setOnClickListener(v -> onSave());
 
         if (initialItem == null) {
-            isEditing = false;
-            // TODO: set to a unique Lot number.
-            textViewLotNumber.setText("Temp Lot Num.");
+            if (dbAccess == null) {
+                log.wtf(TAG, "dbAccess is null");
+                textViewLotNumber.setText("Config Error");
+            } else {
+                textViewLotNumber.setText(dbAccess.getUniqueLotNumber());
+            }
+
         } else {
-            isEditing = true;
             Item initial = initialItem;
             textViewLotNumber.setText(initial.getLotNumber());
             editTextName.setText(initial.getArtifactName());
@@ -154,5 +172,93 @@ public class EditArtifactFragment extends Fragment {
         }
 
         return view;
+    }
+
+    private void errorEmptyField(String fieldName) {
+        if (getContext() != null)
+            Toast.makeText(getContext(), "Please give a " + fieldName, Toast.LENGTH_SHORT).show();
+    }
+    private void errorUnsetSpinner(String spinnerName) {
+        if (getContext() != null)
+            Toast.makeText(getContext(), "Please select a " + spinnerName, Toast.LENGTH_SHORT).show();
+    }
+
+    private String getTextViewValue(TextView view) { return view.getText().toString().trim(); }
+    Item createItem() {
+        return new Item(
+                getTextViewValue(textViewLotNumber),
+                getTextViewValue(editTextName),
+                getTextViewValue(editTextArtifactDescription),
+                getSpinnerCategory(),
+                getSpinnerMaterial(),
+                getSpinnerDynasty(),
+                getTextViewValue(editTextCulturalOrigin),
+                getTextViewValue(editTextDimensions),
+                getTextViewValue(editTextConditionReport),
+                getTextViewValue(editTextCurrentLocation),
+                getTextViewValue(editTextAcquisitionMethod),
+                getTextViewValue(editTextProvenance),
+                getTextViewValue(editTextAccessionNumber),
+                getTextViewValue(editTextNotes),
+                "" // TODO: image here.
+        );
+    }
+     boolean validateFields() {
+        if (editTextName.getText().toString().trim().isEmpty()) {
+            errorEmptyField("Name");
+            return false;
+        }
+        if (editTextArtifactDescription.getText().toString().trim().isEmpty()) {
+            errorEmptyField("Description");
+            return false;
+        }
+        if (SPINNER_DEFAULT_CATEGORY.equals(getSpinnerCategory())) {
+            errorUnsetSpinner("Category");
+            return false;
+        }
+        if (SPINNER_DEFAULT_MATERIAL.equals(getSpinnerMaterial())) {
+            errorUnsetSpinner("Material");
+            return false;
+        }
+        if (SPINNER_DEFAULT_DYNASTY.equals(getSpinnerDynasty())) {
+            errorUnsetSpinner("Dynasty/Period");
+            return false;
+        }
+        return true;
+    }
+
+    private void exitEditArtifact() {
+        getParentFragmentManager().popBackStack();
+    }
+    void onCancel() {
+        if (isAdding()) {
+            if (dbAccess == null)
+                log.wtf(TAG, "dbAccess is null, can't cancel addition");
+            else
+                dbAccess.cancelAdd(textViewLotNumber.getText().toString().trim());
+        }
+        exitEditArtifact();
+    }
+    void onSave() {
+        if (!validateFields())
+        {
+            return;
+        }
+        if (dbAccess == null) {
+            Toast.makeText(getContext(), "App config error\nNull DbAccess", Toast.LENGTH_LONG).show();
+            log.wtf(TAG, "Cannot access Db: DbEditAccess instance is null");
+            return;
+        }
+        DbEditorAccessResult result = dbAccess.editItem(createItem());
+
+        switch (result) {
+            case SUCCESS:
+                exitEditArtifact();
+                return;
+            case ERROR:
+                if (getContext() != null)
+                    Toast.makeText(getContext(), "Error saving\nPlease try again later", Toast.LENGTH_LONG).show();
+                break;
+        }
     }
 }

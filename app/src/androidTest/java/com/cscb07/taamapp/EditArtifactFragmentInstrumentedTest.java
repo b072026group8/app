@@ -131,4 +131,31 @@ public class EditArtifactFragmentInstrumentedTest {
             });
         }
     }
+
+    @Test
+    public void fragmentCreation_AddMode_GetsLotNumber() {
+        final String someLot = "sample-lot-123";
+        DbEditorAccess access = new DbEditorAccess() {
+            @Override
+            public String getUniqueLotNumber() {
+                return someLot;
+            }
+            @Override public DbEditorAccessResult editItem(Item item) { throw new RuntimeException("Shouldn't run"); } @Override public void cancelAdd(String lotNumber) {throw new RuntimeException("Shouldn't run"); }
+        };
+        FragmentFactory factory = new FragmentFactory() {
+            @NonNull
+            @Override
+            public Fragment instantiate(@NonNull ClassLoader classLoader, @NonNull String className) {
+                return new EditArtifactFragment(null, access);
+            }
+        };
+
+        try (FragmentScenario<EditArtifactFragment> scenario = FragmentScenario.launch(EditArtifactFragment.class, null, factory)) {
+            scenario.onFragment(f -> {
+
+
+                assertEquals(someLot, f.textViewLotNumber.getText().toString());
+            });
+        }
+    }
 }

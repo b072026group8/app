@@ -84,14 +84,13 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
 
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
-            Log.i(TAG, "Added item updated");
-            wasChanged = true;
+            wasChanged = snapshot.exists();
+            Log.i(TAG, "Added item updated: exists = " + wasChanged);
         }
 
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
-            Log.w(TAG, "listener removed with error: " + error);
+            Log.w(TAG, "listener removed with error", error.toException());
         }
-
     }
 }

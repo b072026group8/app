@@ -14,7 +14,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
-import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;

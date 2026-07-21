@@ -25,10 +25,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         Item item = itemList.get(position);
-//        holder.textViewTitle.setText(item.getTitle());
-        holder.textViewAuthor.setText(item.getMaterial());
-        holder.textViewGenre.setText(item.getCategory());
-        holder.textViewDescription.setText(item.getDescription());
+        holder.textViewName.setText(item.getArtifactName());
+        holder.textViewCategory.setText(item.getCategory());
+        holder.textViewMaterial.setText(item.getMaterial());
+        holder.textViewDynastyPeriod.setText(item.getDynastyPeriod());
     }
 
     @Override
@@ -37,14 +37,14 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewTitle, textViewAuthor, textViewGenre, textViewDescription;
+        TextView textViewName, textViewCategory, textViewMaterial, textViewDynastyPeriod;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            textViewTitle = itemView.findViewById(R.id.textViewTitle);
-            textViewAuthor = itemView.findViewById(R.id.textViewAuthor);
-            textViewGenre = itemView.findViewById(R.id.textViewGenre);
-            textViewDescription = itemView.findViewById(R.id.textViewDescription);
+            textViewName = itemView.findViewById(R.id.textViewName);
+            textViewCategory = itemView.findViewById(R.id.textViewCategory);
+            textViewMaterial = itemView.findViewById(R.id.textViewMaterial);
+            textViewDynastyPeriod = itemView.findViewById(R.id.textViewDynastyPeriod);
         }
     }
 }

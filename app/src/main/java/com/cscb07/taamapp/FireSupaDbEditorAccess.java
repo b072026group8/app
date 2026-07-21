@@ -12,6 +12,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Default implementation of {@link DbEditorAccess} to use with {@link EditArtifactFragment}.
  */
@@ -54,11 +57,17 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
 
     @Override
     public DbEditorAccessResult editItem(Item item) {
-        Log.d(TAG, "editing item, LOT: " + item.getLotNumber());
-        Task<Void> task = dbRef.child(item.getLotNumber()).setValue(item);
-        task.addOnSuccessListener(v -> Log.i(TAG, "Updated item. LOT: " + item.getLotNumber()));
-        task.addOnFailureListener(e -> Log.i(TAG, "exception:", e));
-        task.addOnCanceledListener(() -> Log.i(TAG, "canceled"));
+        Log.d(TAG, "Editing item, LOT: " + item.getLotNumber());
+        if (addChangeListener != null && addChangeListener.wasChanged()) {
+            Log.w(TAG, "\tReserved entry was modified, overriding.");
+        }
+        dbRef.child(item.getLotNumber()).setValue(item)
+            .addOnSuccessListener(v -> {
+                Log.i(TAG, "Updated item. LOT: " + item.getLotNumber());
+            })
+            .addOnFailureListener(e -> {
+                Log.i(TAG, "Failed to update item. LOT: " + item.getLotNumber(), e);
+            });
         return DbEditorAccessResult.SUCCESS;
     }
 

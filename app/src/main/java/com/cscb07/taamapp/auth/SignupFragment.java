@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.cscb07.taamapp.R;
 
-public class SignupFragment extends Fragment implements Auth.View {
+public class SignupFragment extends Fragment implements UserAuthentication {
     private EditText editTextName, editTextEmail, editTextPassword;
     private Button signupButton;
     private AuthPresenter presenter;
@@ -28,7 +28,7 @@ public class SignupFragment extends Fragment implements Auth.View {
         editTextPassword = view.findViewById(R.id.SignupPassword);
         signupButton = view.findViewById(R.id.SignupButton);
 
-        presenter = new AuthPresenter(this);
+        presenter = new AuthPresenter();
 
         // Signup button input
         signupButton.setOnClickListener(new View.OnClickListener() {

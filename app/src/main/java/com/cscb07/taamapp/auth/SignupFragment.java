@@ -30,7 +30,7 @@ public class SignupFragment extends Fragment implements UserAuthentication {
         signupButton = view.findViewById(R.id.SignupButton);
         loginInsteadButton = view.findViewById(R.id.LoginInsteadButton);
 
-        presenter = new AuthPresenter(this);
+        presenter = new AuthPresenter(this, new AuthModel());
 
         // Signup button input
         signupButton.setOnClickListener(new View.OnClickListener() {

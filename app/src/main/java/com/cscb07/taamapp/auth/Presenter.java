@@ -1,6 +1,6 @@
 package com.cscb07.taamapp.auth;
 
 interface Presenter {
-    public void login(String email, String password);
-    public void signup(String name, String email, String password);
+    void login(String email, String password);
+    void signup(String name, String email, String password);
 }

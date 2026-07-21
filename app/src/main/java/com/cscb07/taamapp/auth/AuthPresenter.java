@@ -4,8 +4,8 @@ public class AuthPresenter implements Presenter {
     private final AuthModel model;
     private final UserAuthentication view;
 
-    public AuthPresenter(UserAuthentication view) {
-        this.model = new AuthModel();
+    public AuthPresenter(UserAuthentication view, AuthModel model) {
+        this.model = model;
         this.view = view;
     }
 

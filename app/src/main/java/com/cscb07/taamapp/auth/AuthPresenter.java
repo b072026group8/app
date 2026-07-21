@@ -2,9 +2,11 @@ package com.cscb07.taamapp.auth;
 
 public class AuthPresenter implements Presenter {
     private final AuthModel model;
+    private final UserAuthentication view;
 
-    public AuthPresenter() {
-        model = new AuthModel();
+    public AuthPresenter(UserAuthentication view) {
+        this.model = new AuthModel();
+        this.view = view;
     }
 
     @Override

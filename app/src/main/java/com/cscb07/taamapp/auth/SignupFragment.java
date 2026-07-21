@@ -15,7 +15,7 @@ import com.cscb07.taamapp.R;
 
 public class SignupFragment extends Fragment implements UserAuthentication {
     private EditText editTextName, editTextEmail, editTextPassword;
-    private Button signupButton;
+    private Button signupButton, loginInsteadButton;
     private AuthPresenter presenter;
 
     @Override
@@ -27,8 +27,9 @@ public class SignupFragment extends Fragment implements UserAuthentication {
         editTextEmail = view.findViewById(R.id.SignupEmailAddress);
         editTextPassword = view.findViewById(R.id.SignupPassword);
         signupButton = view.findViewById(R.id.SignupButton);
+        loginInsteadButton = view.findViewById(R.id.LoginInsteadButton);
 
-        presenter = new AuthPresenter();
+        presenter = new AuthPresenter(this);
 
         // Signup button input
         signupButton.setOnClickListener(new View.OnClickListener() {
@@ -39,6 +40,14 @@ public class SignupFragment extends Fragment implements UserAuthentication {
                 String password = editTextPassword.getText().toString().trim();
                 presenter.signup(name, email, password);
             }
+        });
+
+        loginInsteadButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               // Since login page is first, remove signup page from stack
+               getParentFragmentManager().popBackStack();
+           }
         });
 
         return view;

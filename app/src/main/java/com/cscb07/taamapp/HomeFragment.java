@@ -1,6 +1,7 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +87,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle possible errors
+                Log.e("Firebase", "Something went wrong fetching artifacts.", databaseError.toException());
             }
         });
     }

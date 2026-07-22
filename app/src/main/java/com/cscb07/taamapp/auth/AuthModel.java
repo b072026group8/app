@@ -17,11 +17,16 @@ public class AuthModel {
 
     private FirebaseAuth mAuth;
     private FirebaseDatabase db;
+    private AuthStatus status;
 
     public AuthModel() {
         // Initialize firebase instance
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance();
+    }
+
+    public void initStatus(AuthStatus status) {
+        this.status = status;
     }
 
     public void registerUser(String name, String email, String password) {
@@ -36,11 +41,12 @@ public class AuthModel {
                             if (user != null) {  // Null check
                                 saveUserRTDB(user.getUid(), name, email);
                                 System.out.println("Signup success");
-                                // TODO Update UI after signing up (Home page)
                                 System.out.println(user.getUid());
+                                // TODO Update UI after signing up (Home page)
                             }
                         } else {
                             System.out.println("Signup failed");
+                            status.failedAuth("Signup failed. User already exists");
                         }
                     }
                 });
@@ -71,9 +77,11 @@ public class AuthModel {
                                 // TODO Update UI after logging in (Home page)
                             } else {
                                 System.out.println("Login success, user is null");
+                                status.failedAuth("Failed to retrieve user, please try again");
                             }
                         } else {
                             System.out.println("Login failed");
+                            status.failedAuth("Login failed, invalid credentials");
                         }
                     }
                 });

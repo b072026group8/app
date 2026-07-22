@@ -18,6 +18,7 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
     public static final String TAG = "FireSupaDbEditorAccess";
     private final FirebaseDatabase db;
     private final DatabaseReference dbRef;
+    private final String subFieldPath = "value";
     @Nullable
     private DatabaseReference addedItemRef;
     @Nullable
@@ -57,7 +58,7 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
         if (addChangeListener != null && addChangeListener.wasChanged()) {
             Log.w(TAG, "\tReserved entry was modified, overriding.");
         }
-        dbRef.child(item.getLotNumber()).setValue(item)
+        dbRef.child(item.getLotNumber()).child(subFieldPath).setValue(item)
             .addOnSuccessListener(v -> {
                 Log.i(TAG, "Updated item. LOT: " + item.getLotNumber());
             })

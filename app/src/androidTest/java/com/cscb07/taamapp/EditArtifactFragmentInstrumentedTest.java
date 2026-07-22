@@ -209,7 +209,7 @@ public class EditArtifactFragmentInstrumentedTest {
 
             Thread.sleep(2500);
             CountDownLatch latch = new CountDownLatch(1);
-            FirebaseDatabase.getInstance().getReference("artifacts/"+item.getLotNumber()).get()
+            FirebaseDatabase.getInstance().getReference("artifacts/"+item.getLotNumber()+"/value").get()
                     .addOnSuccessListener(data -> {
                         snapshot = data;
                         latch.countDown();

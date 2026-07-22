@@ -24,7 +24,7 @@ public class ManageItemsFragment extends Fragment {
         buttonAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadFragment(new EditArtifactFragment());
+                loadFragment(new EditArtifactFragment(null, new FireSupaDbEditorAccess()));
             }
         });
 
@@ -47,7 +47,7 @@ public class ManageItemsFragment extends Fragment {
                                 "138918234",
                                 "Very curious notes here" ,
                                 ""
-                        ))));
+                        ), new FireSupaDbEditorAccess())));
 
         buttonDeleteItem.setOnClickListener(v -> loadFragment(new DeleteItemFragment()));
 

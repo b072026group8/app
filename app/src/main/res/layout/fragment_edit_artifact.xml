@@ -22,6 +22,7 @@
             android:layout_weight="1"
             android:text="Lot #: "
             android:textAlignment="center"
+            android:textColor="@color/lightgold"
             android:textSize="24sp" />
 
         <TextView
@@ -29,6 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:textColor="@color/lightgold"
             android:textSize="24sp" />
 
     </LinearLayout>
@@ -44,6 +46,8 @@
         android:hint="Artifact Name"
         android:inputType="text"
         android:textAlignment="viewStart"
+        android:textColor="@color/white"
+        android:textColorHint="@color/editor_hint"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,6 +82,8 @@
                 android:lines="10"
                 android:scrollbarAlwaysDrawVerticalTrack="true"
                 android:scrollbars="vertical"
+                android:textColor="@color/white"
+                android:textColorHint="@color/editor_hint"
                 android:textSize="20sp" />
 
             <Spinner
@@ -105,6 +111,8 @@
                 android:ems="10"
                 android:hint="Cultural Origin"
                 android:inputType="text"
+                android:textColor="@color/white"
+                android:textColorHint="@color/editor_hint"
                 android:textSize="20sp" />
 
             <EditText
@@ -114,6 +122,8 @@
                 android:ems="10"
                 android:hint="Dimensions"
                 android:inputType="text"
+                android:textColor="@color/white"
+                android:textColorHint="@color/editor_hint"
                 android:textSize="20sp" />
 
             <EditText
@@ -123,6 +133,8 @@
                 android:ems="10"
                 android:hint="Condition"
                 android:inputType="text"
+                android:textColor="@color/white"
+                android:textColorHint="@color/editor_hint"
                 android:textSize="20sp" />
 
             <EditText
@@ -132,6 +144,8 @@
                 android:ems="10"
                 android:hint="Current Location"
                 android:inputType="text"
+                android:textColor="@color/white"
+                android:textColorHint="@color/editor_hint"
                 android:textSize="20sp" />
 
             <EditText
@@ -141,6 +155,8 @@
                 android:ems="10"
                 android:hint="Acquisition Method"
                 android:inputType="text"
+                android:textColor="@color/white"
+                android:textColorHint="@color/editor_hint"
                 android:textSize="20sp" />
 
             <EditText
@@ -150,6 +166,8 @@
                 android:ems="10"
                 android:hint="Provenance"
                 android:inputType="text"
+                android:textColor="@color/white"
+                android:textColorHint="@color/editor_hint"
                 android:textSize="20sp" />
 
             <EditText
@@ -159,6 +177,8 @@
                 android:ems="10"
                 android:hint="Accession Number"
                 android:inputType="text"
+                android:textColor="@color/white"
+                android:textColorHint="@color/editor_hint"
                 android:textSize="20sp" />
 
             <EditText
@@ -171,6 +191,8 @@
                 android:inputType="textMultiLine"
                 android:lines="6"
                 android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/editor_hint"
                 android:textSize="20sp" />
 
         </LinearLayout>

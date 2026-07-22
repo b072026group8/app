@@ -92,7 +92,7 @@ public class EditArtifactFragment extends Fragment {
     {
         List<CharSequence> options = new ArrayList<>(Arrays.asList(getResources().getStringArray(arrayId)));
         options.add(0, default_value);
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, options);
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(getContext(), R.layout.edit_spinner_textview, options);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spin.setAdapter(adapter);
 
@@ -256,6 +256,7 @@ public class EditArtifactFragment extends Fragment {
                 exitEditArtifact();
                 return;
             case ERROR:
+                log.i(TAG, "error uploading to db.");
                 if (getContext() != null)
                     Toast.makeText(getContext(), "Error saving\nPlease try again later", Toast.LENGTH_LONG).show();
                 break;

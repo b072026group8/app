@@ -1,7 +1,5 @@
 package com.cscb07.taamapp.auth;
 
-import android.util.Patterns;
-
 public class AuthPresenter implements Presenter, AuthStatus {
     private final AuthModel model;
     private final UserAuthentication view;

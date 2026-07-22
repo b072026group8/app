@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
+    private final String Tag = "HomeFragment";
     private ItemAdapter itemAdapter;
     private List<Item> itemList;
     private FirebaseDatabase db;
@@ -79,7 +80,11 @@ public class HomeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 itemList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Item item = snapshot.getValue(Item.class);
+                    Item item = snapshot.child("value").getValue(Item.class);
+                    if (item == null) {
+                        Log.e(Tag, "could not fetch/build artifact item at " + snapshot.getKey() + "/value");
+                        continue;
+                    }
                     itemList.add(item);
                 }
                 itemAdapter.notifyDataSetChanged();
@@ -87,7 +92,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("Firebase", "Something went wrong fetching artifacts.", databaseError.toException());
+                Log.e(Tag, "Something went wrong fetching artifacts.", databaseError.toException());
             }
         });
     }

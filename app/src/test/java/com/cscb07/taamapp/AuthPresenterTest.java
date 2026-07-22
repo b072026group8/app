@@ -18,6 +18,8 @@ public class AuthPresenterTest {
         mockView = mock(UserAuthentication.class);
         mockModel = mock(AuthModel.class);
 
+        // Fix error with Patterns.EMAIL_ADDRESS.matcher(email).matches() during testing. It's replaces that static method
+
         presenter = new AuthPresenter(mockView, mockModel);
     }
     @Test
@@ -41,8 +43,21 @@ public class AuthPresenterTest {
     @Test
     public void Signup4() {
         presenter.signup("Daniel", "daniel@daniel.com", "abc");
-        verify(mockView, never()).showError(anyString());  // Error message not displayed
-        verify(mockModel).registerUser("Daniel", "daniel@daniel.com", "abc");  // New user not created
+        verify(mockView).showError("Password must be at least 6 characters");  // Error message not displayed
+        verify(mockModel, never()).registerUser("Daniel", "daniel@daniel.com", "abc");  // New user not created, password too short
+    }
+    @Test
+    public void Signup5() {
+        presenter.signup("Daniel", "danieldaniel.com", "abc123");
+        verify(mockView).showError("Please enter a valid email address");  // Error message displayed
+        verify(mockModel, never()).registerUser("Daniel", "danieldaniel.com", "abc123");  // New user not created
+    }
+
+    @Test
+    public void Signup6() {
+        presenter.signup("Daniel", "daniel@daniel.com", "abc123");  // Perfectly valid
+        verify(mockView, never()).showError(anyString());  // No Error message displayed
+        verify(mockModel).registerUser("Daniel", "daniel@daniel.com", "abc123");  // New user created
     }
     @Test
     public void Login1() {
@@ -62,6 +77,12 @@ public class AuthPresenterTest {
     public void Login3() {
         presenter.login("daniel@daniel.com", "abc");
         verify(mockView, never()).showError(anyString());
-        verify(mockModel).loginUser("daniel@daniel.com", "abc");  // New user not logged in
+        verify(mockModel).loginUser("daniel@daniel.com", "abc");  // New user logged in
+    }
+
+    @Test
+    public void FailedAuth1() {
+        presenter.failedAuth("error message");  // Testing the failedAuth method
+        verify(mockView).showError("error message");
     }
 }

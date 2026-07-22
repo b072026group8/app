@@ -23,7 +23,7 @@ public class AuthPresenter implements Presenter, AuthStatus {
             view.showError("Password can't be empty");
         } else if (password.length() < 6) {  // Prevent bad passwords
             view.showError("Password must be at least 6 characters");
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {  // Email must follow this format something@something.something
+        } else if (!isValidEmail(email)) {  // Email must follow this format something@something.something
             view.showError("Please enter a valid email address");
         } else {
             model.registerUser(name, email, password);
@@ -45,5 +45,17 @@ public class AuthPresenter implements Presenter, AuthStatus {
     // Error Toast for invalid user credentials in signup and login
     public void failedAuth(String m) {
         view.showError(m);
+    }
+
+    // Checks if email input is valid. Must follow something@something.something
+    private boolean isValidEmail(String e) {
+        String regex = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+            "\\@" +
+            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+            "(" +
+                "\\." +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+            ")+";
+        return e.matches(regex);  // Literally copied from Patterns.EMAIL_ADDRESS. Having issues with testing
     }
 }

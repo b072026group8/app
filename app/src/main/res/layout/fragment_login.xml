@@ -149,5 +149,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/LoginButton"
         app:strokeColor="@color/lightgold"
-        app:strokeWidth="3dp" />
+        app:strokeWidth="2dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

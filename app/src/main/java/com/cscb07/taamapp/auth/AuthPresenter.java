@@ -45,6 +45,10 @@ public class AuthPresenter implements Presenter, AuthStatus {
         view.showError(m);
     }
 
+    public void successAuth() {
+        view.loadHome();
+    }
+
     // Checks if email input is valid. Must follow something@something.something
     private boolean isValidEmail(String e) {
         String regex = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +

@@ -40,9 +40,13 @@ public class AuthModel {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {  // Null check
                                 saveUserRTDB(user.getUid(), name, email);
+
+                                // Debugging (logcat)
                                 System.out.println("Signup success");
                                 System.out.println(user.getUid());
-                                // TODO Update UI after signing up (Home page)
+
+                                // Change to home screen
+                                status.successAuth();
                             }
                         } else {
                             System.out.println("Signup failed");
@@ -72,9 +76,14 @@ public class AuthModel {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {  // Null check
+
+                                // Debugging
                                 System.out.println("Login success");
                                 System.out.println(user.getUid());
-                                // TODO Update UI after logging in (Home page)
+
+                                // Change to home screen
+                                status.successAuth();
+
                             } else {
                                 System.out.println("Login success, user is null");
                                 status.failedAuth("Failed to retrieve user, please try again");

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.cscb07.taamapp.HomeFragment;
 import com.cscb07.taamapp.R;
 
 public class SignupFragment extends Fragment implements UserAuthentication {
@@ -59,5 +60,10 @@ public class SignupFragment extends Fragment implements UserAuthentication {
         if (getContext() != null) {
             Toast.makeText(getContext(), m, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void loadHome() {
+        getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).addToBackStack(null).commit();
     }
 }

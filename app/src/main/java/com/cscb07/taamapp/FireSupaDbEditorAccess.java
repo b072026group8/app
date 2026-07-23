@@ -27,7 +27,6 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
     public FireSupaDbEditorAccess() {
         db = FirebaseDatabase.getInstance();
         dbRef = db.getReference("artifacts/");
-        Log.i(TAG, dbRef.getKey());
     }
 
     private void removeAddedKey() {
@@ -70,6 +69,7 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
 
     @Override
     public void cancelAdd(@NonNull String lotNumber) {
+        Log.v(TAG, "cancelling Add (or edit)");
         if (addedItemRef == null) {
             return;
         }

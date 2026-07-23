@@ -57,10 +57,11 @@ public class AuthModel {
     }
 
     public void saveUserRTDB(String userID, String name, String email) {
-        Map<String, String> user = new HashMap<>();
+        Map<String, Object> user = new HashMap<>();
         user.put("userid", userID);
         user.put("name", name);
         user.put("email", email);
+        user.put("accountType", AccountType.USER);  // Don't use ADMIN here!
 
         // Put in RTDB. Firebase RTDB documentation
         DatabaseReference mDatabase = db.getReference();
@@ -80,6 +81,7 @@ public class AuthModel {
                                 // Debugging
                                 System.out.println("Login success");
                                 System.out.println(user.getUid());
+
 
                                 // Change to home screen
                                 status.successAuth();

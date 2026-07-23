@@ -41,7 +41,7 @@ public class HomeFragment extends Fragment {
         RecyclerView artifactCardGrid = view.findViewById(R.id.artifactCardGrid);
 
         itemList = new ArrayList<>();
-        itemAdapter = new ItemAdapter(itemList);
+        itemAdapter = new ItemAdapter(itemList, getParentFragmentManager().beginTransaction());
         db = FirebaseDatabase.getInstance();
         fetchItemsFromDatabase(false);
 

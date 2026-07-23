@@ -29,11 +29,11 @@ public class ExpandedArtifactViewFragment extends Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
     View view = inflater.inflate(R.layout.fragment_expanded_artifact_view, container,false);
-    db = FirebaseDatabase.getInstance("https://b07-demo-summer-2024-default-rtdb.firebaseio.com/");
+    db = FirebaseDatabase.getInstance();
     Bundle args = getArguments();
     if (args != null) {
-            lot = args.getString("lotNumber");
-            ref = db.getReference("artifacts").child(lot);
+        lot = args.getString("lotNumber");
+        ref = db.getReference("artifacts").child(lot);
         Button deleteButton = view.findViewById(R.id.button);
         TextView name = view.findViewById(R.id.name);
         TextView lotNum = view.findViewById(R.id.Lotnum);
@@ -54,21 +54,24 @@ public class ExpandedArtifactViewFragment extends Fragment{
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 DataSnapshot data = snapshot.child("value");
+                Item item = data.getValue(Item.class);
+                if (item != null) {
+                    name.setText(item.getArtifactName());
+                    lotNum.setText(item.getLotNumber());
+                    description.setText(item.getDescription());
+                    category.setText(item.getCategory());
+                    material.setText(item.getMaterial());
+                    dynastyPeriod.setText(item.getDynastyPeriod());
+                    culturalOrigin.setText(item.getCulturalOrigin());
+                    dimensions.setText(item.getDimensions());
+                    conditionReport.setText(item.getConditionReport());
+                    currentLocation.setText(item.getCurrentLocation());
+                    acquisitionMethod.setText(item.getAcquisitionMethod());
+                    provenance.setText(item.getProvenance());
+                    accessionNumber.setText(item.getAccessionNumber());
+                    notes.setText(item.getNotes());
+                }
 
-                name.setText(data.child("artifactName").getValue(String.class));
-                lotNum.setText(data.child("lotNumber").getValue(String.class));
-                description.setText(data.child("description").getValue(String.class));
-                category.setText(data.child("category").getValue(String.class));
-                material.setText(data.child("material").getValue(String.class));
-                dynastyPeriod.setText(data.child("dynastyPeriod").getValue(String.class));
-                culturalOrigin.setText(data.child("culturalOrigin").getValue(String.class));
-                dimensions.setText(data.child("dimensions").getValue(String.class));
-                conditionReport.setText(data.child("conditionReport").getValue(String.class));
-                currentLocation.setText(data.child("currentLocation").getValue(String.class));
-                acquisitionMethod.setText(data.child("acquisitionMethod").getValue(String.class));
-                provenance.setText(data.child("provenance").getValue(String.class));
-                accessionNumber.setText(data.child("accessionNumber").getValue(String.class));
-                notes.setText(data.child("notes").getValue(String.class));
             }
 
             @Override

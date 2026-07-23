@@ -27,9 +27,7 @@ public class MainActivity extends AppCompatActivity {
         myRef.child("movies").setValue("B07 Demo!");
 
         if (savedInstanceState == null) {
-            //loadFragment(new HomeFragment());
-            //loadFragment(new SignupFragment());  // Signup test
-            loadFragment(new LoginFragment());  // Login test
+            loadFragment(new LoginFragment());  // Load the login page
         }
     }
 

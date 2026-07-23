@@ -57,7 +57,7 @@ public class AuthModel {
     }
 
     public void saveUserRTDB(String userID, String name, String email) {
-        Map<String, Object> user = new HashMap<>();
+        Map<String, String> user = new HashMap<>();
         user.put("userid", userID);
         user.put("name", name);
         user.put("email", email);

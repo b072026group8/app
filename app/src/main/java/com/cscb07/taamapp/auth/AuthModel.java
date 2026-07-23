@@ -96,4 +96,26 @@ public class AuthModel {
                 });
     }
 
+    // Once guest accounts are created, they won't be deleted due to Identity Platform requiring firebase blaze plan
+    public void createGuest() {
+        // Using firebase anonymous authentication
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user != null) {
+                                System.out.println("Guest account created");
+                                System.out.println(user.getUid());
+                                status.successAuth();
+                            }
+                        } else {
+                            System.out.println("Guest account creation failed");
+                            status.failedAuth("Guest account could not be created");
+                        }
+                    }
+                });
+    }
+
 }

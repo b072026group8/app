@@ -201,6 +201,12 @@ public class EditArtifactFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        onCancel(false);
+    }
+
     private void errorEmptyField(String fieldName) {
         if (getContext() != null)
             Toast.makeText(getContext(), "Please give a " + fieldName, Toast.LENGTH_SHORT).show();
@@ -258,13 +264,18 @@ public class EditArtifactFragment extends Fragment {
         getParentFragmentManager().popBackStack();
     }
     void onCancel() {
+        onCancel(true);
+    }
+    private void onCancel(boolean cancelling){
         if (isAdding()) {
             if (dbAccess == null)
                 log.wtf(TAG, "dbAccess is null, can't cancel addition");
             else
                 dbAccess.cancelAdd(textViewLotNumber.getText().toString().trim());
         }
-        exitEditArtifact();
+        if (cancelling) {
+            exitEditArtifact();
+        }
     }
     void saveItem(String imageUrl) {
         DbEditorAccessResult result =

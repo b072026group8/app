@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import android.util.Log;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
 
 import com.cscb07.taamapp.util.OperationListener;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +27,7 @@ public class SavedArtifactWriterInstrumentedTest {
         return key;
     }
     @Test
+    @LargeTest
     public void addSavedArtifact_sampleValues_ReflectedInDb() throws InterruptedException {
         String uid = getSomeKey();
         String lot = getSomeKey();
@@ -54,6 +56,7 @@ public class SavedArtifactWriterInstrumentedTest {
     }
 
     @Test
+    @LargeTest
     public void addSavedArtifact_usingListener_ReceiveResults() throws InterruptedException {
         String uid = getSomeKey();
         String lot = getSomeKey();
@@ -85,6 +88,7 @@ public class SavedArtifactWriterInstrumentedTest {
     }
 
     @Test
+    @LargeTest
     public void removeSavedArtifact_ValueExists_RemovesItFromDb() throws InterruptedException {
         String uid = getSomeKey();
         String lot = getSomeKey();
@@ -115,6 +119,7 @@ public class SavedArtifactWriterInstrumentedTest {
     }
 
     @Test
+    @LargeTest
     public void removeSavedArtifact_usingListener_ReceiveResults() throws InterruptedException {
         String uid = getSomeKey();
         String lot = getSomeKey();

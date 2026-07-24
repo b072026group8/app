@@ -2,6 +2,8 @@ package com.cscb07.taamapp;
 
 import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.FlakyTest;
+import androidx.test.filters.LargeTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +38,8 @@ public class SavedArtifactReaderInstrumentedTest {
     }
     boolean hasReceived = false;
     @Test
+    @LargeTest
+    @FlakyTest
     public void addOnSavedArtifactChangedListener_alreadyHadValue_listenerCalled() throws InterruptedException {
         String uid = getSomeKey();
         String lot = getSomeKey();
@@ -88,6 +92,8 @@ public class SavedArtifactReaderInstrumentedTest {
     }
 
     @Test
+    @LargeTest
+    @FlakyTest
     public void addOnChangedListener_sampleValues_listenerCalled() throws InterruptedException {
         hasReceived = false;
         String uid = getSomeKey();

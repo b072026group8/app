@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cscb07.taamapp.util.ListStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +29,7 @@ public class HomeFragment extends Fragment {
     private final String Tag = "HomeFragment";
     private ItemAdapter itemAdapter;
     private List<Item> itemList;
+    private ListStrategy<Item> displayItemList;
     private FirebaseDatabase db;
     private DatabaseReference itemsRef;
 
@@ -41,7 +43,8 @@ public class HomeFragment extends Fragment {
         RecyclerView artifactCardGrid = view.findViewById(R.id.artifactCardGrid);
 
         itemList = new ArrayList<>();
-        itemAdapter = new ItemAdapter(itemList, getParentFragmentManager().beginTransaction());
+        displayItemList = new ListStrategy<>(itemList);
+        itemAdapter = new ItemAdapter(displayItemList, getParentFragmentManager().beginTransaction());
         db = FirebaseDatabase.getInstance();
         fetchItemsFromDatabase(false);
 

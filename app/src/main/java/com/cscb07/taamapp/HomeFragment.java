@@ -1,12 +1,14 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Spinner;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +17,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cscb07.taamapp.itemSorting.ItemFilterList;
 import com.cscb07.taamapp.util.ListStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +33,7 @@ public class HomeFragment extends Fragment {
     private ItemAdapter itemAdapter;
     private List<Item> itemList;
     private ListStrategy<Item> displayItemList;
+    private ItemFilterList searchList;
     private FirebaseDatabase db;
     private DatabaseReference itemsRef;
 
@@ -41,10 +45,12 @@ public class HomeFragment extends Fragment {
         Button buttonRecyclerView = view.findViewById(R.id.buttonFilterSaved);
         Button buttonManageItems = view.findViewById(R.id.buttonManageItems);
         RecyclerView artifactCardGrid = view.findViewById(R.id.artifactCardGrid);
+        EditText searchBar = view.findViewById(R.id.homeSearchEditText);
 
         itemList = new ArrayList<>();
         displayItemList = new ListStrategy<>(itemList);
-        itemAdapter = new ItemAdapter(displayItemList, getParentFragmentManager().beginTransaction());
+        searchList = new ItemFilterList(displayItemList);
+        itemAdapter = new ItemAdapter(searchList, getParentFragmentManager().beginTransaction());
         db = FirebaseDatabase.getInstance();
         fetchItemsFromDatabase(false);
 
@@ -66,6 +72,18 @@ public class HomeFragment extends Fragment {
 
         artifactCardGrid.setLayoutManager(new GridLayoutManager(getContext(), 3));
         artifactCardGrid.setAdapter(itemAdapter);
+
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            @Override public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String query = editable.toString().trim();
+                Log.d(Tag, "new search query: " + query);
+                searchList.queryKeyword(query);
+                itemAdapter.notifyDataSetChanged();
+            }
+        });
 
         return view;
     }
@@ -90,6 +108,7 @@ public class HomeFragment extends Fragment {
                     }
                     itemList.add(item);
                 }
+                searchList.requery();
                 itemAdapter.notifyDataSetChanged();
             }
 

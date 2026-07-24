@@ -13,7 +13,7 @@ import com.cscb07.taamapp.util.OperationListener;
  * Class to add or remove artifacts from a user's saved artifact list.
  */
 public class SavedArtifactWriter {
-    public final String DB_PATH = "saved_collection/";
+    public static final String DB_PATH = "saved_collection/";
     private final DatabaseReference collectionRoot;
 
     public SavedArtifactWriter() {

@@ -85,25 +85,47 @@ public class ExpandedArtifactViewFragment extends Fragment{
 
         }
         ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
-        SavedArtifactWriter savedArtifactWriter = new SavedArtifactWriter();
-        saveArtifactButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ToggleButton instance = (ToggleButton) view;
-                String uid = FirebaseAuth.getInstance().getUid();
-                if (uid == null) {
-                    Log.w(Tag, "Null user, 'saved artifact' button shouldn't be accessible");
-                    return;
+        saveArtifactButton.setClickable(false);
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid != null) {
+            SavedArtifactWriter savedArtifactWriter = new SavedArtifactWriter();
+            saveArtifactButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ToggleButton instance = (ToggleButton) view;
+                    if (uid == null) {
+                        Log.w(Tag, "Null user, 'saved artifact' button shouldn't be accessible");
+                        return;
+                    }
+                    if (instance.isChecked()) {
+                        Log.i(Tag, "adding artifact " + lot + " to user's collection: " + uid);
+                        savedArtifactWriter.addSavedArtifact(uid, lot);
+                    } else {
+                        Log.i(Tag, "removing artifact " + lot + " from user's collection: " + uid);
+                        savedArtifactWriter.removeSavedArtifact(uid, lot);
+                    }
                 }
-                if (instance.isChecked()) {
-                    Log.i(Tag, "adding artifact " + lot + " to user's collection: " + uid);
-                    savedArtifactWriter.addSavedArtifact(uid, lot);
-                } else {
-                    Log.i(Tag, "removing artifact " + lot + " from user's collection: " + uid);
-                    savedArtifactWriter.removeSavedArtifact(uid, lot);
+            });
+            saveArtifactButton.setClickable(false);
+
+            SavedArtifactReader reader = SavedArtifactReader.getInstance(uid);
+            reader.addOnSavedArtifactChangedListener(lot, new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    saveArtifactButton.setClickable(true);
+                    if (snapshot.exists()) {
+                        saveArtifactButton.setChecked(true);
+                    } else {
+                        saveArtifactButton.setChecked(false);
+                    }
                 }
-            }
-        });
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e(Tag, "listener cancelled", error.toException());
+                }
+            });
+        }
         return view;
     }
 }

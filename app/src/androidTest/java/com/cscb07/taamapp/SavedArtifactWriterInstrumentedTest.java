@@ -18,7 +18,7 @@ import java.util.Random;
 
 @RunWith(AndroidJUnit4.class)
 public class SavedArtifactWriterInstrumentedTest {
-    private final String sourceKey = "test-key-value";
+    private final String sourceKey = "test-key-value-do-not-use";
     private Random r = new Random();
     public String getSomeKey() {
         String key = sourceKey + r.nextInt();

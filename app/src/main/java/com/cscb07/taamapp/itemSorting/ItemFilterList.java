@@ -24,7 +24,7 @@ public class ItemFilterList extends ArrayList<Item> {
         queryKeyword("");
     }
 
-    private boolean contains(String source, String keyword) {
+    private static boolean contains(String source, String keyword) {
         return source.toLowerCase(Locale.ROOT).contains(keyword);
     }
 

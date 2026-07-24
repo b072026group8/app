@@ -90,8 +90,7 @@ public class ListStrategy<T> implements List<T> {
 
     @Override
     public boolean removeAll(@NonNull Collection<?> collection) {
-        //noinspection SuspiciousMethodCalls
-        return list.remove(collection);
+        return list.removeAll(collection);
     }
 
     @Override

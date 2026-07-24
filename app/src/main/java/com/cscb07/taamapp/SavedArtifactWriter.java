@@ -16,7 +16,7 @@ public class SavedArtifactWriter {
     public final String DB_PATH = "saved_collection/";
     private final DatabaseReference collectionRoot;
 
-    private SavedArtifactWriter() {
+    public SavedArtifactWriter() {
         collectionRoot = FirebaseDatabase.getInstance().getReference(DB_PATH);
     }
 

@@ -61,6 +61,7 @@ public class AuthModel {
         user.put("userid", userID);
         user.put("name", name);
         user.put("email", email);
+        user.put("accountType", AccountType.USER);  // Don't use ADMIN here!
 
         // Put in RTDB. Firebase RTDB documentation
         DatabaseReference mDatabase = db.getReference();
@@ -81,6 +82,7 @@ public class AuthModel {
                                 System.out.println("Login success");
                                 System.out.println(user.getUid());
 
+
                                 // Change to home screen
                                 status.successAuth();
 
@@ -91,6 +93,28 @@ public class AuthModel {
                         } else {
                             System.out.println("Login failed");
                             status.failedAuth("Login failed, invalid credentials");
+                        }
+                    }
+                });
+    }
+
+    // Once guest accounts are created, they won't be deleted due to Identity Platform requiring firebase blaze plan
+    public void createGuest() {
+        // Using firebase anonymous authentication
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user != null) {
+                                System.out.println("Guest account created");
+                                System.out.println(user.getUid());
+                                status.successAuth();
+                            }
+                        } else {
+                            System.out.println("Guest account creation failed");
+                            status.failedAuth("Guest account could not be created");
                         }
                     }
                 });

@@ -1,5 +1,6 @@
 package com.cscb07.taamapp;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DataSnapshot;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 
 import androidx.annotation.NonNull;
@@ -21,6 +23,7 @@ import androidx.fragment.app.Fragment;
 
 
 public class ExpandedArtifactViewFragment extends Fragment{
+    private final String Tag = "ExpandedArtifactViewFragment";
     private FirebaseDatabase db;
     private DatabaseReference ref;
     private String lot;
@@ -81,6 +84,48 @@ public class ExpandedArtifactViewFragment extends Fragment{
         });
 
         }
-    return view;
+        ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
+        saveArtifactButton.setClickable(false);
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid != null) {
+            SavedArtifactWriter savedArtifactWriter = new SavedArtifactWriter();
+            saveArtifactButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ToggleButton instance = (ToggleButton) view;
+                    if (uid == null) {
+                        Log.w(Tag, "Null user, 'saved artifact' button shouldn't be accessible");
+                        return;
+                    }
+                    if (instance.isChecked()) {
+                        Log.i(Tag, "adding artifact " + lot + " to user's collection: " + uid);
+                        savedArtifactWriter.addSavedArtifact(uid, lot);
+                    } else {
+                        Log.i(Tag, "removing artifact " + lot + " from user's collection: " + uid);
+                        savedArtifactWriter.removeSavedArtifact(uid, lot);
+                    }
+                }
+            });
+            saveArtifactButton.setClickable(false);
+
+            SavedArtifactReader reader = SavedArtifactReader.getInstance(uid);
+            reader.addOnSavedArtifactChangedListener(lot, new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    saveArtifactButton.setClickable(true);
+                    if (snapshot.exists()) {
+                        saveArtifactButton.setChecked(true);
+                    } else {
+                        saveArtifactButton.setChecked(false);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e(Tag, "listener cancelled", error.toException());
+                }
+            });
+        }
+        return view;
     }
 }

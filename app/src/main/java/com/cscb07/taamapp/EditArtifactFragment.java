@@ -22,6 +22,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import android.net.Uri;
+import android.widget.ImageView;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import com.bumptech.glide.Glide;
+
 public class EditArtifactFragment extends Fragment {
     private static final String TAG = "EditArtifactFragment";
 
@@ -42,12 +49,25 @@ public class EditArtifactFragment extends Fragment {
             editTextProvenance,
             editTextAccessionNumber,
             editTextNotes;
-
     Spinner
             spinnerArtifactCategory,
             spinnerArtifactMaterial,
             spinnerDynasty;
+    private ImageView imageArtifact;
+    private Button buttonSelectImage;
+    private Uri selectedImageUri;
+    private SupabaseImageUploader imageUploader;
 
+    private final ActivityResultLauncher<String> imagePickerLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.GetContent(),
+                    uri -> {
+                        if (uri != null) {
+                            selectedImageUri = uri;
+                            imageArtifact.setImageURI(uri);
+                        }
+                    }
+            );
     private Object getSelectOrDefault(Spinner spinner, Object defaultValue)
     {
         int position = spinner.getSelectedItemPosition();
@@ -116,6 +136,7 @@ public class EditArtifactFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_artifact, container, false);
+        imageUploader = new SupabaseImageUploader(requireContext());
         textViewLotNumber = view.findViewById(R.id.textViewLotNumber);
         editTextName = view.findViewById(R.id.editTextName);
         editTextArtifactDescription = view.findViewById(R.id.editTextArtifactDescription);
@@ -127,6 +148,9 @@ public class EditArtifactFragment extends Fragment {
         editTextProvenance = view.findViewById(R.id.editTextProvenance);
         editTextAccessionNumber = view.findViewById(R.id.editTextAccessionNumber);
         editTextNotes = view.findViewById(R.id.editTextNotes);
+
+        imageArtifact = view.findViewById(R.id.imageArtifact);
+        buttonSelectImage = view.findViewById(R.id.buttonSelectImage);
 
         spinnerArtifactCategory = view.findViewById(R.id.spinnerArtifactCategory);
         spinnerArtifactMaterial = view.findViewById(R.id.spinnerArtifactMaterial);
@@ -140,6 +164,10 @@ public class EditArtifactFragment extends Fragment {
 
         buttonCancel.setOnClickListener(v -> onCancel());
         buttonSave.setOnClickListener(v -> onSave());
+
+        buttonSelectImage.setOnClickListener(v ->
+                imagePickerLauncher.launch("image/*")
+        );
 
         if (initialItem == null) {
             if (dbAccess == null) {
@@ -162,6 +190,14 @@ public class EditArtifactFragment extends Fragment {
             editTextProvenance.setText(initial.getProvenance());
             editTextAccessionNumber.setText(initial.getAccessionNumber());
             editTextNotes.setText(initial.getNotes());
+
+            String imageUrl = initial.getImage();
+
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(this)
+                        .load(imageUrl)
+                        .into(imageArtifact);
+            }
 
             if (!trySetSelection(spinnerArtifactCategory, categoryAdapter, initial.getCategory()))
                 Toast.makeText(getContext(), "Invalid category value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
@@ -191,6 +227,9 @@ public class EditArtifactFragment extends Fragment {
 
     private String getTextViewValue(TextView view) { return view.getText().toString().trim(); }
     Item createItem() {
+        return createItem("");
+    }
+    Item createItem(String imageUrl) {
         return new Item(
                 getTextViewValue(textViewLotNumber),
                 getTextViewValue(editTextName),
@@ -206,7 +245,7 @@ public class EditArtifactFragment extends Fragment {
                 getTextViewValue(editTextProvenance),
                 getTextViewValue(editTextAccessionNumber),
                 getTextViewValue(editTextNotes),
-                "" // TODO: image here.
+                imageUrl
         );
     }
      boolean validateFields() {
@@ -250,6 +289,29 @@ public class EditArtifactFragment extends Fragment {
             exitEditArtifact();
         }
     }
+    void saveItem(String imageUrl) {
+        DbEditorAccessResult result =
+                dbAccess.editItem(createItem(imageUrl));
+
+        switch (result) {
+            case SUCCESS:
+                exitEditArtifact();
+                return;
+
+            case ERROR:
+                log.i(TAG, "error uploading to db.");
+
+                if (getContext() != null) {
+                    Toast.makeText(
+                            getContext(),
+                            "Error saving\nPlease try again later",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+                break;
+        }
+    }
+
     void onSave() {
         if (!validateFields())
         {
@@ -260,17 +322,36 @@ public class EditArtifactFragment extends Fragment {
             log.wtf(TAG, "Cannot access Db: DbEditAccess instance is null");
             return;
         }
-        DbEditorAccessResult result = dbAccess.editItem(createItem());
+        String existingImageUrl =
+                initialItem == null ? "" : initialItem.getImage();
 
-        switch (result) {
-            case SUCCESS:
-                exitEditArtifact();
-                return;
-            case ERROR:
-                log.i(TAG, "error uploading to db.");
-                if (getContext() != null)
-                    Toast.makeText(getContext(), "Error saving\nPlease try again later", Toast.LENGTH_LONG).show();
-                break;
+        if (selectedImageUri == null) {
+            saveItem(existingImageUrl);
+            return;
         }
+
+        String lotNumber = getTextViewValue(textViewLotNumber);
+
+        imageUploader.uploadImage(
+                selectedImageUri,
+                lotNumber,
+                new SupabaseImageUploader.UploadCallback() {
+                    @Override
+                    public void onSuccess(String publicUrl) {
+                        saveItem(publicUrl);
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        if (getContext() != null) {
+                            Toast.makeText(
+                                    getContext(),
+                                    message,
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    }
+                }
+        );
     }
 }

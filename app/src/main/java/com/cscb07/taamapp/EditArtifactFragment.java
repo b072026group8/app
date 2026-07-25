@@ -27,6 +27,7 @@ import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import com.bumptech.glide.Glide;
 
 public class EditArtifactFragment extends Fragment {
     private static final String TAG = "EditArtifactFragment";
@@ -190,6 +191,14 @@ public class EditArtifactFragment extends Fragment {
             editTextAccessionNumber.setText(initial.getAccessionNumber());
             editTextNotes.setText(initial.getNotes());
 
+            String imageUrl = initial.getImage();
+
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(this)
+                        .load(imageUrl)
+                        .into(imageArtifact);
+            }
+
             if (!trySetSelection(spinnerArtifactCategory, categoryAdapter, initial.getCategory()))
                 Toast.makeText(getContext(), "Invalid category value: " + initial.getCategory(), Toast.LENGTH_LONG).show();
             if (!trySetSelection(spinnerArtifactMaterial, materialAdapter, initial.getMaterial()))
@@ -217,6 +226,9 @@ public class EditArtifactFragment extends Fragment {
     }
 
     private String getTextViewValue(TextView view) { return view.getText().toString().trim(); }
+    Item createItem() {
+        return createItem("");
+    }
     Item createItem(String imageUrl) {
         return new Item(
                 getTextViewValue(textViewLotNumber),

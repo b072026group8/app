@@ -65,5 +65,9 @@
         <item>Iron</item>
         <item>Mixed Media</item>
     </string-array>
+    <string name="supabase_url">https://cwwulowtnquxujncenmy.supabase.co</string>
 
+    <string name="supabase_anon_key">sb_publishable_ydNAmZlp153myXKQV_8VZg_S9V7QDTJ</string>
+
+    <string name="supabase_image_bucket">artifact-images</string>
 </resources>

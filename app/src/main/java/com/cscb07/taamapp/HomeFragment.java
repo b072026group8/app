@@ -92,8 +92,10 @@ public class HomeFragment extends Fragment {
             itemList.clear();
             itemList.addAll(map.values());
 
-            searchList.requery();
-            itemAdapter.notifyDataSetChanged();
+            if (displayItemList.getListStrategy() == itemList) {
+                searchList.requery();
+                itemAdapter.notifyDataSetChanged();
+            }
         });
 
         savedItemProvider.registerObserver(list -> {

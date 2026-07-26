@@ -40,6 +40,10 @@ public class AuthPresenter implements Presenter, AuthStatus {
         }
     }
 
+    @Override
+    public void guest() {
+        model.createGuest();
+    }
     // Error Toast for invalid user credentials in signup and login
     public void failedAuth(String m) {
         view.showError(m);

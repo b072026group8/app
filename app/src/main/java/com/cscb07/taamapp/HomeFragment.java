@@ -31,14 +31,27 @@ import java.util.Map;
 public class HomeFragment extends Fragment {
     private final String Tag = "HomeFragment";
     private ItemAdapter itemAdapter;
-    Provider<Map<String, Item>> itemMapProvider;
-    Provider<List<Item>> savedItemProvider;
+    private Provider<Map<String, Item>> itemMapProvider;
+    private Provider<List<Item>> savedItemProvider;
     private List<Item> itemList;
     private List<Item> savedItemList;
     private ListStrategy<Item> displayItemList;
     private ItemFilterList searchList;
     private FirebaseDatabase db;
     private DatabaseReference itemsRef;
+
+    /**
+     * Creates an instance with default implementations of interfaces.
+     */
+    public HomeFragment() {}
+
+    /**
+     * Creates an instance with the specified implementations.
+     */
+    public HomeFragment(Provider<Map<String, Item>> itemMapProvider, Provider<List<Item>> savedItemProvider) {
+        this.itemMapProvider = itemMapProvider;
+        this.savedItemProvider = savedItemProvider;
+    }
 
     /**
      * Set default implementations to interfaces that are <b>unset</b>.

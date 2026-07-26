@@ -3,6 +3,7 @@ package com.cscb07.taamapp;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.cscb07.taamapp.util.Provider;
+import com.cscb07.taamapp.util.UpdateListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -14,8 +15,11 @@ import static org.junit.Assert.*;
 import android.util.Log;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 public class SavedArtifactListProviderInstrumentedTest {
@@ -72,6 +76,13 @@ public class SavedArtifactListProviderInstrumentedTest {
                 }
             };
             SavedArtifactListProvider provider = new SavedArtifactListProvider(mapProvider, uid);
+            CountDownLatch listenerDone = new CountDownLatch(1); // technically, the SUT isn't async. just convenient due to callback restrictions.
+            provider.registerObserver(new UpdateListener<List<Item>>() {
+                @Override
+                public void onChange(List<Item> value) {
+                    listenerDone.countDown();
+                }
+            });
             for (int i = 0; i < 20; i++) { Thread.sleep(50); }
             Item newItem = new Item();
             newItem.setLotNumber(lot);;
@@ -85,6 +96,7 @@ public class SavedArtifactListProviderInstrumentedTest {
             for (int i = 0; i < 20; i++) { Thread.sleep(50); }
             assertEquals(1, provider.getValue().size());
             assertSame(newItem, provider.getValue().get(0));
+            assertTrue(listenerDone.await(10, TimeUnit.MILLISECONDS));
         } finally {
             Log.d(TAG, "removing db mods");
             dbRef.removeValue();

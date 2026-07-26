@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.FlakyTest;
 
+import com.cscb07.taamapp.util.UpdateListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -15,6 +16,10 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 import android.util.Log;
+
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 public class ItemMapProviderInstrumentedTest {
@@ -47,5 +52,20 @@ public class ItemMapProviderInstrumentedTest {
             }
         }
         assertNotEquals(0, provider.getValue().size());
+    }
+
+    @Test
+    public void registerObserver_attachListener_instantlyCalled() throws InterruptedException {
+        ItemMapProvider provider = new ItemMapProvider();
+        CountDownLatch callbackStatus = new CountDownLatch(1);
+
+        provider.registerObserver(new UpdateListener<Map<String, Item>>() {
+            @Override
+            public void onChange(Map<String, Item> value) {
+                callbackStatus.countDown();
+            }
+        });
+
+        assertTrue(callbackStatus.await(100, TimeUnit.MILLISECONDS));
     }
 }

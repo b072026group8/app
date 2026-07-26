@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cscb07.taamapp.itemSorting.ItemFilterList;
+import com.cscb07.taamapp.util.ListProvider;
 import com.cscb07.taamapp.util.ListStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,7 +32,10 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     private final String Tag = "HomeFragment";
     private ItemAdapter itemAdapter;
+    ItemMapProvider itemProvider;
     private List<Item> itemList;
+    private List<Item> savedItemList;
+    private ListProvider<Item> savedArtifactProvider;
     private ListStrategy<Item> displayItemList;
     private ItemFilterList searchList;
     private FirebaseDatabase db;
@@ -47,21 +51,43 @@ public class HomeFragment extends Fragment {
         RecyclerView artifactCardGrid = view.findViewById(R.id.artifactCardGrid);
         EditText searchBar = view.findViewById(R.id.homeSearchEditText);
 
+        itemProvider = new ItemMapProvider();
         itemList = new ArrayList<>();
+        savedItemList = new ArrayList<>();
+        savedArtifactProvider = new SavedArtifactListProvider(itemProvider.getMap());
         displayItemList = new ListStrategy<>(itemList);
         searchList = new ItemFilterList(displayItemList);
         itemAdapter = new ItemAdapter(searchList, getParentFragmentManager().beginTransaction());
         db = FirebaseDatabase.getInstance();
-        fetchItemsFromDatabase(false);
+
+        itemProvider.registerObserver(map -> {
+            itemList.clear();
+            itemList.addAll(map.values());
+
+            searchList.requery();
+            itemAdapter.notifyDataSetChanged();
+        });
+
+        savedArtifactProvider.setList(savedItemList);
+        savedArtifactProvider.addOnChangeListener(list -> {
+            if (displayItemList.getListStrategy() == list) {
+                searchList.requery();
+                itemAdapter.notifyDataSetChanged();
+            }
+        });
 
         buttonRecyclerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (buttonRecyclerView.getText().equals(getString(R.string.show_saved))) {
                     buttonRecyclerView.setText(R.string.show_all);
+                    displayItemList.setListStrategy(itemList);
                 } else {
                     buttonRecyclerView.setText(R.string.show_saved);
+                    displayItemList.setListStrategy(savedItemList);
                 }
+                searchList.requery();
+                itemAdapter.notifyDataSetChanged();
             }
         });
 
@@ -93,29 +119,5 @@ public class HomeFragment extends Fragment {
         transaction.replace(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
-    }
-    private void fetchItemsFromDatabase(boolean saved) {
-        itemsRef = db.getReference("artifacts");
-        itemsRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                itemList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Item item = snapshot.child("value").getValue(Item.class);
-                    if (item == null) {
-                        Log.e(Tag, "could not fetch/build artifact item at " + snapshot.getKey() + "/value");
-                        continue;
-                    }
-                    itemList.add(item);
-                }
-                searchList.requery();
-                itemAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(Tag, "Something went wrong fetching artifacts.", databaseError.toException());
-            }
-        });
     }
 }

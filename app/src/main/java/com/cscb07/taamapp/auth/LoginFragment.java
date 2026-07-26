@@ -18,7 +18,7 @@ import com.cscb07.taamapp.R;
 public class LoginFragment extends Fragment implements UserAuthentication {
 
     private EditText editTextEmail, editTextPassword;
-    private Button loginButton, signupButton;
+    private Button loginButton, signupButton, guestButton;
     private AuthPresenter presenter;
 
     @Override
@@ -30,6 +30,7 @@ public class LoginFragment extends Fragment implements UserAuthentication {
         editTextPassword = view.findViewById(R.id.LoginPassword);
         loginButton = view.findViewById(R.id.LoginButton);
         signupButton = view.findViewById(R.id.NewAccountButton);
+        guestButton = view.findViewById(R.id.GuestButton);
 
         presenter = new AuthPresenter(this, new AuthModel());
 
@@ -49,6 +50,16 @@ public class LoginFragment extends Fragment implements UserAuthentication {
             public void onClick(View v) {
                 // Change to signup fragment
                 getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new SignupFragment()).addToBackStack(null).commit();
+            }
+        });
+
+        // Guest account. Browsing perms only
+        guestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Change to signup fragment
+                presenter.guest();
+
             }
         });
 

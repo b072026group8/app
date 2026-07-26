@@ -18,28 +18,43 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cscb07.taamapp.itemSorting.ItemFilterList;
-import com.cscb07.taamapp.util.ListProvider;
 import com.cscb07.taamapp.util.ListStrategy;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.cscb07.taamapp.util.Provider;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class HomeFragment extends Fragment {
     private final String Tag = "HomeFragment";
     private ItemAdapter itemAdapter;
-    ItemMapProvider itemProvider;
+    Provider<Map<String, Item>> itemMapProvider;
+    Provider<List<Item>> savedItemProvider;
     private List<Item> itemList;
     private List<Item> savedItemList;
-    private ListProvider<Item> savedArtifactProvider;
     private ListStrategy<Item> displayItemList;
     private ItemFilterList searchList;
     private FirebaseDatabase db;
     private DatabaseReference itemsRef;
+
+    /**
+     * Set default implementations to interfaces that are <b>unset</b>.
+     */
+    private void setMissingImplementations() {
+        if (itemMapProvider == null)
+            itemMapProvider = new ItemMapProvider();
+        if (savedItemProvider == null) {
+            String uid = FirebaseAuth.getInstance().getUid();
+            if (uid == null) {
+                Log.w(Tag, "uid is null, setting to empty string");
+                uid = "";
+            }
+            savedItemProvider = new SavedArtifactListProvider(itemMapProvider, uid);
+        }
+    }
 
     @Nullable
     @Override
@@ -51,16 +66,16 @@ public class HomeFragment extends Fragment {
         RecyclerView artifactCardGrid = view.findViewById(R.id.artifactCardGrid);
         EditText searchBar = view.findViewById(R.id.homeSearchEditText);
 
-        itemProvider = new ItemMapProvider();
+        setMissingImplementations();
+
         itemList = new ArrayList<>();
-        savedItemList = new ArrayList<>();
-        savedArtifactProvider = new SavedArtifactListProvider(itemProvider.getMap());
+        savedItemList = savedItemProvider.getValue();
         displayItemList = new ListStrategy<>(itemList);
         searchList = new ItemFilterList(displayItemList);
         itemAdapter = new ItemAdapter(searchList, getParentFragmentManager().beginTransaction());
         db = FirebaseDatabase.getInstance();
 
-        itemProvider.registerObserver(map -> {
+        itemMapProvider.registerObserver(map -> {
             itemList.clear();
             itemList.addAll(map.values());
 
@@ -68,9 +83,11 @@ public class HomeFragment extends Fragment {
             itemAdapter.notifyDataSetChanged();
         });
 
-        savedArtifactProvider.setList(savedItemList);
-        savedArtifactProvider.addOnChangeListener(list -> {
-            if (displayItemList.getListStrategy() == list) {
+        savedItemProvider.registerObserver(list -> {
+            List<Item> previousList = savedItemList;
+            savedItemList = list;
+            if (displayItemList.getListStrategy() == previousList) {
+                displayItemList.setListStrategy(list);
                 searchList.requery();
                 itemAdapter.notifyDataSetChanged();
             }

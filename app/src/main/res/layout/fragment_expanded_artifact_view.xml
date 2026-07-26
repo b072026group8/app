@@ -10,9 +10,9 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="89dp"
+        android:layout_width="100dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="7dp"
         android:backgroundTint="@color/lightgold"
         android:text="Delete"
@@ -23,9 +23,9 @@
 
     <Button
         android:id="@+id/button2"
-        android:layout_width="88dp"
+        android:layout_width="100dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="11dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="70dp"
         android:backgroundTint="@color/lightgold"
         android:text="Edit"
@@ -180,6 +180,7 @@
         android:id="@+id/saveArtifactToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="160dp"
         android:allowUndo="false"
         android:checked="false"

@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 
 import android.util.Log;
 
+import com.cscb07.taamapp.testutil.CallbackStatusLatch;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,6 +24,7 @@ import java.util.Random;
 
 @RunWith(AndroidJUnit4.class)
 public class SavedArtifactReaderInstrumentedTest {
+    private static final String TAG = "SavedArtifactReaderInstrumentedTest";
     private final String sourceKey = "test-key-value-do-not-use";
     private Random r = new Random();
     public String getSomeKey() {
@@ -36,16 +38,16 @@ public class SavedArtifactReaderInstrumentedTest {
                 .getReference(SavedArtifactWriter.DB_PATH)
                 .child(uid);
     }
-    boolean hasReceived = false;
     @Test
     @LargeTest
     @FlakyTest
     public void addOnSavedArtifactChangedListener_alreadyHadValue_listenerCalled() throws InterruptedException {
+        CallbackStatusLatch<DataSnapshot> callbackLatch = new CallbackStatusLatch<>();
         String uid = getSomeKey();
         String lot = getSomeKey();
         DatabaseReference ref = getDbRef(uid);
+        try {
         ref.child(lot).setValue(true);
-        hasReceived = false;
         ValueEventListener listener = new ValueEventListener() {
             boolean disable = false;
             @Override
@@ -53,8 +55,8 @@ public class SavedArtifactReaderInstrumentedTest {
                 if (disable) {
                     return;
                 }
-                hasReceived = true;
                 disable = true;
+                callbackLatch.countDown(snapshot);
                 try {
                     assertEquals(snapshot.getKey(),lot);
                     assertTrue(snapshot.exists());
@@ -70,32 +72,35 @@ public class SavedArtifactReaderInstrumentedTest {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Test", "listener cancelled.", error.toException());
                 if (disable) {
                     return;
                 }
-                Log.e("Test", "listener cancelled.", error.toException());
-                fail();
+                callbackLatch.countDown(null);
             }
         };
         SavedArtifactReader sut = SavedArtifactReader.getInstance(uid);
 
+
         sut.addOnSavedArtifactChangedListener(lot, listener);
 
-        Thread.sleep(700);
-        Thread.sleep(700);
-        Thread.sleep(700);
-        Thread.sleep(700);
-        Thread.sleep(700);
-        ref.removeValue();
-        assertTrue(hasReceived);
-        Log.i("Test", "finishing test");
+
+            assertTrue(callbackLatch.awaitCallback(3000));
+            DataSnapshot snapshot = callbackLatch.getResult();
+            assertNotNull(snapshot);
+            assertEquals(snapshot.getKey(),lot);
+            assertTrue(snapshot.exists());
+        } finally {
+            ref.removeValue().addOnFailureListener(
+                    err -> Log.e(TAG, "failed to remove test value.", err));
+        }
     }
 
     @Test
     @LargeTest
     @FlakyTest
     public void addOnChangedListener_sampleValues_listenerCalled() throws InterruptedException {
-        hasReceived = false;
+        CallbackStatusLatch<DataSnapshot> callbackLatch = new CallbackStatusLatch<>();
         String uid = getSomeKey();
         String[] lots = new String[] {
                 getSomeKey(), getSomeKey(), getSomeKey(),
@@ -104,47 +109,47 @@ public class SavedArtifactReaderInstrumentedTest {
         for (String lot : lots) {
             ref.child(lot).setValue(true);
         }
+        try {
         ValueEventListener listener = new ValueEventListener() {
             boolean disable;
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.i("Test", "on data change");
                 if (disable) {
                     return;
                 }
                 disable = true;
-                hasReceived = true;
-                try {
-                    assertTrue(snapshot.exists());
-                    assertEquals(snapshot.getChildrenCount(), lots.length);
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        assertNotNull(child.getKey());
-                        assertTrue(Arrays.asList(lots).contains(child.getKey()));
-                    }
-                } finally {
-                    if (uid.equals(snapshot.getKey())) {
-                        snapshot.getRef().removeValue();
-                    } else {
-                        Log.e("Test", "somewhere else, not deleting: " + snapshot.getRef().getPath());
-                    }
-                }
+                callbackLatch.countDown(snapshot);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("Test", "listener cancelled", error.toException());
                 if (disable) { return; }
-                fail();
+                disable = true;
+                callbackLatch.countDown(null);
             }
         };
-
         SavedArtifactReader sut = SavedArtifactReader.getInstance(uid);
+
 
         sut.addOnChangedListener(listener);
 
-        Thread.sleep(700);
-        Thread.sleep(700);
-        Thread.sleep(700);
-        Thread.sleep(700);
-        ref.removeValue();
+
+            assertTrue(callbackLatch.awaitCallback(5000));
+            DataSnapshot snapshot = callbackLatch.getResult();
+            assertNotNull(snapshot);
+            assertEquals(uid, snapshot.getKey());
+            assertTrue(snapshot.exists());
+            assertEquals(snapshot.getChildrenCount(), lots.length);
+            for (DataSnapshot child : snapshot.getChildren()) {
+                assertNotNull(child.getKey());
+                assertTrue(Arrays.asList(lots).contains(child.getKey()));
+            }
+        } finally {
+            ref.removeValue().addOnFailureListener(
+                    err -> Log.e(TAG, "failed to remove test value.", err)
+            );
+        }
     }
 }

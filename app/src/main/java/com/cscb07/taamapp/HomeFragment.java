@@ -125,10 +125,10 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 if (buttonRecyclerView.getText().equals(getString(R.string.show_saved))) {
                     buttonRecyclerView.setText(R.string.show_all);
-                    displayItemList.setListStrategy(itemList);
+                    displayItemList.setListStrategy(savedItemList);
                 } else {
                     buttonRecyclerView.setText(R.string.show_saved);
-                    displayItemList.setListStrategy(savedItemList);
+                    displayItemList.setListStrategy(itemList);
                 }
                 searchList.requery();
                 itemAdapter.notifyDataSetChanged();

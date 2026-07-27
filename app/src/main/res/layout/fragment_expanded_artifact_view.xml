@@ -4,15 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/softblack"
     android:rotationX="360"
     android:scaleX="1">
 
     <Button
         android:id="@+id/button"
-        android:layout_width="89dp"
+        android:layout_width="100dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="7dp"
+        android:backgroundTint="@color/lightgold"
         android:text="Delete"
         android:textColorLink="#9B0808"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -21,10 +23,11 @@
 
     <Button
         android:id="@+id/button2"
-        android:layout_width="88dp"
+        android:layout_width="100dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="11dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="70dp"
+        android:backgroundTint="@color/lightgold"
         android:text="Edit"
         android:textColorLink="#A4680F"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -61,98 +64,216 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="64sp" />
+                android:textAlignment="center"
+                android:textColor="@color/lightgold"
+                android:textSize="48sp" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lot Number:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/Lotnum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Category:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Material:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/material"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dynasty/Period:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/dynastyPeriod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cultural Origin:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/culturalOrigin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dimensions:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/dimensions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Condition:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/conditionReport"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Current Location:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/currentLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Aquisistion Method:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/acquisitionMethod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Provenance: "
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/provenance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:text="Accession Number:" />
 
             <TextView
                 android:id="@+id/accessionNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:text="Notes: " />
 
             <TextView
                 android:id="@+id/notes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textSize="28sp" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
 
 
         </LinearLayout>
@@ -162,6 +283,7 @@
         android:id="@+id/saveArtifactToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="160dp"
         android:allowUndo="false"
         android:checked="false"

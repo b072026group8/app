@@ -35,7 +35,7 @@ public final class CallbackStatusLatch<T> {
 
     /**
      * Pauses the current thread until a callback signals it was called, or until
-     * the specified waiting time (approximately) elapses.
+     * the specified waiting time elapses.
      * @param durationMilliseconds The duration in milliseconds to wait.
      * @return <c>true</c> if a callback has signalled within the duration,
      *         <c>false</c> if the duration expires otherwise.
@@ -43,13 +43,7 @@ public final class CallbackStatusLatch<T> {
      */
     public boolean awaitCallback(int durationMilliseconds) throws InterruptedException {
         final int awaitDuration = 100;
-        int awaitCount = (int)(durationMilliseconds /(double)awaitDuration + 0.5);
-        for (int i = 0; i < awaitCount; i++) {
-            if (latch.await(awaitDuration, TimeUnit.MILLISECONDS)) {
-                return true;
-            }
-        }
-        return false;
+        return latch.await(durationMilliseconds, TimeUnit.MILLISECONDS);
     }
 
 

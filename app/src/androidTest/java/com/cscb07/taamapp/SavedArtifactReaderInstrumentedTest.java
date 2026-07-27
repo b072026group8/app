@@ -90,8 +90,10 @@ public class SavedArtifactReaderInstrumentedTest {
             assertEquals(snapshot.getKey(),lot);
             assertTrue(snapshot.exists());
         } finally {
-            ref.removeValue().addOnFailureListener(
-                    err -> Log.e(TAG, "failed to remove test value.", err));
+            ref.removeValue()
+                    .addOnFailureListener(err -> {
+                        throw new RuntimeException("failed to remove test value", err);
+                    });
         }
     }
 
@@ -146,9 +148,8 @@ public class SavedArtifactReaderInstrumentedTest {
                 assertTrue(Arrays.asList(lots).contains(child.getKey()));
             }
         } finally {
-            ref.removeValue().addOnFailureListener(
-                    err -> Log.e(TAG, "failed to remove test value.", err)
-            );
+            ref.removeValue()
+                    .addOnFailureListener(err -> {throw new RuntimeException("failed to remove test value", err);} );
         }
     }
 }

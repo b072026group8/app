@@ -53,7 +53,8 @@ public class SavedArtifactListProviderInstrumentedTest {
             assertSame(map.get(lot), provider.getValue().get(0));
         } finally {
             Log.d(TAG, "removing db mods");
-            dbRef.removeValue();
+            dbRef.removeValue()
+                    .addOnFailureListener(err -> {throw new RuntimeException("failed to remove test value", err);} );
         }
     }
 
@@ -99,7 +100,8 @@ public class SavedArtifactListProviderInstrumentedTest {
             assertTrue(listenerDone.await(10, TimeUnit.MILLISECONDS));
         } finally {
             Log.d(TAG, "removing db mods");
-            dbRef.removeValue();
+            dbRef.removeValue()
+                    .addOnFailureListener(err -> {throw new RuntimeException("failed to remove test value", err);} );
         }
 
     }

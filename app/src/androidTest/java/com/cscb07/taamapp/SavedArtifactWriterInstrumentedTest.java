@@ -53,7 +53,8 @@ public class SavedArtifactWriterInstrumentedTest {
         assertNotNull(task);
         assertTrue(task.isComplete());
         DataSnapshot data = task.getResult();
-        data.getRef().removeValue().addOnFailureListener(err -> Log.e(TAG, "failed to remove test value", err));
+        data.getRef().removeValue()
+                    .addOnFailureListener(err -> {throw new RuntimeException("failed to remove test value", err);} );
         assertTrue(data.exists());
         assertTrue(data.child(lot).exists());
     }
@@ -90,7 +91,7 @@ public class SavedArtifactWriterInstrumentedTest {
                     .getReference(SavedArtifactWriter.DB_PATH)
                     .child(uid)
                     .removeValue()
-                    .addOnFailureListener(err -> Log.e(TAG, "failed to remove test value", err));
+                    .addOnFailureListener(err -> {throw new RuntimeException("failed to remove test value", err);} );
         }
     }
 
@@ -131,7 +132,7 @@ public class SavedArtifactWriterInstrumentedTest {
             assertFalse(data.exists());
         } finally {
             child.removeValue()
-                    .addOnFailureListener(err -> Log.e(TAG, "failed to remove test value", err));
+                    .addOnFailureListener(err -> {throw new RuntimeException("failed to remove test value", err);} );
         }
     }
 
@@ -169,7 +170,7 @@ public class SavedArtifactWriterInstrumentedTest {
                 .getReference(SavedArtifactWriter.DB_PATH)
                 .child(uid)
                 .removeValue()
-                    .addOnFailureListener(err -> Log.e(TAG, "failed to remove test value", err));
+                    .addOnFailureListener(err -> {throw new RuntimeException("failed to remove test value", err);} );
         }
     }
 }

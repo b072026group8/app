@@ -29,7 +29,7 @@ public class SavedArtifactReaderInstrumentedTest {
     private Random r = new Random();
     public String getSomeKey() {
         String key = sourceKey + r.nextInt();
-        Log.v("Test", "generated key: " + key);
+        Log.v(TAG, "generated key: " + key);
         return key;
     }
     @NonNull
@@ -47,42 +47,42 @@ public class SavedArtifactReaderInstrumentedTest {
         String lot = getSomeKey();
         DatabaseReference ref = getDbRef(uid);
         try {
-        ref.child(lot).setValue(true);
-        ValueEventListener listener = new ValueEventListener() {
-            boolean disable = false;
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (disable) {
-                    return;
-                }
-                disable = true;
-                callbackLatch.countDown(snapshot);
-                try {
-                    assertEquals(snapshot.getKey(),lot);
-                    assertTrue(snapshot.exists());
-                    Log.v("Test", "Callback Success!");
-                } finally {
-                    if (lot.equals(snapshot.getKey())) {
-                        snapshot.getRef().removeValue();
-                    } else {
-                        Log.e("Test", "somewhere else, not deleting: " + snapshot.getRef().getPath());
+            ref.child(lot).setValue(true);
+            ValueEventListener listener = new ValueEventListener() {
+                boolean disable = false;
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (disable) {
+                        return;
+                    }
+                    disable = true;
+                    callbackLatch.countDown(snapshot);
+                    try {
+                        assertEquals(snapshot.getKey(),lot);
+                        assertTrue(snapshot.exists());
+                        Log.v(TAG, "Callback Success!");
+                    } finally {
+                        if (lot.equals(snapshot.getKey())) {
+                            snapshot.getRef().removeValue();
+                        } else {
+                            Log.e(TAG, "somewhere else, not deleting: " + snapshot.getRef().getPath());
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Test", "listener cancelled.", error.toException());
-                if (disable) {
-                    return;
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e(TAG, "listener cancelled.", error.toException());
+                    if (disable) {
+                        return;
+                    }
+                    callbackLatch.countDown(null);
                 }
-                callbackLatch.countDown(null);
-            }
-        };
-        SavedArtifactReader sut = SavedArtifactReader.getInstance(uid);
+            };
+            SavedArtifactReader sut = SavedArtifactReader.getInstance(uid);
 
 
-        sut.addOnSavedArtifactChangedListener(lot, listener);
+            sut.addOnSavedArtifactChangedListener(lot, listener);
 
 
             assertTrue(callbackLatch.awaitCallback(3000));
@@ -110,30 +110,30 @@ public class SavedArtifactReaderInstrumentedTest {
             ref.child(lot).setValue(true);
         }
         try {
-        ValueEventListener listener = new ValueEventListener() {
-            boolean disable;
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.i("Test", "on data change");
-                if (disable) {
-                    return;
+            ValueEventListener listener = new ValueEventListener() {
+                boolean disable;
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Log.i(TAG, "on data change");
+                    if (disable) {
+                        return;
+                    }
+                    disable = true;
+                    callbackLatch.countDown(snapshot);
                 }
-                disable = true;
-                callbackLatch.countDown(snapshot);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Test", "listener cancelled", error.toException());
-                if (disable) { return; }
-                disable = true;
-                callbackLatch.countDown(null);
-            }
-        };
-        SavedArtifactReader sut = SavedArtifactReader.getInstance(uid);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e(TAG, "listener cancelled", error.toException());
+                    if (disable) { return; }
+                    disable = true;
+                    callbackLatch.countDown(null);
+                }
+            };
+            SavedArtifactReader sut = SavedArtifactReader.getInstance(uid);
 
 
-        sut.addOnChangedListener(listener);
+            sut.addOnChangedListener(listener);
 
 
             assertTrue(callbackLatch.awaitCallback(5000));

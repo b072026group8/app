@@ -26,7 +26,7 @@ public class SavedArtifactWriterInstrumentedTest {
     private Random r = new Random();
     public String getSomeKey() {
         String key = sourceKey + r.nextInt();
-        Log.v("Test", "generated key: " + key);
+        Log.v(TAG, "generated key: " + key);
         return key;
     }
     @Test
@@ -44,7 +44,7 @@ public class SavedArtifactWriterInstrumentedTest {
                 .getReference(SavedArtifactWriter.DB_PATH)
                 .child(uid).get()
                 .addOnFailureListener(error -> {
-                    Log.e("Test", "get() failed", error);
+                    Log.e(TAG, "get() failed", error);
                     callbackLatch.countDown(null);
                 })
                 .addOnCompleteListener(task -> {
@@ -70,13 +70,13 @@ public class SavedArtifactWriterInstrumentedTest {
         OperationListener<Void> listener = new OperationListener<Void>() {
             @Override
             public void onSuccess(Void value) {
-                Log.v("Test", "Callback Success!");
+                Log.v(TAG, "Callback Success!");
                 callbackLatch.countDown(true);
             }
 
             @Override
             public void onFailure(Exception value) {
-                Log.e("Test", "operation failed.", value);
+                Log.e(TAG, "operation failed.", value);
                 callbackLatch.countDown(false);
             }
         };
@@ -105,25 +105,25 @@ public class SavedArtifactWriterInstrumentedTest {
                 .getReference(SavedArtifactWriter.DB_PATH)
                 .child(uid);
         try {
-        child.child(lot).setValue(true).addOnFailureListener(err -> {Log.e("Test", "error preparing", err); fail();});
-        Thread.sleep(700);;
-        SavedArtifactWriter sut = new SavedArtifactWriter();
+            child.child(lot).setValue(true).addOnFailureListener(err -> {Log.e(TAG, "error preparing", err); fail();});
+            Thread.sleep(700);;
+            SavedArtifactWriter sut = new SavedArtifactWriter();
 
 
-        sut.removeSavedArtifact(uid, lot);
+            sut.removeSavedArtifact(uid, lot);
 
 
-        Thread.sleep(700);
-        CallbackStatusLatch<Task<DataSnapshot>> callbackLatch = new CallbackStatusLatch<>();
-        child.get()
-                .addOnFailureListener(error -> {
-                    Log.e("Test", "get() failed", error);
-                    callbackLatch.countDown(null);
-                })
-                .addOnCompleteListener(task -> {
-                    callbackLatch.countDown(task);
-                    Log.v("Test", "Success!");
-                });
+            Thread.sleep(700);
+            CallbackStatusLatch<Task<DataSnapshot>> callbackLatch = new CallbackStatusLatch<>();
+            child.get()
+                    .addOnFailureListener(error -> {
+                        Log.e(TAG, "get() failed", error);
+                        callbackLatch.countDown(null);
+                    })
+                    .addOnCompleteListener(task -> {
+                        callbackLatch.countDown(task);
+                        Log.v(TAG, "Success!");
+                    });
             assertTrue(callbackLatch.awaitCallback(3000));
             Task<DataSnapshot> task = callbackLatch.getResult();
             assertNotNull(task);
@@ -147,13 +147,13 @@ public class SavedArtifactWriterInstrumentedTest {
         OperationListener<Void> listener = new OperationListener<Void>() {
             @Override
             public void onSuccess(Void value) {
-                Log.v("Test", "Callback Success!");
+                Log.v(TAG, "Callback Success!");
                 callbackLatch.countDown(true);
             }
 
             @Override
             public void onFailure(Exception value) {
-                Log.e("Test", "operation failed.", value);
+                Log.e(TAG, "operation failed.", value);
                 callbackLatch.countDown(false);
             }
         };
@@ -161,6 +161,7 @@ public class SavedArtifactWriterInstrumentedTest {
 
 
             sut.removeSavedArtifact(uid, lot, listener);
+
 
             assertTrue(callbackLatch.awaitCallback(3000));
             assertNotNull(callbackLatch.getResult());

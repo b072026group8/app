@@ -13,6 +13,7 @@ import static org.junit.Assert.*;
 import android.util.Log;
 
 import com.cscb07.taamapp.testutil.CallbackStatusLatch;
+import com.cscb07.taamapp.testutil.KnownRandom;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,15 +21,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
-import java.util.Random;
 
 @RunWith(AndroidJUnit4.class)
 public class SavedArtifactReaderInstrumentedTest {
     private static final String TAG = "SavedArtifactReaderInstrumentedTest";
     private final String sourceKey = "test-key-value-do-not-use";
-    private Random r = new Random();
-    public String getSomeKey() {
-        String key = sourceKey + r.nextInt();
+    public String getSomeKey(int seed) {
+        String key = sourceKey + KnownRandom.nextInt(seed);
         Log.v(TAG, "generated key: " + key);
         return key;
     }
@@ -43,8 +42,8 @@ public class SavedArtifactReaderInstrumentedTest {
     @FlakyTest
     public void addOnSavedArtifactChangedListener_alreadyHadValue_listenerCalled() throws InterruptedException {
         CallbackStatusLatch<DataSnapshot> callbackLatch = new CallbackStatusLatch<>();
-        String uid = getSomeKey();
-        String lot = getSomeKey();
+        String uid = getSomeKey(34567);
+        String lot = getSomeKey(129012);
         DatabaseReference ref = getDbRef(uid);
         try {
             ref.child(lot).setValue(true);
@@ -101,9 +100,9 @@ public class SavedArtifactReaderInstrumentedTest {
     @FlakyTest
     public void addOnChangedListener_sampleValues_listenerCalled() throws InterruptedException {
         CallbackStatusLatch<DataSnapshot> callbackLatch = new CallbackStatusLatch<>();
-        String uid = getSomeKey();
+        String uid = getSomeKey(345);
         String[] lots = new String[] {
-                getSomeKey(), getSomeKey(), getSomeKey(),
+                getSomeKey(456), getSomeKey(567), getSomeKey(678),
         };
         DatabaseReference ref = getDbRef(uid);
         for (String lot : lots) {

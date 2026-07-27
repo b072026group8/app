@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.cscb07.taamapp.testutil.CallbackStatusLatch;
+import com.cscb07.taamapp.testutil.KnownRandom;
 import com.cscb07.taamapp.util.OperationListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -17,15 +18,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Random;
-
 @RunWith(AndroidJUnit4.class)
 public class SavedArtifactWriterInstrumentedTest {
     private static final String TAG = "SavedArtifactWriterInstrumentedTest";
     private final String sourceKey = "test-key-value-do-not-use";
-    private Random r = new Random();
-    public String getSomeKey() {
-        String key = sourceKey + r.nextInt();
+    public String getSomeKey(int seed) {
+        String key = sourceKey + KnownRandom.nextInt(seed);
         Log.v(TAG, "generated key: " + key);
         return key;
     }
@@ -33,8 +31,8 @@ public class SavedArtifactWriterInstrumentedTest {
     @LargeTest
     public void addSavedArtifact_sampleValues_ReflectedInDb() throws InterruptedException {
         CallbackStatusLatch<Task<DataSnapshot>> callbackLatch = new CallbackStatusLatch<>();
-        String uid = getSomeKey();
-        String lot = getSomeKey();
+        String uid = getSomeKey(987);
+        String lot = getSomeKey(876);
         SavedArtifactWriter sut = new SavedArtifactWriter();
 
         sut.addSavedArtifact(uid, lot);
@@ -64,8 +62,8 @@ public class SavedArtifactWriterInstrumentedTest {
     @LargeTest
     public void addSavedArtifact_usingListener_ReceiveResults() throws InterruptedException {
         CallbackStatusLatch<Boolean> callbackLatch = new CallbackStatusLatch<>();
-        String uid = getSomeKey();
-        String lot = getSomeKey();
+        String uid = getSomeKey(765);
+        String lot = getSomeKey(654);
         SavedArtifactWriter sut = new SavedArtifactWriter();
         OperationListener<Void> listener = new OperationListener<Void>() {
             @Override
@@ -99,8 +97,8 @@ public class SavedArtifactWriterInstrumentedTest {
     @Test
     @LargeTest
     public void removeSavedArtifact_ValueExists_RemovesItFromDb() throws InterruptedException {
-        String uid = getSomeKey();
-        String lot = getSomeKey();
+        String uid = getSomeKey(432);
+        String lot = getSomeKey(321);
         DatabaseReference child = FirebaseDatabase.getInstance()
                 .getReference(SavedArtifactWriter.DB_PATH)
                 .child(uid);
@@ -141,8 +139,8 @@ public class SavedArtifactWriterInstrumentedTest {
     @LargeTest
     public void removeSavedArtifact_usingListener_ReceiveResults() throws InterruptedException {
         CallbackStatusLatch<Boolean> callbackLatch = new CallbackStatusLatch<>();
-        String uid = getSomeKey();
-        String lot = getSomeKey();
+        String uid = getSomeKey(210);
+        String lot = getSomeKey(109);
         SavedArtifactWriter sut = new SavedArtifactWriter();
         OperationListener<Void> listener = new OperationListener<Void>() {
             @Override

@@ -68,10 +68,12 @@ public class HomeFragment extends Fragment {
         if (itemMapProvider == null)
             itemMapProvider = new ItemMapProvider();
         if (savedItemProvider == null) {
-            String uid = FirebaseAuth.getInstance().getUid();
-            if (uid == null) {
-                Log.w(Tag, "uid is null, setting to empty string");
+            String uid;
+            if (user == null || user.isAnonymous()) {
                 uid = "";
+                Log.d(Tag, "user not signed in or is anonymous, using empty uid for SavedArtifactListProvider");
+            } else {
+                uid = user.getUid();
             }
             savedItemProvider = new SavedArtifactListProvider(itemMapProvider, uid);
         }
@@ -86,6 +88,8 @@ public class HomeFragment extends Fragment {
         Button buttonManageItems = view.findViewById(R.id.buttonManageItems);
         RecyclerView artifactCardGrid = view.findViewById(R.id.artifactCardGrid);
         EditText searchBar = view.findViewById(R.id.homeSearchEditText);
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
         setMissingImplementations();
 
@@ -115,8 +119,6 @@ public class HomeFragment extends Fragment {
                 itemAdapter.notifyDataSetChanged();
             }
         });
-        
-        user = FirebaseAuth.getInstance().getCurrentUser();
 
         buttonRecyclerView.setOnClickListener(new View.OnClickListener() {
             @Override

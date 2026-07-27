@@ -3,6 +3,7 @@ package com.cscb07.taamapp;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cscb07.taamapp.util.Provider;
 import com.google.firebase.database.DataSnapshot;
@@ -21,6 +22,7 @@ public class SavedArtifactListProvider extends Provider<List<Item>> {
     private Map<String, Item> items;
     private final List<String> lotNumbers = new ArrayList<>();
     private final List<Item> itemList = new ArrayList<>();
+    @Nullable
     private final SavedArtifactReader reader;
 
     /**
@@ -49,6 +51,10 @@ public class SavedArtifactListProvider extends Provider<List<Item>> {
      */
     public SavedArtifactListProvider(@NonNull Map<String, Item> itemMap, @NonNull String uid) {
         items = itemMap;
+        if (uid.isEmpty()) {
+            reader = null;
+            return;
+        }
         reader = SavedArtifactReader.getInstance(uid);
         reader.addOnChangedListener(new ValueEventListener() {
             @Override

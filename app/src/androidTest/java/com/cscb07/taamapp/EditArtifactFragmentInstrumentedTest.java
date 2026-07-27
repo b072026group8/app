@@ -185,6 +185,7 @@ public class EditArtifactFragmentInstrumentedTest {
             action.run();
         } finally {
             FirebaseDatabase.getInstance().purgeOutstandingWrites();
+            FirebaseDatabase.getInstance().goOnline();
         }
     }
 

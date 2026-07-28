@@ -198,7 +198,8 @@ public class HomeFragment extends Fragment {
         FirebaseAuth.getInstance().signOut();
         FragmentManager fragmentManager = getParentFragmentManager();
 
-        // Stack should have something. Shouldnt be empty
+        // Stack should have something. Shouldn't be empty
+
         if (fragmentManager.getBackStackEntryCount() > 0) {
             // Go to the first view in stack (login page) upon logging out
             fragmentManager.popBackStack(fragmentManager.getBackStackEntryAt(0).getId(), 0);

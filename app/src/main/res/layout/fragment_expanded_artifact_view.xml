@@ -248,8 +248,9 @@
                 android:id="@+id/textView15"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:text="Accession Number:" />
+                android:text="Accession Number:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/accessionNumber"
@@ -263,8 +264,9 @@
                 android:id="@+id/textView16"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:text="Notes: " />
+                android:text="Notes: "
+                android:textColor="@color/lightgold"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/notes"

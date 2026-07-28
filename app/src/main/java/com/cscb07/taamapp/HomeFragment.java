@@ -14,6 +14,7 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -86,6 +87,7 @@ public class HomeFragment extends Fragment {
 
         Button buttonRecyclerView = view.findViewById(R.id.buttonFilterSaved);
         Button buttonManageItems = view.findViewById(R.id.buttonManageItems);
+        Button buttonLogout = view.findViewById(R.id.buttonLogout);
         RecyclerView artifactCardGrid = view.findViewById(R.id.artifactCardGrid);
         EditText searchBar = view.findViewById(R.id.homeSearchEditText);
 
@@ -117,6 +119,14 @@ public class HomeFragment extends Fragment {
                 displayItemList.setListStrategy(list);
                 searchList.requery();
                 itemAdapter.notifyDataSetChanged();
+            }
+        });
+
+        // Logout user
+        buttonLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logout();
             }
         });
 
@@ -182,5 +192,16 @@ public class HomeFragment extends Fragment {
         transaction.replace(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private void logout() {
+        FirebaseAuth.getInstance().signOut();
+        FragmentManager fragmentManager = getParentFragmentManager();
+
+        // Stack should have something. Shouldnt be empty
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            // Go to the first view in stack (login page) upon logging out
+            fragmentManager.popBackStack(fragmentManager.getBackStackEntryAt(0).getId(), 0);
+        }
     }
 }

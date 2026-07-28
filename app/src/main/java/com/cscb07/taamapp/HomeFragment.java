@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -187,6 +188,22 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    /**
+     * When the back button is pressed on the home page, log out the user instead of just returning them to the login page
+     */
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                logout();  // Logout if back button is pressed from the homepage
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+    }
+
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
@@ -196,6 +213,8 @@ public class HomeFragment extends Fragment {
 
     private void logout() {
         FirebaseAuth.getInstance().signOut();
+        System.out.println("User logged out");
+
         FragmentManager fragmentManager = getParentFragmentManager();
 
         // Stack should have something. Shouldn't be empty

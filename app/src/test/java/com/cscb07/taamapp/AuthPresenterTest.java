@@ -85,4 +85,10 @@ public class AuthPresenterTest {
         presenter.failedAuth("error message");  // Testing the failedAuth method
         verify(mockView).showError("error message");
     }
+
+    @Test
+    public void SuccessAuth1() {
+        presenter.successAuth();
+        verify(mockView).loadHome();  // successAuth() should load home
+    }
 }

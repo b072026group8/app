@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -214,6 +215,7 @@ public class HomeFragment extends Fragment {
     private void logout() {
         FirebaseAuth.getInstance().signOut();
         System.out.println("User logged out");
+        showToast("User logged out");
 
         FragmentManager fragmentManager = getParentFragmentManager();
 
@@ -222,6 +224,12 @@ public class HomeFragment extends Fragment {
         if (fragmentManager.getBackStackEntryCount() > 0) {
             // Go to the first view in stack (login page) upon logging out
             fragmentManager.popBackStack(fragmentManager.getBackStackEntryAt(0).getId(), 0);
+        }
+    }
+
+    public void showToast(String m) {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), m, Toast.LENGTH_SHORT).show();
         }
     }
 }

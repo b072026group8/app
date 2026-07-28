@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 public class EditArtifactFragmentInstrumentedTest {
+    public static final String TAG = "EditArtifactFragmentInstrumentedTest";
     @Nullable
     private DataSnapshot snapshot = null;
     @Test
@@ -185,6 +186,7 @@ public class EditArtifactFragmentInstrumentedTest {
             action.run();
         } finally {
             FirebaseDatabase.getInstance().purgeOutstandingWrites();
+            FirebaseDatabase.getInstance().goOnline();
         }
     }
 
@@ -247,7 +249,7 @@ public class EditArtifactFragmentInstrumentedTest {
                     item.setCategory(f.getSpinnerCategory());
                     f.spinnerArtifactMaterial.setSelection(1);
                     item.setMaterial(f.getSpinnerMaterial());
-                    Log.i("Test", "" + f.validateFields());
+                    Log.i(TAG, "" + f.validateFields());
 
 
                     f.onSave();
@@ -255,7 +257,7 @@ public class EditArtifactFragmentInstrumentedTest {
             }
 
             Thread.sleep(2500);
-            Log.i("Test", item.getLotNumber());
+            Log.i(TAG, item.getLotNumber());
             CountDownLatch latch = new CountDownLatch(1);
             FirebaseDatabase.getInstance().getReference("artifacts").get()
                     .addOnSuccessListener(data -> {

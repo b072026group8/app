@@ -2,6 +2,7 @@ package com.cscb07.taamapp;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.cscb07.taamapp.testutil.KnownRandom;
 import com.cscb07.taamapp.util.Provider;
 import com.cscb07.taamapp.util.UpdateListener;
 import com.google.firebase.database.DatabaseReference;
@@ -17,16 +18,15 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 public class SavedArtifactListProviderInstrumentedTest {
     private static final String TAG = "SavedArtifactListProviderInstrumentedTest";
-    private static String getKey(long seed) {
-        String key = "random-test-key-do-not-use-" + new Random(seed).nextInt();
-        Log.d(TAG, "from seed: " + seed + "\tgenerated key: " + key);
+    private static String getKey(int seed) {
+        String key = "random-test-key-do-not-use-" + KnownRandom.nextInt(seed);
+        Log.v(TAG, "from seed: " + seed + "\tgenerated key: " + key);
         return key;
     }
 
@@ -53,7 +53,8 @@ public class SavedArtifactListProviderInstrumentedTest {
             assertSame(map.get(lot), provider.getValue().get(0));
         } finally {
             Log.d(TAG, "removing db mods");
-            dbRef.removeValue();
+            dbRef.removeValue()
+                    .addOnFailureListener(err -> {throw new RuntimeException("failed to remove test value", err);} );
         }
     }
 
@@ -99,7 +100,8 @@ public class SavedArtifactListProviderInstrumentedTest {
             assertTrue(listenerDone.await(10, TimeUnit.MILLISECONDS));
         } finally {
             Log.d(TAG, "removing db mods");
-            dbRef.removeValue();
+            dbRef.removeValue()
+                    .addOnFailureListener(err -> {throw new RuntimeException("failed to remove test value", err);} );
         }
 
     }

@@ -2,7 +2,6 @@ package com.cscb07.taamapp;
 
 import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.FlakyTest;
 
 import com.cscb07.taamapp.util.UpdateListener;
 import com.google.firebase.database.DataSnapshot;
@@ -32,7 +31,7 @@ public class ItemMapProviderInstrumentedTest {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Log.d(TAG, "Found " + snapshot.getChildrenCount() + " artifacts.");
                 if (snapshot.getChildrenCount() == 0) {
-                    Log.e(TAG, "Detected no stored artifacts: test won't work properly.");
+                    fail("Detected no stored artifacts: test won't work properly.");
                 }
             }
 

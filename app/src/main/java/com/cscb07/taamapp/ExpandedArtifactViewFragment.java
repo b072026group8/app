@@ -1,5 +1,7 @@
 package com.cscb07.taamapp;
 
+import static android.util.TypedValue.COMPLEX_UNIT_DIP;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -9,6 +11,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +23,10 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 
 
 public class ExpandedArtifactViewFragment extends Fragment{
@@ -27,6 +34,17 @@ public class ExpandedArtifactViewFragment extends Fragment{
     private FirebaseDatabase db;
     private DatabaseReference ref;
     private String lot;
+    private float relatedArtifactViewWidth = 150;
+
+    public float getRelatedArtifactViewWidth() {
+        return relatedArtifactViewWidth;
+    }
+
+    /** Note: Units are in dp. (Probably) does nothing after {@link ExpandedArtifactViewFragment#onCreateView} */
+    public void setRelatedArtifactViewWidth(float relatedArtifactViewWidth) {
+        this.relatedArtifactViewWidth = relatedArtifactViewWidth;
+    }
+
 
     @Nullable
     @Override
@@ -52,6 +70,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
         TextView provenance = view.findViewById(R.id.provenance);
         TextView accessionNumber = view.findViewById(R.id.accessionNumber);
         TextView notes = view.findViewById(R.id.notes);
+            RecyclerView relatedItems = view.findViewById(R.id.relatedArtifactsList);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -83,6 +102,26 @@ public class ExpandedArtifactViewFragment extends Fragment{
             }
         });
 
+
+            relatedItems.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+            // TODO: temp code.
+            ArrayList<Item> items = new ArrayList<>();
+            items.add(new Item());
+            items.add(new Item());
+            items.add(new Item());
+            items.add(new Item());
+            items.add(new Item());
+            items.add(new Item());
+            items.add(new Item());
+            int widthOverride;
+            if (getContext() == null) {
+                widthOverride = 400;
+                Log.w(Tag, "context is null, can't convert width override. Using default of: " + widthOverride);
+            } else {
+                widthOverride = (int) TypedValue.applyDimension(COMPLEX_UNIT_DIP, relatedArtifactViewWidth, getContext().getResources().getDisplayMetrics());
+            }
+            ItemAdapter.LayoutOverrides layoutOverrides = new ItemAdapter.LayoutOverrides(widthOverride);
+            relatedItems.setAdapter(new ItemAdapter(items, getParentFragmentManager().beginTransaction(), layoutOverrides));
         }
         ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
         saveArtifactButton.setClickable(false);

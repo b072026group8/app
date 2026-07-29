@@ -1,30 +1,46 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceControl;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
+    private static final String TAG = "ItemAdapter";
     private List<Item> itemList;
     private FragmentTransaction transaction;
+    @Nullable
+    private LayoutOverrides layoutOverrides;
 
     public ItemAdapter(List<Item> itemList, FragmentTransaction transaction) {
+        this(itemList, transaction, null);
+    }
+    public ItemAdapter(List<Item> itemList, FragmentTransaction transaction, @Nullable LayoutOverrides layoutOverrides) {
         this.itemList = itemList;
         this.transaction = transaction;
+        this.layoutOverrides = layoutOverrides;
     }
 
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_item_adapater, parent, false);
+        if (layoutOverrides != null && view.getLayoutParams() == null) {
+            Log.e(TAG, "created view's layout params are null, cannot set overrides");
+        } else if (layoutOverrides != null) {
+            if (layoutOverrides.useWidthOverride()) {
+                view.getLayoutParams().width = layoutOverrides.getWidthOverride();
+            }
+        }
         return new ItemViewHolder(view);
     }
 
@@ -65,6 +81,30 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             textViewCategory = itemView.findViewById(R.id.textViewCategory);
             textViewMaterial = itemView.findViewById(R.id.textViewMaterial);
             textViewDynastyPeriod = itemView.findViewById(R.id.textViewDynastyPeriod);
+        }
+    }
+
+    /**
+     * Holds settings for {@link ItemViewHolder} for overriding default layout values.
+     */
+    public static class LayoutOverrides {
+        private final boolean useWidthOverride;
+        private final int widthOverride;
+
+        public LayoutOverrides() {
+            useWidthOverride = false;
+            widthOverride = -1;
+        }
+        public LayoutOverrides(int newWidth) {
+            useWidthOverride = true;
+            widthOverride = newWidth;
+        }
+
+        public int getWidthOverride() {
+            return widthOverride;
+        }
+        public boolean useWidthOverride() {
+            return useWidthOverride;
         }
     }
 }

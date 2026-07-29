@@ -10,10 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -86,6 +89,7 @@ public class HomeFragment extends Fragment {
 
         Button buttonRecyclerView = view.findViewById(R.id.buttonFilterSaved);
         Button buttonManageItems = view.findViewById(R.id.buttonManageItems);
+        Button buttonLogout = view.findViewById(R.id.buttonLogout);
         RecyclerView artifactCardGrid = view.findViewById(R.id.artifactCardGrid);
         EditText searchBar = view.findViewById(R.id.homeSearchEditText);
 
@@ -117,6 +121,14 @@ public class HomeFragment extends Fragment {
                 displayItemList.setListStrategy(list);
                 searchList.requery();
                 itemAdapter.notifyDataSetChanged();
+            }
+        });
+
+        // Logout user
+        buttonLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logout();
             }
         });
 
@@ -177,10 +189,47 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    /**
+     * When the back button is pressed on the home page, log out the user instead of just returning them to the login page
+     */
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                logout();  // Logout if back button is pressed from the homepage
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+    }
+
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private void logout() {
+        FirebaseAuth.getInstance().signOut();
+        System.out.println("User logged out");
+        showToast("User logged out");
+
+        FragmentManager fragmentManager = getParentFragmentManager();
+
+        // Stack should have something. Shouldn't be empty
+
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            // Go to the first view in stack (login page) upon logging out
+            fragmentManager.popBackStack(fragmentManager.getBackStackEntryAt(0).getId(), 0);
+        }
+    }
+
+    public void showToast(String m) {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), m, Toast.LENGTH_SHORT).show();
+        }
     }
 }

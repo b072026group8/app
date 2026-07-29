@@ -49,6 +49,7 @@ public class AuthPresenter implements Presenter, AuthStatus {
         view.showError(m);
     }
 
+    // Successful authentication loads home page
     public void successAuth() {
         view.loadHome();
     }

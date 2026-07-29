@@ -67,6 +67,15 @@ public class LoginFragment extends Fragment implements UserAuthentication {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        // Clear email and password fields upon logging out
+        editTextEmail.setText("");
+        editTextPassword.setText("");
+    }
+
+    @Override
     public void showError(String m) {
         if (getContext() != null) {
             Toast.makeText(getContext(), m, Toast.LENGTH_SHORT).show();

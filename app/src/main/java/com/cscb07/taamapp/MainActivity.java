@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    /*
     @Override
     public void onBackPressed() {
         if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
@@ -45,5 +46,5 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
-    }
+    }*/
 }

@@ -20,6 +20,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     private FragmentTransaction transaction;
     @Nullable
     private LayoutOverrides layoutOverrides;
+    private int popBackStackId = -1;
+    public int getPopBackStackId() { return popBackStackId; }
+    public void setPopBackStackId(int popBackStackId) {
+        this.popBackStackId = popBackStackId;
+    }
 
     public ItemAdapter(List<Item> itemList, FragmentTransaction transaction) {
         this(itemList, transaction, null);
@@ -52,6 +57,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 bundle.putString("lotNumber", item.getLotNumber());
+                bundle.putInt(ExpandedArtifactViewFragment.ARG_POP_BACK_ID, popBackStackId);
                 ExpandedArtifactViewFragment expanded = new ExpandedArtifactViewFragment();
                 expanded.setArguments(bundle);
                 transaction.replace(R.id.fragment_container, expanded);
@@ -69,7 +75,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     public int getItemCount() {
         return itemList.size();
     }
-
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         CardView content;
         TextView textViewName, textViewCategory, textViewMaterial, textViewDynastyPeriod;

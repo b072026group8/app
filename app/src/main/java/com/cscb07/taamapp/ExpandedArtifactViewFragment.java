@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -30,30 +31,40 @@ import java.util.ArrayList;
 
 
 public class ExpandedArtifactViewFragment extends Fragment{
-    private final String Tag = "ExpandedArtifactViewFragment";
+    private static final String Tag = "ExpandedArtifactViewFragment";
+    public static final String ARG_POP_BACK_ID = Tag + "-popBackId";
     private FirebaseDatabase db;
     private DatabaseReference ref;
     private String lot;
     private float relatedArtifactViewWidth = 150;
+    private int popBackId = -1;
 
-    public float getRelatedArtifactViewWidth() {
-        return relatedArtifactViewWidth;
+    /** Gets the id of the state in the {@link androidx.fragment.app.FragmentManager} to
+     * pop back to on the home button, or a negative number */
+    public int getPopBackId() {
+        return popBackId;
     }
 
-    /** Note: Units are in dp. (Probably) does nothing after {@link ExpandedArtifactViewFragment#onCreateView} */
-    public void setRelatedArtifactViewWidth(float relatedArtifactViewWidth) {
-        this.relatedArtifactViewWidth = relatedArtifactViewWidth;
+    /** Sets the id of the state in the {@link androidx.fragment.app.FragmentManager} to
+     * pop back to on the home button.
+     * <p>
+     * If negative, the current stat is popped back once.
+     */
+    public void setPopBackId(int popBackId) {
+        this.popBackId = popBackId;
     }
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
-    View view = inflater.inflate(R.layout.fragment_expanded_artifact_view, container,false);
-    db = FirebaseDatabase.getInstance();
-    Bundle args = getArguments();
-    if (args != null) {
+        View view = inflater.inflate(R.layout.fragment_expanded_artifact_view, container,false);
+        ImageButton homeButton = view.findViewById(R.id.expandedViewHomeButton);
+        db = FirebaseDatabase.getInstance();
+        Bundle args = getArguments();
+        if (args != null) {
         lot = args.getString("lotNumber");
+            popBackId = args.getInt(ARG_POP_BACK_ID);
         ref = db.getReference("artifacts").child(lot);
         Button deleteButton = view.findViewById(R.id.button);
         TextView name = view.findViewById(R.id.name);
@@ -121,8 +132,21 @@ public class ExpandedArtifactViewFragment extends Fragment{
                 widthOverride = (int) TypedValue.applyDimension(COMPLEX_UNIT_DIP, relatedArtifactViewWidth, getContext().getResources().getDisplayMetrics());
             }
             ItemAdapter.LayoutOverrides layoutOverrides = new ItemAdapter.LayoutOverrides(widthOverride);
-            relatedItems.setAdapter(new ItemAdapter(items, getParentFragmentManager().beginTransaction(), layoutOverrides));
+            ItemAdapter adapter = new ItemAdapter(items, getParentFragmentManager().beginTransaction(), layoutOverrides);
+            adapter.setPopBackStackId(popBackId);
+            relatedItems.setAdapter(adapter);
         }
+
+        homeButton.setOnClickListener(v -> {
+            Log.i(Tag, "popping back to " + popBackId);
+            if (popBackId < 0) {
+                Log.w(Tag, "popBackId isn't set, popping back 1 state by default (was: " + popBackId + ")");
+                getParentFragmentManager().popBackStack();
+            } else {
+                getParentFragmentManager().popBackStack(popBackId, 0 /* don't pop target as well. */);
+            }
+        });
+
         ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
         saveArtifactButton.setClickable(false);
         String uid = FirebaseAuth.getInstance().getUid();

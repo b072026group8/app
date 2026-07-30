@@ -160,6 +160,7 @@ public class HomeFragment extends Fragment {
         }
 
         artifactCardGrid.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        itemAdapter.setPopBackStackId(getParentFragmentManager().getBackStackEntryAt(getParentFragmentManager().getBackStackEntryCount() - 1).getId());
         artifactCardGrid.setAdapter(itemAdapter);
 
         searchBar.addTextChangedListener(new TextWatcher() {

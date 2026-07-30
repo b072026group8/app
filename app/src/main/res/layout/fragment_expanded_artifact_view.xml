@@ -248,8 +248,8 @@
                 android:id="@+id/textView15"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:text="Accession Number:" />
+                android:text="Accession Number:"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/accessionNumber"
@@ -263,8 +263,8 @@
                 android:id="@+id/textView16"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:text="Notes: " />
+                android:text="Notes: "
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/notes"
@@ -291,7 +291,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="160dp"
         android:allowUndo="false"
         android:checked="false"
         android:clickable="true"
@@ -300,8 +299,22 @@
         android:textOff="Add to\nCollection"
         android:textOn="Remove from\nCollection"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/expandedViewHomeButton"
         app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
+
+    <ImageButton
+        android:id="@+id/expandedViewHomeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="#00FFFFFF"
+        android:clickable="true"
+        android:contentDescription="@string/home_icon_speakable_text"
+        android:focusable="true"
+        android:scaleY="1.2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView3"
+        app:srcCompat="@drawable/home_icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

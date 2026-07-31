@@ -112,8 +112,7 @@ public class ItemOrderingTest {
         CallbackCounter<List<Item>> counter = new CallbackCounter<>();
         ordering.registerObserver(counter::signal);
         // This is b/c registerObserver() automatically calls listeners initially.
-        counter.setCount(0);
-        counter.getReturnValues().clear();
+        counter.reset();
 
         map.put("1", target);
         map.put("2", other1);
@@ -123,6 +122,95 @@ public class ItemOrderingTest {
         assertEquals(1, counter.getCallbackCount());
         assertEquals(2, counter.getReturnValues().get(0).size());
         assertSame(ordering.getValue(), counter.getReturnValues().get(0));
+    }
+
+    /** Returns a list of 4 items in order: a target, most similar, kinda similar, least similar. */
+    public Item[] getSampleItems() {
+        Item target = new Item("lot", "iron shield", "description", "category", "material", "dynasty", "", "", "", "", "", "", "", "", "");
+        Item mostSimilar = new Item("lot", "iron", "shield","iron", "shield","iron", "shield","iron", "shield","iron", "shield","iron", "shield","iron", "");
+        mostSimilar.setCategory(target.getCategory());
+        mostSimilar.setDescription(target.getDescription());
+        mostSimilar.setDynastyPeriod(target.getDynastyPeriod());
+        Item mediumSimilar = new Item();
+        mediumSimilar.setCategory(target.getCategory());
+        mediumSimilar.setDescription(target.getDescription());
+        mediumSimilar.setDynastyPeriod(target.getDynastyPeriod());
+        Item leastSimilar = new Item();
+        leastSimilar.setNotes("shield");
+        return new Item[] {target, mostSimilar, mediumSimilar, leastSimilar};
+    }
+
+    @Test
+    public void setMaxDisplayed_valueLessThanSize_limitsLowestValue() {
+        Item[] itemPrep = getSampleItems();
+        Item
+                target = itemPrep[0],
+                mostSimilar = itemPrep[1],
+                kindaSimilar = itemPrep[2],
+                leastSimilar = itemPrep[3];
+        HashMap<String, Item> map = new HashMap<>();
+        map.put("0", target);
+        map.put("1", mostSimilar);
+        map.put("2", kindaSimilar);
+        map.put("3", leastSimilar);
+        Provider<Map<String, Item>> provider = new Provider<Map<String, Item>>() {
+            @Override
+            public Map<String, Item> getValue() {
+                return map;
+            }
+        };
+        ItemOrdering ordering = new ItemOrdering(target, provider);
+        CallbackCounter<List<Item>> counter = new CallbackCounter<>();
+        ordering.registerObserver(counter::signal);
+        // This is b/c registerObserver() automatically calls listeners initially.
+        counter.reset();
+
+
+        ordering.setMaxDisplayed(2);
+
+
+        assertEquals(2, ordering.getValue().size());
+        assertFalse(ordering.getValue().contains(leastSimilar));
+        assertEquals(1, counter.getCallbackCount());
+        assertEquals(2, counter.getReturnValues().get(0).size());
+        assertFalse(counter.getReturnValues().get(0).contains(leastSimilar));
+    }
+
+    @Test
+    public void setMinRanking_valueLessThanSize_limitsLowestValue() {
+        Item[] itemPrep = getSampleItems();
+        Item
+                target = itemPrep[0],
+                mostSimilar = itemPrep[1],
+                kindaSimilar = itemPrep[2],
+                leastSimilar = itemPrep[3];
+        final int minRanking = new ItemRanker().rankSimilarity(target, kindaSimilar);
+        HashMap<String, Item> map = new HashMap<>();
+        map.put("0", target);
+        map.put("1", mostSimilar);
+        map.put("2", kindaSimilar);
+        map.put("3", leastSimilar);
+        Provider<Map<String, Item>> provider = new Provider<Map<String, Item>>() {
+            @Override
+            public Map<String, Item> getValue() {
+                return map;
+            }
+        };
+        ItemOrdering ordering = new ItemOrdering(target, provider);
+        CallbackCounter<List<Item>> counter = new CallbackCounter<>();
+        ordering.registerObserver(counter::signal);
+        // This is b/c registerObserver() automatically calls listeners initially.
+        counter.reset();
+
+
+        ordering.setMinRanking(minRanking);
+
+
+        assertEquals(2, ordering.getValue().size());
+        assertFalse(ordering.getValue().contains(leastSimilar));
+        assertEquals(1, counter.getCallbackCount());
+        assertEquals(2, counter.getReturnValues().get(0).size());
+        assertFalse(counter.getReturnValues().get(0).contains(leastSimilar));
     }
 
     @Test

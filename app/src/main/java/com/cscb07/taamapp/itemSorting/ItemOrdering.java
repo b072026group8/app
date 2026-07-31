@@ -34,12 +34,24 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
     private int minRanking = Integer.MIN_VALUE;
 
     /** Get the max number of items displayed. */ public int getMaxDisplayed() { return maxDisplayed; }
-    /** Set the max number of items displayed. */ public void setMaxDisplayed(int maxDisplayed) {
+    /** Set the max number of items displayed. */
+    public void setMaxDisplayed(int maxDisplayed) {
         if (maxDisplayed <= 0) throw new IllegalArgumentException("maxDisplayed must be positive");
+        int original = this.maxDisplayed;
         this.maxDisplayed = maxDisplayed;
+        if (original == maxDisplayed)
+            return;
+        if (original < maxDisplayed)
+            updateValue();
+        if (original > maxDisplayed)
+            onCollectionChange.onChange(itemProvider.getValue());
     }
     /** Get the min ranking value required for an item to appear. */ public int getMinRanking() { return minRanking; }
-    /** Set the min ranking value required for an item to appear. */ public void setMinRanking(int minRanking) { this.minRanking = minRanking; }
+    /** Set the min ranking value required for an item to appear. */
+    public void setMinRanking(int minRanking) {
+        this.minRanking = minRanking;
+        onCollectionChange.onChange(itemProvider.getValue());
+    }
 
 
     /**
@@ -70,7 +82,7 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
                 continue;
             }
             int itemRanking = ranker.rankSimilarity(targetItem, item);
-            if (itemRanking > minRanking) {
+            if (itemRanking >= minRanking) {
                 ranking.add(new ItemRanking(item, itemRanking));
             }
         }

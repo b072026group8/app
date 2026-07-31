@@ -2,6 +2,11 @@ package com.cscb07.taamapp;
 
 import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 
+import com.cscb07.taamapp.itemSorting.DbOrderingFactory;
+import com.cscb07.taamapp.itemSorting.OrderingFactory;
+import com.cscb07.taamapp.util.ListStrategy;
+import com.cscb07.taamapp.util.Provider;
+import com.cscb07.taamapp.util.UpdateListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -20,23 +25,37 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-
+import java.util.List;
 
 public class ExpandedArtifactViewFragment extends Fragment{
     private static final String Tag = "ExpandedArtifactViewFragment";
     public static final String ARG_POP_BACK_ID = Tag + "-popBackId";
+    /** Prefer to use {@link ExpandedArtifactViewFragment#getOrderingFactory()}. */
+    private static OrderingFactory orderingFactory;
+
+    /** Set the {@link OrderingFactory} instance to be used by <i>all</i> {@link ExpandedArtifactViewFragment} instances.*/
+    public static void setOrderingFactory(OrderingFactory factory) { orderingFactory = factory; }
+    private static OrderingFactory getOrderingFactory() {
+        if (orderingFactory == null) {
+            Log.w(Tag, "OrderingFactory instance is null, setting to default instance");
+            orderingFactory = new DbOrderingFactory(new ItemMapProvider());
+        }
+        return orderingFactory;
+    }
+
     private FirebaseDatabase db;
     private DatabaseReference ref;
     private String lot;
     private float relatedArtifactViewWidth = 150;
+    private final ListStrategy<Item> relatedArtifactList = new ListStrategy<>();
+    private Provider<List<Item>> relatedArtifactProvider;
+    private RecyclerView.Adapter<?> relatedArtifactAdapter = null;
     private int popBackId = -1;
 
     /** Gets the id of the state in the {@link androidx.fragment.app.FragmentManager} to
@@ -83,12 +102,15 @@ public class ExpandedArtifactViewFragment extends Fragment{
         TextView notes = view.findViewById(R.id.notes);
             RecyclerView relatedItems = view.findViewById(R.id.relatedArtifactsList);
 
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                DataSnapshot data = snapshot.child("value");
-                Item item = data.getValue(Item.class);
-                if (item != null) {
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    DataSnapshot data = snapshot.child("value");
+                    Item item = data.getValue(Item.class);
+                    if (item == null) {
+                        Log.e(Tag, "Could not find item for lot: " + lot);
+                        return;
+                    }
                     name.setText(item.getArtifactName());
                     lotNum.setText(item.getLotNumber());
                     description.setText(item.getDescription());
@@ -103,38 +125,32 @@ public class ExpandedArtifactViewFragment extends Fragment{
                     provenance.setText(item.getProvenance());
                     accessionNumber.setText(item.getAccessionNumber());
                     notes.setText(item.getNotes());
+
+                    relatedArtifactProvider = getOrderingFactory().getOrdering(item);
+                    relatedArtifactProvider.registerObserver(relatedArtifactUpdateListener);
                 }
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("Firebase", "Error fetching artifact fields.", databaseError.toException());
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("Firebase", "Error fetching artifact fields.", databaseError.toException());
+                }
+            });
 
 
             relatedItems.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-            // TODO: temp code.
-            ArrayList<Item> items = new ArrayList<>();
-            items.add(new Item());
-            items.add(new Item());
-            items.add(new Item());
-            items.add(new Item());
-            items.add(new Item());
-            items.add(new Item());
-            items.add(new Item());
             int widthOverride;
             if (getContext() == null) {
-                widthOverride = 400;
-                Log.w(Tag, "context is null, can't convert width override. Using default of: " + widthOverride);
+                widthOverride = (int)(relatedArtifactViewWidth * 3);
+                Log.w(Tag, "context is null, can't properly convert width override. Using approximation of: " + widthOverride);
             } else {
                 widthOverride = (int) TypedValue.applyDimension(COMPLEX_UNIT_DIP, relatedArtifactViewWidth, getContext().getResources().getDisplayMetrics());
+                Log.i(Tag, "Width override: " + widthOverride);
             }
             ItemAdapter.LayoutOverrides layoutOverrides = new ItemAdapter.LayoutOverrides(widthOverride);
-            ItemAdapter adapter = new ItemAdapter(items, getParentFragmentManager().beginTransaction(), layoutOverrides);
+            ItemAdapter adapter = new ItemAdapter(relatedArtifactList, getParentFragmentManager().beginTransaction(), layoutOverrides);
             adapter.setPopBackStackId(popBackId);
             relatedItems.setAdapter(adapter);
+            relatedArtifactAdapter = adapter;
         }
 
         homeButton.setOnClickListener(v -> {
@@ -190,5 +206,18 @@ public class ExpandedArtifactViewFragment extends Fragment{
             });
         }
         return view;
+    }
+
+    private final UpdateListener<List<Item>>  relatedArtifactUpdateListener = l -> {
+        relatedArtifactList.setListStrategy(l);
+        if (relatedArtifactAdapter != null) {
+            relatedArtifactAdapter.notifyDataSetChanged();
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        relatedArtifactProvider.unregisterObserver(relatedArtifactUpdateListener);
+        super.onDestroy();
     }
 }

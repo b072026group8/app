@@ -53,6 +53,15 @@ public class ExpandedArtifactViewFragment extends Fragment{
         TextView accessionNumber = view.findViewById(R.id.accessionNumber);
         TextView notes = view.findViewById(R.id.notes);
 
+        TextView culturalOriginHeader = view.findViewById(R.id.textView9);
+        TextView dimensionsHeader = view.findViewById(R.id.textView10);
+        TextView conditionReportHeader = view.findViewById(R.id.textView11);
+        TextView currentLocationHeader = view.findViewById(R.id.textView12);
+        TextView acquisitionMethodHeader = view.findViewById(R.id.textView13);
+        TextView provenanceHeader = view.findViewById(R.id.textView14);
+        TextView accessionNumberHeader = view.findViewById(R.id.textView15);
+        TextView notesHeader = view.findViewById(R.id.textView16);
+
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -73,6 +82,32 @@ public class ExpandedArtifactViewFragment extends Fragment{
                     provenance.setText(item.getProvenance());
                     accessionNumber.setText(item.getAccessionNumber());
                     notes.setText(item.getNotes());
+
+                    if(!item.getCulturalOrigin().isEmpty()) {
+                        culturalOriginHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getDimensions().isEmpty()) {
+                        dimensionsHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getConditionReport().isEmpty()) {
+                        conditionReportHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getCurrentLocation().isEmpty()) {
+                        currentLocationHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getAcquisitionMethod().isEmpty()) {
+                        acquisitionMethodHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getProvenance().isEmpty()) {
+                        provenanceHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getAccessionNumber().isEmpty()) {
+                        accessionNumberHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getNotes().isEmpty()) {
+                        notesHeader.setVisibility(View.VISIBLE);
+                    }
+
                 }
 
             }

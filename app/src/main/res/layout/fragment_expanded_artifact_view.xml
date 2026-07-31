@@ -9,7 +9,7 @@
     android:scaleX="1">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/artifactDelete"
         android:layout_width="100dp"
         android:layout_height="48dp"
         android:layout_marginEnd="16dp"
@@ -17,6 +17,7 @@
         android:backgroundTint="@color/lightgold"
         android:text="Delete"
         android:textColorLink="#9B0808"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button2" />
@@ -154,7 +155,8 @@
                 android:layout_height="wrap_content"
                 android:text="Cultural Origin:"
                 android:textColor="@color/lightgold"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/culturalOrigin"
@@ -170,7 +172,8 @@
                 android:layout_height="wrap_content"
                 android:text="Dimensions:"
                 android:textColor="@color/lightgold"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/dimensions"
@@ -186,7 +189,8 @@
                 android:layout_height="wrap_content"
                 android:text="Condition:"
                 android:textColor="@color/lightgold"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/conditionReport"
@@ -202,7 +206,8 @@
                 android:layout_height="wrap_content"
                 android:text="Current Location:"
                 android:textColor="@color/lightgold"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/currentLocation"
@@ -218,7 +223,8 @@
                 android:layout_height="wrap_content"
                 android:text="Aquisistion Method:"
                 android:textColor="@color/lightgold"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/acquisitionMethod"
@@ -234,7 +240,8 @@
                 android:layout_height="wrap_content"
                 android:text="Provenance: "
                 android:textColor="@color/lightgold"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/provenance"
@@ -248,8 +255,10 @@
                 android:id="@+id/textView15"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="Accession Number:"
+                android:textColor="@color/lightgold"
                 android:textSize="24sp"
-                android:text="Accession Number:" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/accessionNumber"
@@ -263,8 +272,10 @@
                 android:id="@+id/textView16"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="Notes: "
+                android:textColor="@color/lightgold"
                 android:textSize="24sp"
-                android:text="Notes: " />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/notes"
@@ -293,7 +304,7 @@
         android:textOff="Add to\nCollection"
         android:textOn="Remove from\nCollection"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button"
+        app:layout_constraintEnd_toStartOf="@+id/artifactDelete"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
 

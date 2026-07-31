@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ExpandedArtifactViewFragment extends Fragment{
@@ -136,8 +137,9 @@ public class ExpandedArtifactViewFragment extends Fragment{
             Button addComment = view.findViewById(R.id.addComment);
             EditText commentContent = view.findViewById(R.id.commentField);
             if (!acc.isAnonymous()) {
-                CommentManager commentManager = new CommentManager(this.lot, uid, getContext());
-                CommentAdapter adapter = new CommentAdapter(new ArrayList<>(), commentManager);
+                List<Comment> commentList = new ArrayList<>();
+                CommentManager commentManager = new CommentManager(this.lot, uid, getContext(), commentList);
+                CommentAdapter adapter = new CommentAdapter(commentList, commentManager);
                 addComment.setVisibility(View.VISIBLE);
                 commentContent.setVisibility(View.VISIBLE);
                 ref = db.getReference("users/" + uid).child("name");
@@ -151,6 +153,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
                                     String name = snapshot.getValue(String.class);
                                     Comment comment = new Comment(uid, name, commentContent.getText().toString());
                                     commentManager.addComment(comment);
+                                    adapter.notifyItemInserted(adapter.getItemCount() - 1);
                                 }
 
                                 @Override

@@ -34,11 +34,11 @@ public class LikeManager {
         Map<String, Object> updates = new HashMap<>();
 
         if (isLiked) {
-            updates.put("users/" + uid + "/likedArtifacts/" + lotNumber, true);
+            updates.put("likedArtifacts/" + uid + "/" + lotNumber, true);
             updates.put("artifacts/" + lotNumber + "/likeCount", ServerValue.increment(1));
         } else {
             // null removes field from database instead of storing it as false
-            updates.put("users/" + uid + "/likedArtifacts/" + lotNumber, null);
+            updates.put("likedArtifacts/" + uid + "/" + lotNumber, null);
             updates.put("artifacts/" + lotNumber + "/likeCount", ServerValue.increment(-1));
         }
 

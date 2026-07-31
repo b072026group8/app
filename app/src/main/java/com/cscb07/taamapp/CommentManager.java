@@ -66,7 +66,6 @@ public class CommentManager {
             comment.setId(id);
             ref.child(id).setValue(comment).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    commentList.add(comment);
                     Toast.makeText(context, "Comment added successfully.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(context, "Failed to add comment.", Toast.LENGTH_SHORT).show();
@@ -76,6 +75,7 @@ public class CommentManager {
             Log.e(TAG, "DB returned null id for adding comment");
             Toast.makeText(context, "Failed to add comment.", Toast.LENGTH_SHORT).show();
         }
+        loadComments();
     }
 
     public void deleteComment(Comment comment) {

@@ -1,7 +1,5 @@
 package com.cscb07.taamapp.util;
 
-import android.database.Observable;
-
 /**
  * Provides some value that may or may not change, and alerts registered listeners
  * when it does.

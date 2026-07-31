@@ -44,7 +44,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
     private static OrderingFactory getOrderingFactory() {
         if (orderingFactory == null) {
             Log.w(Tag, "OrderingFactory instance is null, setting to default instance");
-            orderingFactory = new DbOrderingFactory(new ItemMapProvider());
+            orderingFactory = new DbOrderingFactory(ItemMapProvider.getInstance());
         }
         return orderingFactory;
     }

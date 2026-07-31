@@ -25,7 +25,7 @@ public class ItemMapProviderInstrumentedTest {
     private static final String TAG = "ItemMapProviderInstrumentedTest";
     @Test
     // Seems this test may fail in wider contexts when sleep duration is too small.
-    public void ctor_defaults_FetchesItems() throws InterruptedException {
+    public void getInstance_defaults_FetchesItems() throws InterruptedException {
         FirebaseDatabase.getInstance().getReference("artifacts").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -42,7 +42,7 @@ public class ItemMapProviderInstrumentedTest {
         });
         ItemMapProvider provider;
 
-        provider = new ItemMapProvider();
+        provider = ItemMapProvider.getInstance();
 
         for (int i = 0; i < 25; i++) {
             Thread.sleep(100);
@@ -55,7 +55,7 @@ public class ItemMapProviderInstrumentedTest {
 
     @Test
     public void registerObserver_attachListener_instantlyCalled() throws InterruptedException {
-        ItemMapProvider provider = new ItemMapProvider();
+        ItemMapProvider provider = ItemMapProvider.getInstance();
         CountDownLatch callbackStatus = new CountDownLatch(1);
 
         provider.registerObserver(new UpdateListener<Map<String, Item>>() {

@@ -66,7 +66,7 @@ public class HomeFragment extends Fragment {
      */
     private void setMissingImplementations() {
         if (itemMapProvider == null)
-            itemMapProvider = new ItemMapProvider();
+            itemMapProvider = ItemMapProvider.getInstance();
         if (savedItemProvider == null) {
             String uid;
             if (user == null || user.isAnonymous()) {

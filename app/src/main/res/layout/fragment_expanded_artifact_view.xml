@@ -308,7 +308,6 @@
         android:drawablePadding="5dp"
 
         android:includeFontPadding="false"
-        android:text="999"
         android:textColor="@color/lightgold"
         android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="parent"

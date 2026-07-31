@@ -26,7 +26,7 @@ public class LikeManager {
     Users liked artifacts
      */
     public void checkUserLikes(String uid, String lotNumber, ValueEventListener listener) {
-        db.child("users").child(uid).child("likedArtifacts").child(lotNumber).addListenerForSingleValueEvent(listener);
+        db.child("likedArtifacts").child(uid).child(lotNumber).addListenerForSingleValueEvent(listener);
     }
 
     public void toggleLike(String uid, String lotNumber, boolean isLiked) {

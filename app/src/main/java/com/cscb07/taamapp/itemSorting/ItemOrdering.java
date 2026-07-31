@@ -49,10 +49,9 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
     public ItemOrdering(@NonNull Item target, @NonNull Provider<Map<String, Item>> itemProvider) {
         this.targetItem = target;
         this.itemProvider = itemProvider;
-        int capacity = 12;
-        if (itemProvider.getValue() instanceof List) {
-            List<Item> list = (List<Item>)itemProvider.getValue();
-            capacity = list.size();
+        int capacity = itemProvider.getValue().size();
+        if (capacity <= 12) {
+            capacity = 12;
         }
 
         ranking = new ArrayList<>(capacity);

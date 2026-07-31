@@ -5,8 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.cscb07.taamapp.namedAlias.ItemMappingProvider;
-
+import com.cscb07.taamapp.util.Provider;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,7 +19,7 @@ import java.util.Map;
  * Provides and maintains a {@link Map} from a String Lot number to artifact {@link Item}s,
  * as updated in the database.
  */
-public class ItemMapProvider extends ItemMappingProvider {
+public class ItemMapProvider extends Provider<Map<String, Item>> {
     private static final String TAG = "ItemMapProvider";
     private final Map<String, Item> itemMap = new HashMap<>();
     private final DatabaseReference ref;

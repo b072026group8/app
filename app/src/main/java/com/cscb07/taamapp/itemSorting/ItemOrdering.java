@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Provides an ordering of items based on similarity to a target item, and limits what items
@@ -103,8 +104,8 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
 
             @Override
             public Item next() {
-                index++;
-                return ranking.get(index).getItem();
+                if (!hasNext()) throw new NoSuchElementException();
+                return ranking.get(++index).getItem();
             }
         };
     }
@@ -170,11 +171,12 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
         return this;
     }
 
-
+    /** List Iterator implementation to be used. */
     private class OrderingIterator implements ListIterator<Item> {
         private int index;
+        /** @param index index of the item to next be (i.e. returned via <c>next()</c>). */
         private OrderingIterator(int index) {
-            this.index = index;
+            this.index = index - 1;
         }
         @Override
         public boolean hasNext() {
@@ -182,6 +184,7 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
         }
         @Override
         public Item next() {
+            if (!hasNext()) throw new NoSuchElementException();
             return ranking.get(++index).getItem();
         }
         @Override
@@ -190,6 +193,7 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
         }
         @Override
         public Item previous() {
+            if (!hasPrevious()) throw new NoSuchElementException();
             return ranking.get(--index).getItem();
         }
         @Override
@@ -234,7 +238,7 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
 
     /** Internal class to represent the ranking of an item. */
     private static final class ItemRanking {
-        public static final Comparator<ItemRanking> COMPARATOR = (t1, t2) ->  t1.getRank() - t2.getRank();
+        public static final Comparator<ItemRanking> COMPARATOR = (t1, t2) ->  t2.getRank() - t1.getRank();
         @NonNull
         private final Item item;
         private final int rank;

@@ -48,7 +48,7 @@ public class ItemOrderingTest {
 
         assertEquals(2, ordering.size());
         assertEquals(mostSimilar, ordering.get(0));
-        assertEquals(mostSimilar, ordering.get(1));
+        assertEquals(leastSimilar, ordering.get(1));
     }
 
     @Test
@@ -237,7 +237,7 @@ public class ItemOrderingTest {
         assertEquals(mostSimilar, iterator.previous());
         //
         assertFalse(iterator.hasPrevious());
-        assertEquals(0, iterator.previousIndex());
+        assertEquals(-1, iterator.previousIndex());
         //
         assertEquals(leastSimilar, iterator.next());
         assertFalse(iterator.hasNext());

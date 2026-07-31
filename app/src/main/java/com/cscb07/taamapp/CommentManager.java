@@ -21,8 +21,9 @@ public class CommentManager {
     private String userUid;
     private String accountType;
     private Context context;
+    private List<Comment> commentList;
 
-    public CommentManager(String lotNum, String userUid, Context context) {
+    public CommentManager(String lotNum, String userUid, Context context, List<Comment> commentList) {
         this.lotNum = lotNum;
         this.userUid = userUid;
         db.getReference("users/" + userUid).child("accountType").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -37,16 +38,17 @@ public class CommentManager {
             }
         });
         this.context = context;
+        this.commentList = commentList;
     }
-    public void loadComments(List<Comment> list) {
+    public void loadComments() {
         DatabaseReference ref = db.getReference("artifacts/" + lotNum + "/comments");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                list.clear();
+                commentList.clear();
                 for (DataSnapshot curr : snapshot.getChildren()) {
                     Comment comment = curr.getValue(Comment.class);
-                    list.add(comment);
+                    commentList.add(comment);
                 }
             }
 
@@ -64,6 +66,7 @@ public class CommentManager {
             comment.setId(id);
             ref.child(id).setValue(comment).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
+                    commentList.add(comment);
                     Toast.makeText(context, "Comment added successfully.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(context, "Failed to add comment.", Toast.LENGTH_SHORT).show();

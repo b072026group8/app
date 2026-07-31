@@ -13,8 +13,8 @@ public class Comment {
         this.text = "";
     }
 
-    public Comment(String id, String userUid, String name, String text) {
-        this.id = id;
+    public Comment(String userUid, String name, String text) {
+        this.id = "";
         this.userUid = userUid;
         this.name = name;
         this.text = text;
@@ -28,6 +28,13 @@ public class Comment {
         return id;
     }
 
+    public void setUserUid(String userUid) {
+        this.userUid = userUid;
+    }
+
+    public String getUserUid() {
+        return this.userUid;
+    }
 
     public String getName() {
         return name;

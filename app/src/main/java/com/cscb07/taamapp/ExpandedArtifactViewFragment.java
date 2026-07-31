@@ -94,7 +94,8 @@ public class ExpandedArtifactViewFragment extends Fragment {
 
         // Like/Unlike feature
         CheckBox likeButton = view.findViewById(R.id.likeButton);
-        String uid = FirebaseAuth.getInstance().getUid();
+        FirebaseUser acc = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = acc.getUid();
 
         if (uid != null && lot != null) {
             LikeManager likeManager = new LikeManager();
@@ -142,9 +143,7 @@ public class ExpandedArtifactViewFragment extends Fragment {
         ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
         saveArtifactButton.setClickable(false);
 
-        FirebaseUser acc = FirebaseAuth.getInstance().getCurrentUser();
-        if (acc != null) {
-            String uid = acc.getUid();
+        if (uid != null) {
             SavedArtifactWriter savedArtifactWriter = new SavedArtifactWriter();
             saveArtifactButton.setOnClickListener(new View.OnClickListener() {
                 @Override

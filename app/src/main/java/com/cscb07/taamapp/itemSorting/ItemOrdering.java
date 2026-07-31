@@ -63,6 +63,7 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
     }
 
     private final UpdateListener<Map<String, Item>> onCollectionChange = (items) -> {
+        ranking.clear();
         for (Item item : items.values()) {
             if (targetItem.equals(item)) {
                 continue;

@@ -92,6 +92,7 @@ public class ExpandedArtifactViewFragment extends Fragment {
 
         }
 
+
         // Like/Unlike feature
         CheckBox likeButton = view.findViewById(R.id.likeButton);
         FirebaseUser acc = FirebaseAuth.getInstance().getCurrentUser();
@@ -133,6 +134,15 @@ public class ExpandedArtifactViewFragment extends Fragment {
             likeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    // Guest can't like
+                    if (acc.isAnonymous()) {
+                        likeButton.setChecked(false);
+                        Toast.makeText(getContext(), "Please sign in to like artifacts", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Users and admins can like/unlike
                     likeManager.toggleLike(uid, lot, likeButton.isChecked());
                 }
             });
@@ -178,6 +188,8 @@ public class ExpandedArtifactViewFragment extends Fragment {
                 }
             });
 
+
+            // Comments
             Button addComment = view.findViewById(R.id.addComment);
             EditText commentContent = view.findViewById(R.id.commentField);
             if (!acc.isAnonymous()) {

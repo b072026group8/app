@@ -1,5 +1,7 @@
 package com.cscb07.taamapp;
 
+import androidx.annotation.Nullable;
+
 public class Comment {
     private String id;
     private String userUid;
@@ -50,5 +52,18 @@ public class Comment {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof Comment) {
+            return getId().equals(((Comment) obj).getId());
+        }
+        return false;
     }
 }

@@ -1,26 +1,22 @@
-package com.cscb07.taamapp;
+package com.cscb07.taamapp.itemSorting;
 
-import com.cscb07.taamapp.itemSorting.ItemOrdering;
-import com.cscb07.taamapp.util.CallbackCounter;
+import com.cscb07.taamapp.Item;
+import com.cscb07.taamapp.testutil.CallbackCounter;
 import com.cscb07.taamapp.util.Provider;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 import org.mockito.junit.MockitoJUnitRunner;
-import static org.mockito.Mockito.*;
 
 import androidx.annotation.NonNull;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
-import okhttp3.Call;
 
 @RunWith(MockitoJUnitRunner.Strict.class)
 public class ItemOrderingTest {

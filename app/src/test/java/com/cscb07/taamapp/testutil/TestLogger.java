@@ -1,11 +1,13 @@
-package com.cscb07.taamapp.util;
+package com.cscb07.taamapp.testutil;
+
+import com.cscb07.taamapp.util.Logger;
 
 import java.util.ArrayList;
 
 /**
  * A simple logger using {@link System#out}, to avoid android dependency.
  */
-public class TestLogger implements Logger{
+public class TestLogger implements Logger {
     public ArrayList<String> messages = new ArrayList<>();
 
     private void log(Character level, String tag, String msg, Throwable tr) {

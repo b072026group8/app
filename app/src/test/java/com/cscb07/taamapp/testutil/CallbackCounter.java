@@ -1,4 +1,4 @@
-package com.cscb07.taamapp.util;
+package com.cscb07.taamapp.testutil;
 
 import java.util.ArrayList;
 import java.util.List;

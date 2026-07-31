@@ -1,6 +1,6 @@
-package com.cscb07.taamapp;
+package com.cscb07.taamapp.itemSorting;
 
-import com.cscb07.taamapp.itemSorting.ItemRanker;
+import com.cscb07.taamapp.Item;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

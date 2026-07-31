@@ -214,6 +214,44 @@ public class ItemOrderingTest {
     }
 
     @Test
+    public void setMinDisplayed_min2MinRankingOfHighest_retainsMedium() {
+        Item[] itemPrep = getSampleItems();
+        Item
+                target = itemPrep[0],
+                mostSimilar = itemPrep[1],
+                kindaSimilar = itemPrep[2],
+                leastSimilar = itemPrep[3];
+        final int minRanking = new ItemRanker().rankSimilarity(target, mostSimilar);
+        HashMap<String, Item> map = new HashMap<>();
+        map.put("0", target);
+        map.put("1", mostSimilar);
+        map.put("2", kindaSimilar);
+        map.put("3", leastSimilar);
+        Provider<Map<String, Item>> provider = new Provider<Map<String, Item>>() {
+            @Override
+            public Map<String, Item> getValue() {
+                return map;
+            }
+        };
+        ItemOrdering ordering = new ItemOrdering(target, provider);
+        ordering.setMinRanking(minRanking);
+        CallbackCounter<List<Item>> counter = new CallbackCounter<>();
+        ordering.registerObserver(counter::signal);
+        // This is b/c registerObserver() automatically calls listeners initially.
+        counter.reset();
+
+
+        ordering.setMinDisplayed(2);
+
+
+        assertEquals(2, ordering.getValue().size());
+        assertFalse(ordering.getValue().contains(leastSimilar));
+        assertEquals(1, counter.getCallbackCount());
+        assertEquals(2, counter.getReturnValues().get(0).size());
+        assertFalse(counter.getReturnValues().get(0).contains(leastSimilar));
+    }
+
+    @Test
     public void listMethods_sampleSource_positiveResult() {
         Item target = createSampleTarget();
         Item mostSimilar = new Item("lot", "iron", "shield","iron", "shield","iron", "shield","iron", "shield","iron", "shield","iron", "shield","iron", "");

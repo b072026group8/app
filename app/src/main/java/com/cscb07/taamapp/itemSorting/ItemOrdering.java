@@ -30,21 +30,28 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
     private Item targetItem;
     @NonNull
     private final Provider<Map<String, Item>> itemProvider;
+    private int minDisplayed = 0;
     private int maxDisplayed = Integer.MAX_VALUE;
     private int minRanking = Integer.MIN_VALUE;
 
-    /** Get the max number of items displayed. */ public int getMaxDisplayed() { return maxDisplayed; }
-    /** Set the max number of items displayed. */
-    public void setMaxDisplayed(int maxDisplayed) {
-        if (maxDisplayed <= 0) throw new IllegalArgumentException("maxDisplayed must be positive");
-        int original = this.maxDisplayed;
-        this.maxDisplayed = maxDisplayed;
-        if (original == maxDisplayed)
+    /** Gets the min number of items to always display if possible. Takes precedence over minRanking. */ public int getMinDisplayed() { return minDisplayed; }
+    /** Sets the min number of items to always display if possible. Takes precedence over minRanking. Cannot be negative. */
+    public void setMinDisplayed(int minDisplayed) {
+        if (minDisplayed < 0) throw new IllegalArgumentException("minDisplayed must be nonnegative.");
+        this.minDisplayed = minDisplayed;
+        if (minDisplayed > maxDisplayed) {
+            setMaxDisplayed(minDisplayed);
             return;
-        if (original < maxDisplayed)
-            updateValue();
-        if (original > maxDisplayed)
-            onCollectionChange.onChange(itemProvider.getValue());
+        }
+        onCollectionChange.onChange(itemProvider.getValue());
+    }
+
+    /** Get the max number of items displayed. */ public int getMaxDisplayed() { return maxDisplayed; }
+    /** Set the max number of items displayed. Cannot be smaller than {@link ItemOrdering#getMinDisplayed}. */
+    public void setMaxDisplayed(int maxDisplayed) {
+        if (maxDisplayed < minDisplayed) throw new IllegalArgumentException("maxDisplayed cannot be smaller than minDisplayed");
+        this.maxDisplayed = maxDisplayed;
+        onCollectionChange.onChange(itemProvider.getValue());
     }
     /** Get the min ranking value required for an item to appear. */ public int getMinRanking() { return minRanking; }
     /** Set the min ranking value required for an item to appear. */
@@ -82,13 +89,21 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
                 continue;
             }
             int itemRanking = ranker.rankSimilarity(targetItem, item);
-            if (itemRanking >= minRanking) {
-                ranking.add(new ItemRanking(item, itemRanking));
-            }
+            ranking.add(new ItemRanking(item, itemRanking));
         }
         ranking.sort(ItemRanking.COMPARATOR);
-        updateValue();
+        trimItems();
     };
+
+    private void trimItems() {
+        for (int i = ranking.size() - 1; i >= minDisplayed; i--) {
+            if (ranking.get(i).getRank() < minRanking) {
+                ranking.remove(i);
+            }
+        }
+        updateValue();
+    }
+
 
     /** Gets the number of items in the ranking */
     @Override

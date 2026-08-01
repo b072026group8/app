@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ExpandedArtifactViewFragment extends Fragment{
+public class ExpandedArtifactViewFragment extends Fragment {
     private final String Tag = "ExpandedArtifactViewFragment";
     private FirebaseDatabase db;
     private DatabaseReference ref;
@@ -116,21 +117,78 @@ public class ExpandedArtifactViewFragment extends Fragment{
 
                 }
 
-            }
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("Firebase", "Error fetching artifact fields.", databaseError.toException());
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("Firebase", "Error fetching artifact fields.", databaseError.toException());
+                }
+            });
 
-    }
+        }
+
+
+        // Like/Unlike feature
+        CheckBox likeButton = view.findViewById(R.id.likeButton);
+        FirebaseUser acc = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = acc.getUid();
+
+        if (uid != null && lot != null) {
+            LikeManager likeManager = new LikeManager();
+
+            // User liked artifacts
+            likeManager.checkUserLikes(uid, lot, new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    likeButton.setChecked(snapshot.exists());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("Firebase", "Failed to load user liked artifacts", error.toException());
+                }
+            });
+
+            // Like count for artifacts
+            likeManager.likeCountUpdater(lot, new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Long count = snapshot.getValue(Long.class);
+
+                    // If the count is null, it means no one has liked the artifact yet.
+                    likeButton.setText(String.valueOf(count != null ? count : "0"));
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("Firebase", "Failed to load like count", error.toException());
+                }
+            });
+
+            // Like button toggled
+            likeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    // Guest can't like
+                    if (acc.isAnonymous()) {
+                        likeButton.setChecked(false);
+                        Toast.makeText(getContext(), "Please sign in to like artifacts", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Users and admins can like/unlike
+                    likeManager.toggleLike(uid, lot, likeButton.isChecked());
+                }
+            });
+        }
+
+
+        // Saved artifact feature
         ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
         saveArtifactButton.setClickable(false);
 
-        FirebaseUser acc = FirebaseAuth.getInstance().getCurrentUser();
-        if (acc != null) {
-            String uid = acc.getUid();
+        if (uid != null) {
             SavedArtifactWriter savedArtifactWriter = new SavedArtifactWriter();
             saveArtifactButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -156,11 +214,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     saveArtifactButton.setClickable(true);
-                    if (snapshot.exists()) {
-                        saveArtifactButton.setChecked(true);
-                    } else {
-                        saveArtifactButton.setChecked(false);
-                    }
+                    saveArtifactButton.setChecked(snapshot.exists());
                 }
 
                 @Override
@@ -169,6 +223,8 @@ public class ExpandedArtifactViewFragment extends Fragment{
                 }
             });
 
+
+            // Comments
             Button addComment = view.findViewById(R.id.addComment);
             EditText commentContent = view.findViewById(R.id.commentField);
             if (!acc.isAnonymous()) {
@@ -203,6 +259,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
                 });
             }
         }
+
         return view;
     }
 }

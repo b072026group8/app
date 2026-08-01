@@ -56,6 +56,16 @@ public class SignupFragment extends Fragment implements UserAuthentication {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        // Clear name, email and password fields if user clicks the back button
+        editTextName.setText("");
+        editTextEmail.setText("");
+        editTextPassword.setText("");
+    }
+
+    @Override
     public void showError(String m) {
         if (getContext() != null) {
             Toast.makeText(getContext(), m, Toast.LENGTH_SHORT).show();

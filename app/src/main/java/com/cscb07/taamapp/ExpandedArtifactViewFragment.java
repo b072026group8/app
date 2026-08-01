@@ -8,6 +8,7 @@ import com.cscb07.taamapp.util.ListStrategy;
 import com.cscb07.taamapp.util.Provider;
 import com.cscb07.taamapp.util.UpdateListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DataSnapshot;
@@ -22,7 +23,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -32,6 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class ExpandedArtifactViewFragment extends Fragment{
     private static final String Tag = "ExpandedArtifactViewFragment";
@@ -85,7 +89,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
         lot = args.getString("lotNumber");
             popBackId = args.getInt(ARG_POP_BACK_ID);
         ref = db.getReference("artifacts").child(lot);
-        Button deleteButton = view.findViewById(R.id.button);
+        Button deleteButton = view.findViewById(R.id.artifactDelete);
         TextView name = view.findViewById(R.id.name);
         TextView lotNum = view.findViewById(R.id.Lotnum);
         TextView description = view.findViewById(R.id.description);
@@ -101,6 +105,14 @@ public class ExpandedArtifactViewFragment extends Fragment{
         TextView accessionNumber = view.findViewById(R.id.accessionNumber);
         TextView notes = view.findViewById(R.id.notes);
             RecyclerView relatedItems = view.findViewById(R.id.relatedArtifactsList);
+            TextView culturalOriginHeader = view.findViewById(R.id.textView9);
+            TextView dimensionsHeader = view.findViewById(R.id.textView10);
+            TextView conditionReportHeader = view.findViewById(R.id.textView11);
+            TextView currentLocationHeader = view.findViewById(R.id.textView12);
+            TextView acquisitionMethodHeader = view.findViewById(R.id.textView13);
+            TextView provenanceHeader = view.findViewById(R.id.textView14);
+            TextView accessionNumberHeader = view.findViewById(R.id.textView15);
+            TextView notesHeader = view.findViewById(R.id.textView16);
 
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -128,6 +140,30 @@ public class ExpandedArtifactViewFragment extends Fragment{
 
                     relatedArtifactProvider = getOrderingFactory().getOrdering(item);
                     relatedArtifactProvider.registerObserver(relatedArtifactUpdateListener);
+                    if(!item.getCulturalOrigin().isEmpty()) {
+                        culturalOriginHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getDimensions().isEmpty()) {
+                        dimensionsHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getConditionReport().isEmpty()) {
+                        conditionReportHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getCurrentLocation().isEmpty()) {
+                        currentLocationHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getAcquisitionMethod().isEmpty()) {
+                        acquisitionMethodHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getProvenance().isEmpty()) {
+                        provenanceHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getAccessionNumber().isEmpty()) {
+                        accessionNumberHeader.setVisibility(View.VISIBLE);
+                    }
+                    if(!item.getNotes().isEmpty()) {
+                        notesHeader.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 @Override
@@ -165,8 +201,10 @@ public class ExpandedArtifactViewFragment extends Fragment{
 
         ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
         saveArtifactButton.setClickable(false);
-        String uid = FirebaseAuth.getInstance().getUid();
-        if (uid != null) {
+
+        FirebaseUser acc = FirebaseAuth.getInstance().getCurrentUser();
+        if (acc != null) {
+            String uid = acc.getUid();
             SavedArtifactWriter savedArtifactWriter = new SavedArtifactWriter();
             saveArtifactButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -204,6 +242,40 @@ public class ExpandedArtifactViewFragment extends Fragment{
                     Log.e(Tag, "listener cancelled", error.toException());
                 }
             });
+
+            Button addComment = view.findViewById(R.id.addComment);
+            EditText commentContent = view.findViewById(R.id.commentField);
+            if (!acc.isAnonymous()) {
+                List<Comment> commentList = new ArrayList<>();
+                CommentManager commentManager = new CommentManager(this.lot, uid, getContext(), commentList);
+                CommentAdapter adapter = new CommentAdapter(commentList, commentManager);
+                addComment.setVisibility(View.VISIBLE);
+                commentContent.setVisibility(View.VISIBLE);
+                ref = db.getReference("users/" + uid).child("name");
+                addComment.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (!commentContent.getText().toString().isBlank()) {
+                            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    String name = snapshot.getValue(String.class);
+                                    Comment comment = new Comment(uid, name, commentContent.getText().toString());
+                                    commentManager.addComment(comment);
+                                    adapter.notifyItemInserted(adapter.getItemCount() - 1);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e(Tag, "Error getting account name");
+                                }
+                            });
+                        } else {
+                            Toast.makeText(getContext(), "Comment cannot be empty.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
         }
         return view;
     }

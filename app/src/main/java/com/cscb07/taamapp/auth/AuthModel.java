@@ -30,12 +30,13 @@ public class AuthModel {
     }
 
     public void registerUser(String name, String email, String password) {
-        // Firebase authentication documentation
+        // Create account with name, email and password
         mAuth.createUserWithEmailAndPassword(email, password)  // Create user
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {  // Null check
@@ -69,7 +70,7 @@ public class AuthModel {
     }
 
     public void loginUser(String email, String password) {
-        // Firebase authentication documentation
+        // Login user with email and password
         mAuth.signInWithEmailAndPassword(email, password)  // Sign in
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -100,7 +101,7 @@ public class AuthModel {
 
     // Once guest accounts are created, they won't be deleted due to Identity Platform requiring firebase blaze plan
     public void createGuest() {
-        // Using firebase anonymous authentication
+        // Create guest account using firebase anonymous authentication
         mAuth.signInAnonymously()
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override

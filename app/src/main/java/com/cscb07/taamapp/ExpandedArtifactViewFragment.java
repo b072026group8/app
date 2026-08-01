@@ -37,7 +37,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
     if (args != null) {
         lot = args.getString("lotNumber");
         ref = db.getReference("artifacts").child(lot);
-        Button deleteButton = view.findViewById(R.id.button);
+        Button deleteButton = view.findViewById(R.id.artifactDelete);
         TextView name = view.findViewById(R.id.name);
         TextView lotNum = view.findViewById(R.id.Lotnum);
         TextView description = view.findViewById(R.id.description);

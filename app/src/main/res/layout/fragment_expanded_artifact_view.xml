@@ -19,15 +19,14 @@
         android:textColorLink="#9B0808"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/button2"
         android:layout_width="100dp"
         android:layout_height="48dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="4dp"
         android:backgroundTint="@color/lightgold"
         android:text="Edit"
         android:textColorLink="#A4680F"
@@ -320,7 +319,7 @@
         android:id="@+id/saveArtifactToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="20dp"
         android:layout_marginBottom="37dp"
         android:allowUndo="false"
         android:checked="false"
@@ -329,11 +328,9 @@
         android:lines="2"
         android:textOff="Add to\nCollection"
         android:textOn="Remove from\nCollection"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/expandedViewHomeButton"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
+        app:layout_constraintStart_toEndOf="@+id/likeButton" />
 
     <ImageButton
         android:id="@+id/expandedViewHomeButton"
@@ -348,24 +345,25 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollView3"
+        app:layout_constraintVertical_bias="0.45"
         app:srcCompat="@drawable/home_icon" />
 
     <CheckBox
         android:id="@+id/likeButton"
         android:layout_width="wrap_content"
         android:layout_height="67dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="32dp"
 
+        android:layout_marginStart="13dp"
+        android:layout_marginBottom="28dp"
         android:button="@null"
+
         android:drawableStart="@drawable/heart_selector"
         android:drawablePadding="5dp"
-
         android:includeFontPadding="false"
         android:textColor="@color/lightgold"
         android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/expandedViewHomeButton"
         app:useMaterialThemeColors="false" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

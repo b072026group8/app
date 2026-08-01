@@ -151,7 +151,7 @@ public class HomeFragment extends Fragment {
 
         buttonManageItems.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { loadFragment(new AddItemFragment());}
+            public void onClick(View v) { loadFragment(new EditArtifactFragment(null, new FireSupaDbEditorAccess()));}
         });
 
         if (user != null && !user.isAnonymous()) {

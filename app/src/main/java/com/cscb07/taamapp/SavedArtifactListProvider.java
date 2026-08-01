@@ -35,8 +35,6 @@ public class SavedArtifactListProvider extends Provider<List<Item>> {
      */
     public SavedArtifactListProvider(@NonNull Provider<Map<String, Item>> itemMapProvider, @NonNull String uid) {
         this(itemMapProvider.getValue(), uid);
-        itemMapProvider.registerObserver(map -> items = map);
-
         itemMapProvider.registerObserver(map -> {
             items = map;
             updateValue();
@@ -77,6 +75,11 @@ public class SavedArtifactListProvider extends Provider<List<Item>> {
     public void updateValue() {
         itemList.clear();
         for (String lotNumber : lotNumbers) {
+            Item item = items.get(lotNumber);
+            if (item == null) {
+                Log.w(TAG, "Received a lot number for a non-existent item.");
+                continue;
+            }
             itemList.add(items.get(lotNumber));
         }
         super.updateValue();

@@ -51,6 +51,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
+        Log.i(TAG, "binding view holder on index: " + position);
         Item item = itemList.get(position);
         holder.content.setOnClickListener(new View.OnClickListener() {
             @Override

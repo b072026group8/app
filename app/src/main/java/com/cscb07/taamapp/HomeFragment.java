@@ -67,9 +67,12 @@ public class HomeFragment extends Fragment {
      * Set default implementations to interfaces that are <b>unset</b>.
      */
     private void setMissingImplementations() {
-        if (itemMapProvider == null)
+        if (itemMapProvider == null) {
+            Log.i(Tag, "setting itemMapProvider to default instance");
             itemMapProvider = ItemMapProvider.getInstance();
+        }
         if (savedItemProvider == null) {
+            Log.i(Tag, "setting savedItemProvider to default instance");
             String uid;
             if (user == null || user.isAnonymous()) {
                 uid = "";

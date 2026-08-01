@@ -35,6 +35,10 @@ public class ItemMapProvider extends Provider<Map<String, Item>> {
         public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
             String lot = snapshot.getKey();
             Item item = snapshot.child("value").getValue(Item.class);
+            if (item == null) {
+                Log.w(TAG, "Getting artifact at " + lot + " gives a null instance");
+                return;
+            }
             itemMap.put(lot, item);
             updateValue();
         }

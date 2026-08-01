@@ -38,6 +38,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
+
 
 public class ExpandedArtifactViewFragment extends Fragment{
     private static final String Tag = "ExpandedArtifactViewFragment";
@@ -92,6 +95,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
             popBackId = args.getInt(ARG_POP_BACK_ID);
             ref = db.getReference("artifacts").child(lot);
             Button deleteButton = view.findViewById(R.id.artifactDelete);
+            ImageView imageView = view.findViewById(R.id.imageView5);
             TextView name = view.findViewById(R.id.name);
             TextView lotNum = view.findViewById(R.id.Lotnum);
             TextView description = view.findViewById(R.id.description);
@@ -139,6 +143,11 @@ public class ExpandedArtifactViewFragment extends Fragment{
                     provenance.setText(item.getProvenance());
                     accessionNumber.setText(item.getAccessionNumber());
                     notes.setText(item.getNotes());
+                    if (item.getImage() != null && !item.getImage().isEmpty()) {
+                        Glide.with(requireContext())
+                                .load(item.getImage())
+                                .into(imageView);
+                    }
 
                     relatedArtifactProvider = getOrderingFactory().getOrdering(item);
                     relatedArtifactProvider.registerObserver(relatedArtifactUpdateListener);

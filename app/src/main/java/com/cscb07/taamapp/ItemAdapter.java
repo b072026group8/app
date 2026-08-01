@@ -13,6 +13,8 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
+import com.bumptech.glide.Glide;
+import android.widget.ImageView;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
     private static final String TAG = "ItemAdapter";
@@ -70,6 +72,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         holder.textViewCategory.setText(item.getCategory());
         holder.textViewMaterial.setText(item.getMaterial());
         holder.textViewDynastyPeriod.setText(item.getDynastyPeriod());
+        Glide.with(holder.itemView.getContext())
+                .load(item.getImage())
+                .into(holder.imageView);
     }
 
     @Override
@@ -78,6 +83,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     }
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         CardView content;
+        ImageView imageView;
         TextView textViewName, textViewCategory, textViewMaterial, textViewDynastyPeriod;
 
         public ItemViewHolder(@NonNull View itemView) {
@@ -87,6 +93,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             textViewCategory = itemView.findViewById(R.id.textViewCategory);
             textViewMaterial = itemView.findViewById(R.id.textViewMaterial);
             textViewDynastyPeriod = itemView.findViewById(R.id.textViewDynastyPeriod);
+            imageView = itemView.findViewById(R.id.imageView);
         }
     }
 

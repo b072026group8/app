@@ -1,6 +1,7 @@
 package com.cscb07.taamapp;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DataSnapshot;
@@ -13,13 +14,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ExpandedArtifactViewFragment extends Fragment{
@@ -118,11 +124,13 @@ public class ExpandedArtifactViewFragment extends Fragment{
             }
         });
 
-        }
+    }
         ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
         saveArtifactButton.setClickable(false);
-        String uid = FirebaseAuth.getInstance().getUid();
-        if (uid != null) {
+
+        FirebaseUser acc = FirebaseAuth.getInstance().getCurrentUser();
+        if (acc != null) {
+            String uid = acc.getUid();
             SavedArtifactWriter savedArtifactWriter = new SavedArtifactWriter();
             saveArtifactButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -160,6 +168,40 @@ public class ExpandedArtifactViewFragment extends Fragment{
                     Log.e(Tag, "listener cancelled", error.toException());
                 }
             });
+
+            Button addComment = view.findViewById(R.id.addComment);
+            EditText commentContent = view.findViewById(R.id.commentField);
+            if (!acc.isAnonymous()) {
+                List<Comment> commentList = new ArrayList<>();
+                CommentManager commentManager = new CommentManager(this.lot, uid, getContext(), commentList);
+                CommentAdapter adapter = new CommentAdapter(commentList, commentManager);
+                addComment.setVisibility(View.VISIBLE);
+                commentContent.setVisibility(View.VISIBLE);
+                ref = db.getReference("users/" + uid).child("name");
+                addComment.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (!commentContent.getText().toString().isBlank()) {
+                            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    String name = snapshot.getValue(String.class);
+                                    Comment comment = new Comment(uid, name, commentContent.getText().toString());
+                                    commentManager.addComment(comment);
+                                    adapter.notifyItemInserted(adapter.getItemCount() - 1);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e(Tag, "Error getting account name");
+                                }
+                            });
+                        } else {
+                            Toast.makeText(getContext(), "Comment cannot be empty.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
         }
         return view;
     }

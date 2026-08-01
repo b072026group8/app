@@ -285,6 +285,24 @@
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
+            <Button
+                android:id="@+id/addComment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/lightgold"
+                android:text="@string/add_comment"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/commentField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/comment_hint"
+                android:inputType="textMultiLine"
+                android:textColor="@color/white"
+                android:textColorHint="@color/editor_hint"
+                android:visibility="gone" />
 
 
         </LinearLayout>

@@ -14,6 +14,7 @@ import java.util.Locale;
  * <p>Note: it is initially <b>empty</b>. Use {@link ItemFilterList#queryKeyword} to set items.
  */
 public class ItemFilterList extends ArrayList<Item> {
+    private final ItemRanker ranker = new ItemRanker();
     @NonNull
     private final List<Item> source;
     @NonNull
@@ -45,19 +46,7 @@ public class ItemFilterList extends ArrayList<Item> {
             return;
         }
         for(Item item : source) {
-            if (contains(item.getArtifactName(), query)
-                    || contains(item.getDescription(), query)
-                    || contains(item.getMaterial(), query)
-                    || contains(item.getCategory(), query)
-                    || contains(item.getDynastyPeriod(), query)
-                    || contains(item.getCulturalOrigin(), query)
-                    || contains(item.getDimensions(), query)
-                    || contains(item.getConditionReport(), query)
-                    || contains(item.getCurrentLocation(), query)
-                    || contains(item.getAcquisitionMethod(), query)
-                    || contains(item.getProvenance(), query)
-                    || contains(item.getAccessionNumber(), query)
-                    || contains(item.getNotes(), query)) {
+            if (ranker.artifactHasKeyword(item, query)) {
                 this.add(item);
             }
         }

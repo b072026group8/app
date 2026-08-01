@@ -67,6 +67,15 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
      * Will skip adding the target item to the ranking.
      */
     public ItemOrdering(@NonNull Item target, @NonNull Provider<Map<String, Item>> itemProvider) {
+        this(target, itemProvider, null);
+    }
+    public ItemOrdering(@NonNull Item target, @NonNull Provider<Map<String, Item>> itemProvider, @Nullable FilterSettings filterSettings) {
+        if (filterSettings != null) {
+            minDisplayed = filterSettings.minDisplayed;
+            maxDisplayed = filterSettings.maxDisplayed;
+            minRanking = filterSettings.minRanking;
+        }
+
         this.targetItem = target;
         this.itemProvider = itemProvider;
         int capacity = itemProvider.getValue().size();
@@ -77,6 +86,7 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
         ranking = new ArrayList<>(capacity);
         itemProvider.registerObserver(onCollectionChange);
     }
+
     @Override
     protected void finalize() {
         itemProvider.unregisterObserver(onCollectionChange);
@@ -282,6 +292,33 @@ public class ItemOrdering extends Provider<List<Item>> implements ReadonlyList<I
 
         public int getRank() {
             return rank;
+        }
+    }
+
+    public static final class FilterSettings {
+        private int minDisplayed = 0;
+        private int maxDisplayed = Integer.MAX_VALUE;
+        private int minRanking = Integer.MIN_VALUE;
+
+        /** Gets the min number of items to always display if possible. Takes precedence over minRanking. */ public int getMinDisplayed() { return minDisplayed; }
+        /** Sets the min number of items to always display if possible. Takes precedence over minRanking. Cannot be negative. */
+        public void setMinDisplayed(int minDisplayed) {
+            if (minDisplayed < 0) throw new IllegalArgumentException("minDisplayed must be nonnegative.");
+            this.minDisplayed = minDisplayed;
+            if (minDisplayed > maxDisplayed)
+                setMaxDisplayed(minDisplayed);
+        }
+
+        /** Get the max number of items displayed. */ public int getMaxDisplayed() { return maxDisplayed; }
+        /** Set the max number of items displayed. Cannot be smaller than {@link ItemOrdering#getMinDisplayed}. */
+        public void setMaxDisplayed(int maxDisplayed) {
+            if (maxDisplayed < minDisplayed) throw new IllegalArgumentException("maxDisplayed cannot be smaller than minDisplayed");
+            this.maxDisplayed = maxDisplayed;
+        }
+        /** Get the min ranking value required for an item to appear. */ public int getMinRanking() { return minRanking; }
+        /** Set the min ranking value required for an item to appear. */
+        public void setMinRanking(int minRanking) {
+            this.minRanking = minRanking;
         }
     }
 }

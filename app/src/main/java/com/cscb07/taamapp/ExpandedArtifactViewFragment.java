@@ -40,11 +40,11 @@ public class ExpandedArtifactViewFragment extends Fragment{
     private static OrderingFactory orderingFactory;
 
     /** Set the {@link OrderingFactory} instance to be used by <i>all</i> {@link ExpandedArtifactViewFragment} instances.*/
-    public static void setOrderingFactory(OrderingFactory factory) { orderingFactory = factory; }
+    public static void setOrderingFactory(@NonNull OrderingFactory factory) { orderingFactory = factory; }
     private static OrderingFactory getOrderingFactory() {
         if (orderingFactory == null) {
             Log.w(Tag, "OrderingFactory instance is null, setting to default instance");
-            orderingFactory = new DbOrderingFactory(ItemMapProvider.getInstance());
+            orderingFactory = new DbOrderingFactory(ItemMapProvider.getInstance(), 3, 8, 5);
         }
         return orderingFactory;
     }

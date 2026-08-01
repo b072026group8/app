@@ -160,7 +160,11 @@ public class HomeFragment extends Fragment {
         }
 
         artifactCardGrid.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        itemAdapter.setPopBackStackId(getParentFragmentManager().getBackStackEntryAt(getParentFragmentManager().getBackStackEntryCount() - 1).getId());
+        if (getParentFragmentManager().getBackStackEntryCount() > 0) {
+            itemAdapter.setPopBackStackId(getParentFragmentManager().getBackStackEntryAt(getParentFragmentManager().getBackStackEntryCount() - 1).getId());
+        } else {
+            Log.w(Tag, "No backstack entry, cannot give Id for views to pop back to.");
+        }
         artifactCardGrid.setAdapter(itemAdapter);
 
         searchBar.addTextChangedListener(new TextWatcher() {

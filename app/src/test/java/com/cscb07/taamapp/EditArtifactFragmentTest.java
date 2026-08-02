@@ -1,6 +1,6 @@
 package com.cscb07.taamapp;
 
-import com.cscb07.taamapp.util.TestLogger;
+import com.cscb07.taamapp.testutil.TestLogger;
 
 import android.text.Editable;
 import android.widget.EditText;

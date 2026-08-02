@@ -3,6 +3,7 @@ package com.cscb07.taamapp.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,11 @@ import java.util.ListIterator;
 public class ListStrategy<T> implements List<T> {
     @NonNull
     private List<T> list;
+    /** Creates a ListStrategy with some default empty list implementation. */
+    public ListStrategy() {
+        list = new ArrayList<>();
+    }
+    /** Creates a ListStrategy with the provided list as the starting implementation. */
     public ListStrategy(@NonNull List<T> list) {
         this.list = list;
     }

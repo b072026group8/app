@@ -1,7 +1,6 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -68,9 +67,12 @@ public class HomeFragment extends Fragment {
      * Set default implementations to interfaces that are <b>unset</b>.
      */
     private void setMissingImplementations() {
-        if (itemMapProvider == null)
-            itemMapProvider = new ItemMapProvider();
+        if (itemMapProvider == null) {
+            Log.i(Tag, "setting itemMapProvider to default instance");
+            itemMapProvider = ItemMapProvider.getInstance();
+        }
         if (savedItemProvider == null) {
+            Log.i(Tag, "setting savedItemProvider to default instance");
             String uid;
             if (user == null || user.isAnonymous()) {
                 uid = "";
@@ -172,6 +174,11 @@ public class HomeFragment extends Fragment {
         }
 
         artifactCardGrid.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        if (getParentFragmentManager().getBackStackEntryCount() > 0) {
+            itemAdapter.setPopBackStackId(getParentFragmentManager().getBackStackEntryAt(getParentFragmentManager().getBackStackEntryCount() - 1).getId());
+        } else {
+            Log.w(Tag, "No backstack entry, cannot give Id for views to pop back to.");
+        }
         artifactCardGrid.setAdapter(itemAdapter);
 
         searchBar.addTextChangedListener(new TextWatcher() {

@@ -21,6 +21,13 @@ import java.util.Map;
  */
 public class ItemMapProvider extends Provider<Map<String, Item>> {
     private static final String TAG = "ItemMapProvider";
+    private static ItemMapProvider instance;
+    public static ItemMapProvider getInstance() {
+        if (instance == null) {
+            instance = new ItemMapProvider();
+        }
+        return instance;
+    }
     private final Map<String, Item> itemMap = new HashMap<>();
     private final DatabaseReference ref;
     private final ChildEventListener dbListener = new ChildEventListener() {
@@ -28,6 +35,10 @@ public class ItemMapProvider extends Provider<Map<String, Item>> {
         public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
             String lot = snapshot.getKey();
             Item item = snapshot.child("value").getValue(Item.class);
+            if (item == null) {
+                Log.w(TAG, "Getting artifact at " + lot + " gives a null instance");
+                return;
+            }
             itemMap.put(lot, item);
             updateValue();
         }
@@ -56,6 +67,7 @@ public class ItemMapProvider extends Provider<Map<String, Item>> {
         }
     };
 
+    /** Creates a new instance. Prefer the singleton {@link ItemMapProvider#getInstance()} instead. */
     public ItemMapProvider() {
         ref = FirebaseDatabase.getInstance().getReference("artifacts");
         ref.addChildEventListener(dbListener);

@@ -15,6 +15,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -198,6 +200,49 @@ public class ExpandedArtifactViewFragment extends Fragment{
             adapter.setPopBackStackId(popBackId);
             relatedItems.setAdapter(adapter);
             relatedArtifactAdapter = adapter;
+
+        //delete functionality
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        deleteButton.setVisibility(View.GONE);
+
+        deleteButton.setOnClickListener(v -> {
+            new AlertDialog.Builder(getContext()).setTitle("Confirm deletion")
+                    .setMessage("Are you sure you want to delete this artifact?")
+                    .setNeutralButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                    .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            db.getReference("artifacts").child(lot).removeValue().addOnSuccessListener(unused -> {
+                                requireActivity().onBackPressed();
+                            });
+                        }
+                    }).show();
+
+
+        });
+
+        if(user != null && !user.isAnonymous()) {
+            DatabaseReference userref = db.getReference("users").child(user.getUid()).child("accountType");
+
+            userref.get().addOnSuccessListener(snapshot -> {
+
+                        String accountType = snapshot.getValue(String.class);
+
+                        if("admin".equals(accountType)) {
+                            deleteButton.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+
+        }
+
+
+
         }
 
         homeButton.setOnClickListener(v -> {

@@ -39,6 +39,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
@@ -201,27 +203,67 @@ public class ExpandedArtifactViewFragment extends Fragment{
             relatedItems.setAdapter(adapter);
             relatedArtifactAdapter = adapter;
 
-        //delete functionality
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        deleteButton.setVisibility(View.GONE);
+            //button visibility
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            deleteButton.setVisibility(View.GONE);
+            editButton.setVisibility(View.GONE);
+            if(user != null && !user.isAnonymous()) {
+                DatabaseReference userref = db.getReference("users").child(user.getUid()).child("accountType");
 
-        deleteButton.setOnClickListener(v -> {
-            new AlertDialog.Builder(getContext()).setTitle("Confirm deletion")
-                    .setMessage("Are you sure you want to delete this artifact?")
-                    .setNeutralButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            })
-                    .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            db.getReference("artifacts").child(lot).removeValue().addOnSuccessListener(unused -> {
-                                requireActivity().onBackPressed();
-                            });
-                        }
-                    }).show();
+                userref.get().addOnSuccessListener(snapshot -> {
+
+                    String accountType = snapshot.getValue(String.class);
+
+                    if("admin".equals(accountType)) {
+                        deleteButton.setVisibility(View.VISIBLE);
+                        editButton.setVisibility(View.VISIBLE);
+                    }
+                });
+
+
+            }
+
+            //delete functionality
+            deleteButton.setOnClickListener(v -> {
+                new AlertDialog.Builder(getContext()).setTitle("Confirm deletion")
+                        .setMessage("Are you sure you want to delete this artifact?")
+                        .setNeutralButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DatabaseReference root = db.getReference();
+                                root.get().addOnSuccessListener(snapshot -> {
+                                    Map<String, Object> deletes = new HashMap<>();
+                                    deletes.put("artifacts/" + lot, null);
+
+                                    DataSnapshot saved = snapshot.child("saved_collection");
+                                    for(DataSnapshot user: saved.getChildren()){
+                                        if(user.hasChild(lot)){
+                                            deletes.put("saved_collection/" + user.getKey() + "/" + lot, null);
+                                        }
+                                    }
+
+                                    DataSnapshot liked = snapshot.child("likedArtifacts");
+                                    for(DataSnapshot user: liked.getChildren()){
+                                        if(user.hasChild(lot)){
+                                            deletes.put("likedArtifacts/" + user.getKey() + "/" + lot, null);
+                                        }
+                                    }
+
+                                    root.updateChildren(deletes).addOnSuccessListener(unused -> {
+                                        getParentFragmentManager().popBackStack();
+                                    });
+
+                                });
+
+
+                            }
+                        }).show();
 
 
         });

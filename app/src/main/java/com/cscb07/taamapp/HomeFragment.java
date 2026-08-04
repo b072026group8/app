@@ -230,7 +230,7 @@ public class HomeFragment extends Fragment {
 
         if (fragmentManager.getBackStackEntryCount() > 0) {
             // Go to the first view in stack (login page) upon logging out
-            fragmentManager.popBackStack(fragmentManager.getBackStackEntryAt(0).getId(), 0);
+            fragmentManager.popBackStack();
         }
     }
 

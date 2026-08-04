@@ -99,6 +99,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
             popBackId = args.getInt(ARG_POP_BACK_ID);
             ref = db.getReference("artifacts").child(lot);
             Button deleteButton = view.findViewById(R.id.artifactDelete);
+            Button editButton = view.findViewById(R.id.editButton);
             ImageView imageView = view.findViewById(R.id.imageView5);
             TextView name = view.findViewById(R.id.name);
             TextView lotNum = view.findViewById(R.id.Lotnum);

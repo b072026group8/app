@@ -92,7 +92,10 @@ public class ExpandedArtifactViewFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_expanded_artifact_view, container,false);
         ImageButton homeButton = view.findViewById(R.id.expandedViewHomeButton);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = user == null ? null : user.getUid();
         db = FirebaseDatabase.getInstance();
+
         Bundle args = getArguments();
         if (args != null) {
             lot = args.getString("lotNumber");
@@ -205,7 +208,6 @@ public class ExpandedArtifactViewFragment extends Fragment{
             relatedArtifactAdapter = adapter;
 
             //button visibility
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             deleteButton.setVisibility(View.GONE);
             editButton.setVisibility(View.GONE);
             if(user != null && !user.isAnonymous()) {
@@ -267,25 +269,17 @@ public class ExpandedArtifactViewFragment extends Fragment{
                         }).show();
 
 
-        });
+            });
 
-        if(user != null && !user.isAnonymous()) {
-            DatabaseReference userref = db.getReference("users").child(user.getUid()).child("accountType");
-
-            userref.get().addOnSuccessListener(snapshot -> {
-
-                        String accountType = snapshot.getValue(String.class);
-
-                        if("admin".equals(accountType)) {
-                            deleteButton.setVisibility(View.VISIBLE);
-                        }
-                    });
-
-
-        }
-
-
-
+            if(user != null && !user.isAnonymous()) {
+                DatabaseReference userref = db.getReference("users").child(user.getUid()).child("accountType");
+                userref.get().addOnSuccessListener(snapshot -> {
+                    String accountType = snapshot.getValue(String.class);
+                    if("admin".equals(accountType)) {
+                        deleteButton.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
         }
 
         homeButton.setOnClickListener(v -> {
@@ -298,14 +292,8 @@ public class ExpandedArtifactViewFragment extends Fragment{
             }
         });
 
-        ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
-        saveArtifactButton.setClickable(false);
-
-
         // Like/Unlike feature
         CheckBox likeButton = view.findViewById(R.id.likeButton);
-        FirebaseUser acc = FirebaseAuth.getInstance().getCurrentUser();
-        String uid = acc.getUid();
 
         if (uid != null && lot != null) {
             LikeManager likeManager = new LikeManager();
@@ -345,7 +333,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
                 public void onClick(View view) {
 
                     // Guest can't like
-                    if (acc.isAnonymous()) {
+                    if (user.isAnonymous()) {
                         likeButton.setChecked(false);
                         Toast.makeText(getContext(), "Please sign in to like artifacts", Toast.LENGTH_SHORT).show();
                         return;
@@ -359,8 +347,10 @@ public class ExpandedArtifactViewFragment extends Fragment{
 
 
         // Saved artifact feature
-
-        if (uid != null) {
+        ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
+        saveArtifactButton.setClickable(false);
+        saveArtifactButton.setVisibility(View.INVISIBLE);
+        if (user != null && !user.isAnonymous()) {
             SavedArtifactWriter savedArtifactWriter = new SavedArtifactWriter();
             saveArtifactButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -387,11 +377,13 @@ public class ExpandedArtifactViewFragment extends Fragment{
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     saveArtifactButton.setClickable(true);
                     saveArtifactButton.setChecked(snapshot.exists());
+                    saveArtifactButton.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Log.e(Tag, "listener cancelled", error.toException());
+                    Toast.makeText(getContext(), "Error: failed to enable save artifact button", Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -399,7 +391,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
             // Comments
             Button addComment = view.findViewById(R.id.addComment);
             EditText commentContent = view.findViewById(R.id.commentField);
-            if (!acc.isAnonymous()) {
+            if (!user.isAnonymous()) {
                 List<Comment> commentList = new ArrayList<>();
                 CommentManager commentManager = new CommentManager(this.lot, uid, getContext(), commentList);
                 CommentAdapter adapter = new CommentAdapter(commentList, commentManager);

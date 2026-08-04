@@ -102,6 +102,10 @@ public class ExpandedArtifactViewFragment extends Fragment{
         }
         if (args != null) {
             lot = args.getString("lotNumber");
+            if (lot == null) {
+                Log.wtf(Tag, "arg 'lotNumber' is not set, giving default of empty string.", new Exception());
+                lot = "";
+            }
             popBackId = args.getInt(ARG_POP_BACK_ID);
             ref = db.getReference("artifacts").child(lot);
             Button deleteButton = view.findViewById(R.id.artifactDelete);

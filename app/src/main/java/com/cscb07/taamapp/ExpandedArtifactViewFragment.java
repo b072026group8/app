@@ -234,42 +234,42 @@ public class ExpandedArtifactViewFragment extends Fragment{
             // delete button functionality
             deleteButton.setOnClickListener(v -> {
                 new AlertDialog.Builder(getContext()).setTitle("Confirm deletion")
-                    .setMessage("Are you sure you want to delete this artifact?")
-                    .setNeutralButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            DatabaseReference root = db.getReference();
-                            root.get().addOnSuccessListener(snapshot -> {
-                                Map<String, Object> deletes = new HashMap<>();
-                                deletes.put("artifacts/" + lot, null);
+                        .setMessage("Are you sure you want to delete this artifact?")
+                        .setNeutralButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DatabaseReference root = db.getReference();
+                                root.get().addOnSuccessListener(snapshot -> {
+                                    Map<String, Object> deletes = new HashMap<>();
+                                    deletes.put("artifacts/" + lot, null);
 
-                                DataSnapshot saved = snapshot.child("saved_collection");
-                                for(DataSnapshot user: saved.getChildren()){
-                                    if(user.hasChild(lot)){
-                                        deletes.put("saved_collection/" + user.getKey() + "/" + lot, null);
+                                    DataSnapshot saved = snapshot.child("saved_collection");
+                                    for(DataSnapshot user: saved.getChildren()){
+                                        if(user.hasChild(lot)){
+                                            deletes.put("saved_collection/" + user.getKey() + "/" + lot, null);
+                                        }
                                     }
-                                }
 
-                                DataSnapshot liked = snapshot.child("likedArtifacts");
-                                for(DataSnapshot user: liked.getChildren()){
-                                    if(user.hasChild(lot)){
-                                        deletes.put("likedArtifacts/" + user.getKey() + "/" + lot, null);
+                                    DataSnapshot liked = snapshot.child("likedArtifacts");
+                                    for(DataSnapshot user: liked.getChildren()){
+                                        if(user.hasChild(lot)){
+                                            deletes.put("likedArtifacts/" + user.getKey() + "/" + lot, null);
+                                        }
                                     }
-                                }
 
-                                root.updateChildren(deletes).addOnSuccessListener(unused -> {
-                                    getParentFragmentManager().popBackStack();
+                                    root.updateChildren(deletes).addOnSuccessListener(unused -> {
+                                        getParentFragmentManager().popBackStack();
+                                    });
+
                                 });
-
-                            });
-                        }
-                    }).show();
+                            }
+                        }).show();
             });
 
             if(user != null && !user.isAnonymous()) {

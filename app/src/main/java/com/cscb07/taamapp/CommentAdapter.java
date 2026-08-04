@@ -31,12 +31,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         Comment comment = this.commentList.get(position);
-        if (comment.getUserUid().equals(this.commentManager.getUserUid()) || this.commentManager.getAccountType().equals(AccountType.ADMIN)) {
+        holder.deleteButton.setVisibility(View.GONE);
+        if (comment.getUserUid().equals(this.commentManager.getUserUid()) || AccountType.ADMIN.equals(this.commentManager.getAccountType())) {
             holder.deleteButton.setVisibility(View.VISIBLE);
             holder.deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+//todo: add delete here
                 }
             });
         }
@@ -46,7 +47,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     @Override
     public int getItemCount() {
-        return 0;
+        return commentList.size();
     }
 
     public static class CommentViewHolder extends RecyclerView.ViewHolder {

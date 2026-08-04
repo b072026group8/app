@@ -310,6 +310,21 @@
                 android:textColor="@color/white"
                 android:textColorHint="@color/editor_hint"
                 android:visibility="gone" />
+            <TextView
+                android:id="@+id/commentHead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Comments: "
+                android:textColor="@color/lightgold"
+                android:textSize="24sp"
+                android:visibility="visible" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/commentSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:visibility="visible" />
 
 
         </LinearLayout>

@@ -91,6 +91,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_expanded_artifact_view, container,false);
         ImageButton homeButton = view.findViewById(R.id.expandedViewHomeButton);
         db = FirebaseDatabase.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Bundle args = getArguments();
         if (args != null) {
             lot = args.getString("lotNumber");
@@ -202,7 +203,6 @@ public class ExpandedArtifactViewFragment extends Fragment{
             relatedArtifactAdapter = adapter;
 
         //delete functionality
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         deleteButton.setVisibility(View.GONE);
 
         deleteButton.setOnClickListener(v -> {
@@ -356,35 +356,50 @@ public class ExpandedArtifactViewFragment extends Fragment{
             // Comments
             Button addComment = view.findViewById(R.id.addComment);
             EditText commentContent = view.findViewById(R.id.commentField);
-            if (!acc.isAnonymous()) {
-                List<Comment> commentList = new ArrayList<>();
-                CommentManager commentManager = new CommentManager(this.lot, uid, getContext(), commentList);
-                CommentAdapter adapter = new CommentAdapter(commentList, commentManager);
-                addComment.setVisibility(View.VISIBLE);
-                commentContent.setVisibility(View.VISIBLE);
-                ref = db.getReference("users/" + uid).child("name");
-                addComment.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (!commentContent.getText().toString().isBlank()) {
-                            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    String name = snapshot.getValue(String.class);
-                                    Comment comment = new Comment(uid, name, commentContent.getText().toString());
-                                    commentManager.addComment(comment);
-                                    adapter.notifyItemInserted(adapter.getItemCount() - 1);
-                                }
+            RecyclerView commentSection = view.findViewById(R.id.commentSection);
+            if(user!=null) {
+                DatabaseReference userref = db.getReference("users").child(user.getUid()).child("accountType");
+                userref.get().addOnSuccessListener(snapshot -> {
+                    String accountType = snapshot.getValue(String.class);
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.e(Tag, "Error getting account name");
-                                }
-                            });
-                        } else {
-                            Toast.makeText(getContext(), "Comment cannot be empty.", Toast.LENGTH_SHORT).show();
+
+
+                List<Comment> commentList = new ArrayList<>();
+                CommentManager commentManager = new CommentManager(this.lot, uid, accountType, getContext(), commentList);
+                CommentAdapter adapter = new CommentAdapter(commentList, commentManager);
+                commentSection.setLayoutManager(new LinearLayoutManager(requireContext()));
+                commentSection.setAdapter(adapter);
+                commentManager.loadComments(adapter);
+                adapter.notifyDataSetChanged();
+
+                if (!acc.isAnonymous()) {
+                    addComment.setVisibility(View.VISIBLE);
+                    commentContent.setVisibility(View.VISIBLE);
+                    ref = db.getReference("users/" + uid).child("name");
+                    addComment.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (!commentContent.getText().toString().isBlank()) {
+                                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        String name = snapshot.getValue(String.class);
+                                        Comment comment = new Comment(uid, name, commentContent.getText().toString());
+                                        commentManager.addComment(comment);
+                                        adapter.notifyItemInserted(adapter.getItemCount() - 1);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.e(Tag, "Error getting account name");
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(getContext(), "Comment cannot be empty.", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
+                    });
+                }
                 });
             }
         }

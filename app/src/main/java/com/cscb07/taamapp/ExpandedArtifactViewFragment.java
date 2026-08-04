@@ -97,6 +97,9 @@ public class ExpandedArtifactViewFragment extends Fragment{
         db = FirebaseDatabase.getInstance();
 
         Bundle args = getArguments();
+        if (args == null) {
+            Log.wtf(Tag, "getArguments() was null, it shouldn't be null", new Exception());
+        }
         if (args != null) {
             lot = args.getString("lotNumber");
             popBackId = args.getInt(ARG_POP_BACK_ID);
@@ -191,7 +194,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
                 }
             });
 
-
+            // setup related items layout.
             relatedItems.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
             int widthOverride;
             if (getContext() == null) {
@@ -207,14 +210,14 @@ public class ExpandedArtifactViewFragment extends Fragment{
             relatedItems.setAdapter(adapter);
             relatedArtifactAdapter = adapter;
 
-            //button visibility
+
+            // delete/edit button visibility
             deleteButton.setVisibility(View.GONE);
             editButton.setVisibility(View.GONE);
             if(user != null && !user.isAnonymous()) {
                 DatabaseReference userref = db.getReference("users").child(user.getUid()).child("accountType");
 
                 userref.get().addOnSuccessListener(snapshot -> {
-
                     String accountType = snapshot.getValue(String.class);
 
                     if("admin".equals(accountType)) {
@@ -222,53 +225,47 @@ public class ExpandedArtifactViewFragment extends Fragment{
                         editButton.setVisibility(View.VISIBLE);
                     }
                 });
-
-
             }
 
-            //delete functionality
+            // delete button functionality
             deleteButton.setOnClickListener(v -> {
                 new AlertDialog.Builder(getContext()).setTitle("Confirm deletion")
-                        .setMessage("Are you sure you want to delete this artifact?")
-                        .setNeutralButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DatabaseReference root = db.getReference();
-                                root.get().addOnSuccessListener(snapshot -> {
-                                    Map<String, Object> deletes = new HashMap<>();
-                                    deletes.put("artifacts/" + lot, null);
+                    .setMessage("Are you sure you want to delete this artifact?")
+                    .setNeutralButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DatabaseReference root = db.getReference();
+                            root.get().addOnSuccessListener(snapshot -> {
+                                Map<String, Object> deletes = new HashMap<>();
+                                deletes.put("artifacts/" + lot, null);
 
-                                    DataSnapshot saved = snapshot.child("saved_collection");
-                                    for(DataSnapshot user: saved.getChildren()){
-                                        if(user.hasChild(lot)){
-                                            deletes.put("saved_collection/" + user.getKey() + "/" + lot, null);
-                                        }
+                                DataSnapshot saved = snapshot.child("saved_collection");
+                                for(DataSnapshot user: saved.getChildren()){
+                                    if(user.hasChild(lot)){
+                                        deletes.put("saved_collection/" + user.getKey() + "/" + lot, null);
                                     }
+                                }
 
-                                    DataSnapshot liked = snapshot.child("likedArtifacts");
-                                    for(DataSnapshot user: liked.getChildren()){
-                                        if(user.hasChild(lot)){
-                                            deletes.put("likedArtifacts/" + user.getKey() + "/" + lot, null);
-                                        }
+                                DataSnapshot liked = snapshot.child("likedArtifacts");
+                                for(DataSnapshot user: liked.getChildren()){
+                                    if(user.hasChild(lot)){
+                                        deletes.put("likedArtifacts/" + user.getKey() + "/" + lot, null);
                                     }
+                                }
 
-                                    root.updateChildren(deletes).addOnSuccessListener(unused -> {
-                                        getParentFragmentManager().popBackStack();
-                                    });
-
+                                root.updateChildren(deletes).addOnSuccessListener(unused -> {
+                                    getParentFragmentManager().popBackStack();
                                 });
 
-
-                            }
-                        }).show();
-
-
+                            });
+                        }
+                    }).show();
             });
 
             if(user != null && !user.isAnonymous()) {
@@ -282,6 +279,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
             }
         }
 
+        // home button functionality.
         homeButton.setOnClickListener(v -> {
             Log.i(Tag, "popping back to " + popBackId);
             if (popBackId < 0) {
@@ -294,7 +292,6 @@ public class ExpandedArtifactViewFragment extends Fragment{
 
         // Like/Unlike feature
         CheckBox likeButton = view.findViewById(R.id.likeButton);
-
         if (uid != null && lot != null) {
             LikeManager likeManager = new LikeManager();
 

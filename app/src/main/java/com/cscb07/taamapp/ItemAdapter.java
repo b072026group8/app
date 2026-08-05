@@ -28,6 +28,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         this.popBackStackId = popBackStackId;
     }
 
+    private int itemLimit = 0;  // Let 0 represent "All"
+
     public ItemAdapter(List<Item> itemList, FragmentTransaction transaction) {
         this(itemList, transaction, null);
     }
@@ -79,7 +81,19 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
     @Override
     public int getItemCount() {
-        return itemList.size();
+        if (itemList == null) return 0;
+        int total = itemList.size();
+
+        // If item limit set is 0 or its greater than total amt of artifacts, than display all
+        if (itemLimit <= 0 || itemLimit >= total) {
+            return total;
+        }
+        return itemLimit;
+    }
+
+    public void setItemLimit(int limit) {
+        this.itemLimit = limit;
+        notifyDataSetChanged();
     }
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         CardView content;

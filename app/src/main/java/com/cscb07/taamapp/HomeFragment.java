@@ -1,5 +1,7 @@
 package com.cscb07.taamapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -51,6 +53,7 @@ public class HomeFragment extends Fragment {
     private FirebaseUser user;
     private final String[] paginationValues = {"All", "12", "24"};
     private int paginationIndex = 0;
+
 
     /**
      * Creates an instance with default implementations of interfaces.
@@ -109,6 +112,8 @@ public class HomeFragment extends Fragment {
         itemAdapter = new ItemAdapter(searchList, getParentFragmentManager().beginTransaction());
         db = FirebaseDatabase.getInstance();
 
+        loadPaginationPref(buttonPagination);
+
         itemMapProvider.registerObserver(map -> {
             itemList.clear();
             itemList.addAll(map.values());
@@ -143,6 +148,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 updatePagination();
                 buttonPagination.setText(paginationValues[paginationIndex]);
+                savePagination(paginationIndex);
             }
         });
 
@@ -250,6 +256,41 @@ public class HomeFragment extends Fragment {
         paginationIndex++;
         if (paginationIndex > 2) {
             paginationIndex = 0;
+        }
+
+        updateLimitInItemAdaptor();
+    }
+
+    private void loadPaginationPref(Button buttonPagination) {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+        paginationIndex = sharedPreferences.getInt("pagination_index", 0);
+
+        if (buttonPagination != null) {
+            buttonPagination.setText(paginationValues[paginationIndex]);
+        }
+
+        // Actually display the correct amount of items
+        updateLimitInItemAdaptor();
+    }
+
+    private void savePagination(int paginationIndex) {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putInt("pagination_index", paginationIndex);
+        editor.apply();
+    }
+
+    private void updateLimitInItemAdaptor() {
+        String selectedPagination = paginationValues[paginationIndex];
+        int limit = 0;
+
+        if (!selectedPagination.equals("All")) {
+            limit = Integer.parseInt(selectedPagination);
+        }
+
+        if (itemAdapter != null) {
+            itemAdapter.setItemLimit(limit);
         }
     }
 

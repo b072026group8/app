@@ -14,6 +14,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
+/**
+ * Manages loading, adding, and deleting comments for a specific artifact.
+ * Uses Firebase Realtime Database to store and retrieve comment data.
+ */
 public class CommentManager {
     private final String TAG = "Comment Manager";
     private final FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -23,6 +27,15 @@ public class CommentManager {
     private Context context;
     private List<Comment> commentList;
 
+    /**
+     * Creates a manager for comments belonging to a specific artifact.
+     *
+     * @param lotNum the artifact lot number
+     * @param userUid the current user's unique ID
+     * @param accountType the current user's account type
+     * @param context the context used to display messages
+     * @param commentList the list that stores loaded comments
+     */
     public CommentManager(String lotNum, String userUid, String accountType, Context context, List<Comment> commentList) {
         this.lotNum = lotNum;
         this.userUid = userUid;
@@ -30,6 +43,13 @@ public class CommentManager {
         this.context = context;
         this.commentList = commentList;
     }
+
+    /**
+     * Loads comments for the artifact from Firebase and updates the adapter.
+     * The comment list is refreshed whenever the database data changes.
+     *
+     * @param adapter the adapter displaying the comments
+     */
     public void loadComments(CommentAdapter adapter) {
         DatabaseReference ref = db.getReference("artifacts/" + lotNum + "/comments");
         ref.addValueEventListener(new ValueEventListener() {
@@ -50,6 +70,12 @@ public class CommentManager {
         });
     }
 
+    /**
+     * Adds a new comment to the artifact's comment collection in Firebase.
+     * A unique database ID is generated and assigned to the comment.
+     *
+     * @param comment the comment to add
+     */
     public void addComment(Comment comment) {
         DatabaseReference ref = db.getReference("artifacts/" + lotNum + "/comments");
         String id = ref.push().getKey();
@@ -68,6 +94,11 @@ public class CommentManager {
         }
     }
 
+    /**
+     * Deletes a comment from the artifact's comment collection in Firebase.
+     *
+     * @param comment the comment to delete
+     */
     public void deleteComment(Comment comment) {
         db.getReference("artifacts").child(lotNum).child("comments").child(comment.getId()).removeValue()
                 .addOnSuccessListener(unused -> {
@@ -78,10 +109,20 @@ public class CommentManager {
                 });
     }
 
+    /**
+     * Returns the unique ID of the current user.
+     *
+     * @return the current user's unique ID
+     */
     public String getUserUid() {
         return this.userUid;
     }
 
+    /**
+     * Returns the current user's account type.
+     *
+     * @return the current user's account type
+     */
     public String getAccountType() {
         return this.accountType;
     }

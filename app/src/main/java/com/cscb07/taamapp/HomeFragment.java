@@ -39,6 +39,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Displays the application's home screen.
+ * Allows users to browse, search, and manage museum artifacts.
+ */
 public class HomeFragment extends Fragment {
     private final String Tag = "HomeFragment";
     private ItemAdapter itemAdapter;
@@ -90,6 +94,16 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /**
+     * Creates and initializes the home screen.
+     * Sets up the RecyclerView, search functionality,
+     * and user interface controls.
+     *
+     * @param inflater the layout inflater
+     * @param container the parent view group
+     * @param savedInstanceState the saved instance state
+     * @return the inflated home screen view
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -274,6 +288,11 @@ public class HomeFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
+    /**
+     * Replaces the current fragment with another fragment.
+     *
+     * @param fragment the fragment to display
+     */
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
@@ -281,6 +300,9 @@ public class HomeFragment extends Fragment {
         transaction.commit();
     }
 
+    /**
+     * Signs out the current user and returns to the login screen.
+     */
     private void logout() {
         FirebaseAuth.getInstance().signOut();
         System.out.println("User logged out");
@@ -368,7 +390,12 @@ public class HomeFragment extends Fragment {
             itemAdapter.updateListDisplay(pageSlice);
         }
     }
-
+  
+    /**
+     * Displays a short toast message.
+     *
+     * @param m the message to display
+     */
     public void showToast(String m) {
         if (getContext() != null) {
             Toast.makeText(getContext(), m, Toast.LENGTH_SHORT).show();

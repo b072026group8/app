@@ -16,6 +16,10 @@ import java.util.List;
 import com.bumptech.glide.Glide;
 import android.widget.ImageView;
 
+/**
+ * RecyclerView adapter for displaying artifact cards on the home screen.
+ * Handles binding artifact information and navigating to the expanded artifact view.
+ */
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
     private static final String TAG = "ItemAdapter";
     private List<Item> itemList;
@@ -28,15 +32,36 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         this.popBackStackId = popBackStackId;
     }
 
+    /**
+     * Creates an adapter for displaying artifacts.
+     *
+     * @param itemList the list of artifacts to display
+     * @param transaction the fragment transaction used for navigation
+     */
     public ItemAdapter(List<Item> itemList, FragmentTransaction transaction) {
         this(itemList, transaction, null);
     }
+
+    /**
+     * Creates an adapter with optional layout overrides.
+     *
+     * @param itemList the list of artifacts to display
+     * @param transaction the fragment transaction used for navigation
+     * @param layoutOverrides optional layout overrides for artifact cards
+     */
     public ItemAdapter(List<Item> itemList, FragmentTransaction transaction, @Nullable LayoutOverrides layoutOverrides) {
         this.itemList = itemList;
         this.transaction = transaction;
         this.layoutOverrides = layoutOverrides;
     }
 
+    /**
+     * Creates a ViewHolder for displaying an artifact card.
+     *
+     * @param parent the parent view group
+     * @param viewType the type of view
+     * @return a new ItemViewHolder
+     */
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -51,6 +76,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         return new ItemViewHolder(view);
     }
 
+    /**
+     * Binds artifact data to a ViewHolder and handles navigation
+     * to the expanded artifact view when an artifact is selected.
+     *
+     * @param holder the ViewHolder to bind
+     * @param position the position of the artifact
+     */
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         Log.i(TAG, "binding view holder on index: " + position);
@@ -77,6 +109,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
                 .into(holder.imageView);
     }
 
+    /**
+     * Returns the number of artifacts currently displayed.
+     *
+     * @return the number of artifacts
+     */
     @Override
     public int getItemCount() {
         return itemList != null ? itemList.size() : 0;
@@ -86,11 +123,21 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         this.itemList = updatedList;
         notifyDataSetChanged();
     }
+
+    /**
+     * ViewHolder containing the views used to display
+     * a single artifact card.
+     */
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         CardView content;
         ImageView imageView;
         TextView textViewName, textViewCategory, textViewMaterial, textViewDynastyPeriod;
 
+        /**
+         * Creates a ViewHolder for an artifact card.
+         *
+         * @param itemView the artifact card view
+         */
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             content = itemView.findViewById(R.id.content);

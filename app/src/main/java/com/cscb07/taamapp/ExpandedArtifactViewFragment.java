@@ -396,7 +396,12 @@ public class ExpandedArtifactViewFragment extends Fragment{
                 List<Comment> commentList = new ArrayList<>();
                 CommentManager commentManager = new CommentManager(this.lot, uid, accountType, getContext(), commentList);
                 CommentAdapter adapter = new CommentAdapter(commentList, commentManager);
-                commentSection.setLayoutManager(new LinearLayoutManager(requireContext()));
+                commentSection.setLayoutManager(new LinearLayoutManager(requireContext()){
+                    @Override
+                    public boolean supportsPredictiveItemAnimations() {
+                        return false;
+                    }
+                });
                 commentSection.setAdapter(adapter);
                 commentManager.loadComments(adapter);
                 adapter.notifyDataSetChanged();

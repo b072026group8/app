@@ -269,34 +269,34 @@ public class ExpandedArtifactViewFragment extends Fragment{
                                 });
                             }
                         }).show();
-        });
-
-
-        //edit functionality
-        editButton.setOnClickListener(v -> {
-            ref = db.getReference("artifacts").child(lot);
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    DataSnapshot data = snapshot.child("value");
-                    Item item = data.getValue(Item.class);
-                    if (item == null) {
-                        Log.e(Tag, "Could not find item for lot: " + lot);
-                        return;
-                    }
-                    EditArtifactFragment editFragment = new EditArtifactFragment(item, new FireSupaDbEditorAccess());
-
-                    getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, editFragment).addToBackStack(null).commit();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.e("Firebase", "Error fetching artifact fields.", databaseError.toException());
-                }
-
             });
-        });
-    }
+
+
+            //edit functionality
+            editButton.setOnClickListener(v -> {
+                ref = db.getReference("artifacts").child(lot);
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        DataSnapshot data = snapshot.child("value");
+                        Item item = data.getValue(Item.class);
+                        if (item == null) {
+                            Log.e(Tag, "Could not find item for lot: " + lot);
+                            return;
+                        }
+                        EditArtifactFragment editFragment = new EditArtifactFragment(item, new FireSupaDbEditorAccess());
+
+                        getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, editFragment).addToBackStack(null).commit();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("Firebase", "Error fetching artifact fields.", databaseError.toException());
+                    }
+
+                });
+            });
+        }
 
         // home button functionality.
         homeButton.setOnClickListener(v -> {

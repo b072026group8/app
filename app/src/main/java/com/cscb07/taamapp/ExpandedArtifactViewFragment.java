@@ -297,7 +297,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
             });
         }
 
-            homeButton.setOnClickListener(v -> {
+        homeButton.setOnClickListener(v -> {
                 Log.i(Tag, "popping back to " + popBackId);
                 if (popBackId < 0) {
                     Log.w(Tag, "popBackId isn't set, popping back 1 state by default (was: " + popBackId + ")");

@@ -2,6 +2,7 @@ package com.cscb07.taamapp;
 
 import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 
+import com.cscb07.taamapp.auth.AccountType;
 import com.cscb07.taamapp.itemSorting.DbOrderingFactory;
 import com.cscb07.taamapp.itemSorting.OrderingFactory;
 import com.cscb07.taamapp.util.ListStrategy;
@@ -165,28 +166,28 @@ public class ExpandedArtifactViewFragment extends Fragment{
 
                     relatedArtifactProvider = getOrderingFactory().getOrdering(item);
                     relatedArtifactProvider.registerObserver(relatedArtifactUpdateListener);
-                    if(!item.getCulturalOrigin().isEmpty()) {
+                    if (!item.getCulturalOrigin().isEmpty()) {
                         culturalOriginHeader.setVisibility(View.VISIBLE);
                     }
-                    if(!item.getDimensions().isEmpty()) {
+                    if (!item.getDimensions().isEmpty()) {
                         dimensionsHeader.setVisibility(View.VISIBLE);
                     }
-                    if(!item.getConditionReport().isEmpty()) {
+                    if (!item.getConditionReport().isEmpty()) {
                         conditionReportHeader.setVisibility(View.VISIBLE);
                     }
-                    if(!item.getCurrentLocation().isEmpty()) {
+                    if (!item.getCurrentLocation().isEmpty()) {
                         currentLocationHeader.setVisibility(View.VISIBLE);
                     }
-                    if(!item.getAcquisitionMethod().isEmpty()) {
+                    if (!item.getAcquisitionMethod().isEmpty()) {
                         acquisitionMethodHeader.setVisibility(View.VISIBLE);
                     }
-                    if(!item.getProvenance().isEmpty()) {
+                    if (!item.getProvenance().isEmpty()) {
                         provenanceHeader.setVisibility(View.VISIBLE);
                     }
-                    if(!item.getAccessionNumber().isEmpty()) {
+                    if (!item.getAccessionNumber().isEmpty()) {
                         accessionNumberHeader.setVisibility(View.VISIBLE);
                     }
-                    if(!item.getNotes().isEmpty()) {
+                    if (!item.getNotes().isEmpty()) {
                         notesHeader.setVisibility(View.VISIBLE);
                     }
                 }
@@ -201,7 +202,7 @@ public class ExpandedArtifactViewFragment extends Fragment{
             relatedItems.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
             int widthOverride;
             if (getContext() == null) {
-                widthOverride = (int)(relatedArtifactViewWidth * 3);
+                widthOverride = (int) (relatedArtifactViewWidth * 3);
                 Log.w(Tag, "context is null, can't properly convert width override. Using approximation of: " + widthOverride);
             } else {
                 widthOverride = (int) TypedValue.applyDimension(COMPLEX_UNIT_DIP, relatedArtifactViewWidth, getContext().getResources().getDisplayMetrics());
@@ -216,13 +217,13 @@ public class ExpandedArtifactViewFragment extends Fragment{
             // delete/edit button visibility
             deleteButton.setVisibility(View.GONE);
             editButton.setVisibility(View.GONE);
-            if(user != null && !user.isAnonymous()) {
+            if (user != null && !user.isAnonymous()) {
                 DatabaseReference userref = db.getReference("users").child(user.getUid()).child("accountType");
 
                 userref.get().addOnSuccessListener(snapshot -> {
                     String accountType = snapshot.getValue(String.class);
 
-                    if("admin".equals(accountType)) {
+                    if (AccountType.ADMIN.equals(accountType)) {
                         deleteButton.setVisibility(View.VISIBLE);
                         editButton.setVisibility(View.VISIBLE);
                     }
@@ -248,15 +249,15 @@ public class ExpandedArtifactViewFragment extends Fragment{
                                     deletes.put("artifacts/" + lot, null);
 
                                     DataSnapshot saved = snapshot.child("saved_collection");
-                                    for(DataSnapshot user: saved.getChildren()){
-                                        if(user.hasChild(lot)){
+                                    for (DataSnapshot user : saved.getChildren()) {
+                                        if (user.hasChild(lot)) {
                                             deletes.put("saved_collection/" + user.getKey() + "/" + lot, null);
                                         }
                                     }
 
                                     DataSnapshot liked = snapshot.child("likedArtifacts");
-                                    for(DataSnapshot user: liked.getChildren()){
-                                        if(user.hasChild(lot)){
+                                    for (DataSnapshot user : liked.getChildren()) {
+                                        if (user.hasChild(lot)) {
                                             deletes.put("likedArtifacts/" + user.getKey() + "/" + lot, null);
                                         }
                                     }
@@ -268,18 +269,34 @@ public class ExpandedArtifactViewFragment extends Fragment{
                                 });
                             }
                         }).show();
-            });
+        });
 
-            if(user != null && !user.isAnonymous()) {
-                DatabaseReference userref = db.getReference("users").child(user.getUid()).child("accountType");
-                userref.get().addOnSuccessListener(snapshot -> {
-                    String accountType = snapshot.getValue(String.class);
-                    if("admin".equals(accountType)) {
-                        deleteButton.setVisibility(View.VISIBLE);
+
+        //edit functionality
+        editButton.setOnClickListener(v -> {
+            ref = db.getReference("artifacts").child(lot);
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    DataSnapshot data = snapshot.child("value");
+                    Item item = data.getValue(Item.class);
+                    if (item == null) {
+                        Log.e(Tag, "Could not find item for lot: " + lot);
+                        return;
                     }
-                });
-            }
-        }
+                    EditArtifactFragment editFragment = new EditArtifactFragment(item, new FireSupaDbEditorAccess());
+
+                    getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, editFragment).addToBackStack(null).commit();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("Firebase", "Error fetching artifact fields.", databaseError.toException());
+                }
+
+            });
+        });
+    }
 
         // home button functionality.
         homeButton.setOnClickListener(v -> {
@@ -325,7 +342,6 @@ public class ExpandedArtifactViewFragment extends Fragment{
                     Log.e("Firebase", "Failed to load like count", error.toException());
                 }
             });
-
             // Like button toggled
             likeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -369,7 +385,6 @@ public class ExpandedArtifactViewFragment extends Fragment{
                 }
             });
             saveArtifactButton.setClickable(false);
-
             SavedArtifactReader reader = SavedArtifactReader.getInstance(uid);
             reader.addOnSavedArtifactChangedListener(lot, new ValueEventListener() {
                 @Override
@@ -391,20 +406,18 @@ public class ExpandedArtifactViewFragment extends Fragment{
             Button addComment = view.findViewById(R.id.addComment);
             EditText commentContent = view.findViewById(R.id.commentField);
             RecyclerView commentSection = view.findViewById(R.id.commentSection);
-            if(user != null) {
+            if (user != null) {
                 DatabaseReference userref = db.getReference("users").child(user.getUid()).child("accountType");
                 userref.get().addOnSuccessListener(snapshot -> {
                     String accountType = snapshot.getValue(String.class);
 
 
-
-                List<Comment> commentList = new ArrayList<>();
-                CommentManager commentManager = new CommentManager(this.lot, uid, accountType, getContext(), commentList);
-                CommentAdapter adapter = new CommentAdapter(commentList, commentManager);
-                commentSection.setLayoutManager(new LinearLayoutManager(requireContext()));
-                commentSection.setAdapter(adapter);
-                commentManager.loadComments(adapter);
-                adapter.notifyDataSetChanged();
+                    List<Comment> commentList = new ArrayList<>();
+                    CommentManager commentManager = new CommentManager(this.lot, uid, accountType, getContext(), commentList);
+                    CommentAdapter adapter = new CommentAdapter(commentList, commentManager);
+                    commentSection.setLayoutManager(new LinearLayoutManager(requireContext()));
+                    commentSection.setAdapter(adapter);
+                    commentManager.loadComments(adapter);
 
                 if (!user.isAnonymous()) {
                     addComment.setVisibility(View.VISIBLE);
@@ -420,20 +433,19 @@ public class ExpandedArtifactViewFragment extends Fragment{
                                         String name = snapshot.getValue(String.class);
                                         Comment comment = new Comment(uid, name, commentContent.getText().toString());
                                         commentManager.addComment(comment);
-                                        adapter.notifyItemInserted(adapter.getItemCount() - 1);
                                     }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.e(Tag, "Error getting account name");
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(getContext(), "Comment cannot be empty.", Toast.LENGTH_SHORT).show();
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Log.e(Tag, "Error getting account name");
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(getContext(), "Comment cannot be empty.", Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        }
-                    });
-                }
+                        });
+                    }
                 });
             }
         }

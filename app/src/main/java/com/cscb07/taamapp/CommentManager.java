@@ -69,7 +69,13 @@ public class CommentManager {
     }
 
     public void deleteComment(Comment comment) {
-
+        db.getReference("artifacts").child(lotNum).child("comments").child(comment.getId()).removeValue()
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(context, "Comment deleted.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Failed to delete comment.", Toast.LENGTH_SHORT).show();
+                });
     }
 
     public String getUserUid() {

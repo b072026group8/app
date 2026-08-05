@@ -37,7 +37,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             holder.deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//todo: add delete here
+                    commentManager.deleteComment(comment);
                 }
             });
         }

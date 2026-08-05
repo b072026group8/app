@@ -419,21 +419,21 @@ public class ExpandedArtifactViewFragment extends Fragment{
                 commentSection.setAdapter(adapter);
                 commentManager.loadComments(adapter);
 
-            if (!user.isAnonymous()) {
-                addComment.setVisibility(View.VISIBLE);
-                commentContent.setVisibility(View.VISIBLE);
-                ref = db.getReference("users/" + uid).child("name");
-                addComment.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (!commentContent.getText().toString().isBlank()) {
-                            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    String name = snapshot.getValue(String.class);
-                                    Comment comment = new Comment(uid, name, commentContent.getText().toString());
-                                    commentManager.addComment(comment);
-                                }
+                if (!user.isAnonymous()) {
+                    addComment.setVisibility(View.VISIBLE);
+                    commentContent.setVisibility(View.VISIBLE);
+                    ref = db.getReference("users/" + uid).child("name");
+                    addComment.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (!commentContent.getText().toString().isBlank()) {
+                                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        String name = snapshot.getValue(String.class);
+                                        Comment comment = new Comment(uid, name, commentContent.getText().toString());
+                                        commentManager.addComment(comment);
+                                    }
 
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {

@@ -12,6 +12,13 @@ public interface DbEditorAccess {
     public String getUniqueLotNumber();
 
     /**
+     * checks if lotNumber is a Lot number currently in use in the database.
+     * @param lotNumber The Lot number to be checked.
+     * @return true if the Lot number is in use, false otherwise
+     */
+    public boolean isLotNumberUnique(String lotNumber);
+
+    /**
      * Attempt to edit the item in the database with the matching Lot number, and return whether
      * the operation was successful.
      * @param item The item to edit.

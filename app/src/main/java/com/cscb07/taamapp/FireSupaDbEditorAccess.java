@@ -52,6 +52,27 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
     }
 
     @Override
+    public boolean isLotNumberUnique(String lotNumber) {
+        final boolean[] result = {true};
+        dbRef.child(lotNumber).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                result[0] = snapshot.exists();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error checking if lot number is in use.");
+            }
+        });
+        if (!result[0]) {
+            removeAddedKey();
+            addedItemRef = dbRef.child(lotNumber);
+        }
+        return result[0];
+    }
+
+    @Override
     public DbEditorAccessResult editItem(Item item) {
         Log.d(TAG, "Editing item, LOT: " + item.getLotNumber());
         if (addChangeListener != null && addChangeListener.wasChanged()) {

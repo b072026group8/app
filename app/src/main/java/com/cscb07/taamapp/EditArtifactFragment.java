@@ -1,6 +1,7 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -179,6 +180,7 @@ public class EditArtifactFragment extends Fragment {
 
         } else {
             Item initial = initialItem;
+            editTextLotNumber.setRawInputType(InputType.TYPE_NULL);
             editTextLotNumber.setText(initial.getLotNumber());
             editTextName.setText(initial.getArtifactName());
             editTextArtifactDescription.setText(initial.getDescription());
@@ -249,6 +251,13 @@ public class EditArtifactFragment extends Fragment {
         );
     }
      boolean validateFields() {
+        if (editTextLotNumber.getText().toString().trim().isEmpty()) {
+            errorEmptyField("Lot Number");
+            return false;
+        } else if (dbAccess.isLotNumberUnique(editTextLotNumber.getText().toString().trim())) {
+            Toast.makeText(getContext(), "Lot number is not unique.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         if (editTextName.getText().toString().trim().isEmpty()) {
             errorEmptyField("Name");
             return false;

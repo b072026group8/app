@@ -23,12 +23,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     @Nullable
     private LayoutOverrides layoutOverrides;
     private int popBackStackId = -1;
+    private int itemLimit = 0;  // Let 0 represent "All"
     public int getPopBackStackId() { return popBackStackId; }
     public void setPopBackStackId(int popBackStackId) {
         this.popBackStackId = popBackStackId;
     }
-
-    private int itemLimit = 0;  // Let 0 represent "All"
 
     public ItemAdapter(List<Item> itemList, FragmentTransaction transaction) {
         this(itemList, transaction, null);

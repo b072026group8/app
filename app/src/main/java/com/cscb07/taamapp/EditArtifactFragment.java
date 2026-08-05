@@ -1,7 +1,9 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -139,6 +141,18 @@ public class EditArtifactFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_edit_artifact, container, false);
         imageUploader = new SupabaseImageUploader(requireContext());
         editTextLotNumber = view.findViewById(R.id.textViewLotNumber);
+        editTextLotNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                dbAccess.changeLotNumber(editable.toString());
+            }
+        });
         editTextName = view.findViewById(R.id.editTextName);
         editTextArtifactDescription = view.findViewById(R.id.editTextArtifactDescription);
         editTextCulturalOrigin = view.findViewById(R.id.editTextCulturalOrigin);
@@ -254,7 +268,7 @@ public class EditArtifactFragment extends Fragment {
         if (editTextLotNumber.getText().toString().trim().isEmpty()) {
             errorEmptyField("Lot Number");
             return false;
-        } else if (dbAccess.isLotNumberUnique(editTextLotNumber.getText().toString().trim())) {
+        } else if (dbAccess.isLotNumberUnique()) {
             Toast.makeText(getContext(), "Lot number is not unique.", Toast.LENGTH_SHORT).show();
             return false;
         }

@@ -17,7 +17,7 @@
 
         <TextView
             android:id="@+id/textView3"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Lot #: "
@@ -25,13 +25,16 @@
             android:textColor="@color/lightgold"
             android:textSize="24sp" />
 
-        <TextView
+        <EditText
             android:id="@+id/textViewLotNumber"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="Enter Lot Number..."
+            android:inputType="text"
             android:textColor="@color/lightgold"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 

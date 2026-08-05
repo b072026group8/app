@@ -36,8 +36,8 @@ public class EditArtifactFragmentInstrumentedTest {
         try (FragmentScenario<EditArtifactFragment> scenario = FragmentScenario.launch(EditArtifactFragment.class)) {
 
             scenario.onFragment(f -> {
-                assertNotNull(f.textViewLotNumber);
-                assertTrue(f.textViewLotNumber.getText().length() > 0);
+                assertNotNull(f.editTextLotNumber);
+                assertTrue(f.editTextLotNumber.getText().length() > 0);
                 assertNotNull(f.editTextName);
                 assertNotNull(f.editTextArtifactDescription);
                 assertNotNull(f.spinnerArtifactCategory);
@@ -93,7 +93,7 @@ public class EditArtifactFragmentInstrumentedTest {
             scenario.onFragment(f -> {
 
 
-                assertEquals(inputItem.getLotNumber(), f.textViewLotNumber.getText());
+                assertEquals(inputItem.getLotNumber(), f.editTextLotNumber.getText());
                 assertEquals(inputItem.getDescription(), f.editTextArtifactDescription.getText().toString());
                 assertEquals(inputItem.getCategory(), f.getSpinnerCategory());
                 assertEquals(inputItem.getMaterial(), f.getSpinnerMaterial());
@@ -172,7 +172,7 @@ public class EditArtifactFragmentInstrumentedTest {
             scenario.onFragment(f -> {
 
 
-                assertEquals(someLot, f.textViewLotNumber.getText().toString());
+                assertEquals(someLot, f.editTextLotNumber.getText().toString());
             });
         }
     }
@@ -239,7 +239,7 @@ public class EditArtifactFragmentInstrumentedTest {
             };
             try (FragmentScenario<EditArtifactFragment> scenario = FragmentScenario.launch(EditArtifactFragment.class, null, factory)){
                 scenario.onFragment(f -> {
-                    item.setLotNumber(f.textViewLotNumber.getText().toString());
+                    item.setLotNumber(f.editTextLotNumber.getText().toString());
                     f.editTextName.setText(item.getArtifactName());
                     f.editTextName.setText(item.getArtifactName());
                     f.editTextArtifactDescription.setText(item.getDescription());

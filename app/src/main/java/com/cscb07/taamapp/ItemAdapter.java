@@ -79,7 +79,12 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
     @Override
     public int getItemCount() {
-        return itemList.size();
+        return itemList != null ? itemList.size() : 0;
+    }
+
+    public void updateListDisplay(List<Item> updatedList) {
+        this.itemList = updatedList;
+        notifyDataSetChanged();
     }
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         CardView content;

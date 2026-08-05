@@ -1,5 +1,7 @@
 package com.cscb07.taamapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -49,6 +51,10 @@ public class HomeFragment extends Fragment {
     private FirebaseDatabase db;
     private DatabaseReference itemsRef;
     private FirebaseUser user;
+    private final String[] paginationValues = {"All", "12", "24"};
+    private int paginationIndex = 0;
+    private int currentPage = 0;
+
 
     /**
      * Creates an instance with default implementations of interfaces.
@@ -92,6 +98,9 @@ public class HomeFragment extends Fragment {
         Button buttonRecyclerView = view.findViewById(R.id.buttonFilterSaved);
         Button buttonManageItems = view.findViewById(R.id.buttonManageItems);
         Button buttonLogout = view.findViewById(R.id.buttonLogout);
+        Button buttonPagination = view.findViewById(R.id.buttonPagination);
+        Button buttonLeft = view.findViewById(R.id.buttonLeft);
+        Button buttonRight = view.findViewById(R.id.buttonRight);
         RecyclerView artifactCardGrid = view.findViewById(R.id.artifactCardGrid);
         EditText searchBar = view.findViewById(R.id.homeSearchEditText);
 
@@ -103,8 +112,10 @@ public class HomeFragment extends Fragment {
         savedItemList = savedItemProvider.getValue();
         displayItemList = new ListStrategy<>(itemList);
         searchList = new ItemFilterList(displayItemList);
-        itemAdapter = new ItemAdapter(searchList, getParentFragmentManager().beginTransaction());
+        itemAdapter = new ItemAdapter(new ArrayList<>(), getParentFragmentManager().beginTransaction());
         db = FirebaseDatabase.getInstance();
+
+        loadPaginationPref(buttonPagination);
 
         itemMapProvider.registerObserver(map -> {
             itemList.clear();
@@ -112,7 +123,8 @@ public class HomeFragment extends Fragment {
 
             if (displayItemList.getListStrategy() == itemList) {
                 searchList.requery();
-                itemAdapter.notifyDataSetChanged();
+                currentPage = 0;
+                slicePage();
             }
         });
 
@@ -122,7 +134,8 @@ public class HomeFragment extends Fragment {
             if (displayItemList.getListStrategy() == previousList) {
                 displayItemList.setListStrategy(list);
                 searchList.requery();
-                itemAdapter.notifyDataSetChanged();
+                currentPage = 0;
+                slicePage();
             }
         });
 
@@ -131,6 +144,53 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 logout();
+            }
+        });
+
+        // Pagination Button for artifacts
+        buttonPagination.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updatePagination();
+                currentPage = 0;
+                slicePage();
+                buttonPagination.setText(paginationValues[paginationIndex]);
+                savePagination(paginationIndex);
+            }
+        });
+
+        // Left page Button
+        buttonLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentPage > 0) {
+                    currentPage--;
+                    slicePage();
+                } else {
+                    showToast("Already on first page!");
+                }
+            }
+        });
+
+        // Right page Button
+        buttonRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int limit = getPageLimit();
+                if (limit <= 0) {
+                    showToast("Showing all items. No more to show!");
+                    return;
+                }
+
+                int totalItems = getCurrentItemList().size();
+                int maxPages = (int) Math.ceil((double)totalItems / limit); // Display more pages than les
+
+                if (currentPage < maxPages - 1) {
+                    currentPage++;
+                    slicePage();
+                } else {
+                    showToast("No more items to show.");
+                }
             }
         });
 
@@ -145,7 +205,8 @@ public class HomeFragment extends Fragment {
                     displayItemList.setListStrategy(itemList);
                 }
                 searchList.requery();
-                itemAdapter.notifyDataSetChanged();
+                currentPage = 0;
+                slicePage();
             }
         });
 
@@ -189,7 +250,8 @@ public class HomeFragment extends Fragment {
                 String query = editable.toString().trim();
                 Log.d(Tag, "new search query: " + query);
                 searchList.queryKeyword(query);
-                itemAdapter.notifyDataSetChanged();
+                currentPage = 0;
+                slicePage();
             }
         });
 
@@ -231,6 +293,79 @@ public class HomeFragment extends Fragment {
         if (fragmentManager.getBackStackEntryCount() > 0) {
             // Go to the first view in stack (login page) upon logging out
             fragmentManager.popBackStack();
+        }
+    }
+
+
+    //Calling this method automatically cycles to the next pagination setting. All -> 12 -> 24 -> ...
+    private void updatePagination() {
+        paginationIndex++;
+        if (paginationIndex > paginationValues.length - 1) {
+            paginationIndex = 0;
+        }
+
+        // Update the amt of items on display
+        slicePage();
+    }
+
+
+    //Retrieve saved pagination value, and update the button and the actual amount of items on display
+    private void loadPaginationPref(Button buttonPagination) {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+        paginationIndex = sharedPreferences.getInt("pagination_index", 0);
+
+        if (buttonPagination != null) {
+            buttonPagination.setText(paginationValues[paginationIndex]);
+        }
+
+        // Actually display the correct amount of items
+        slicePage();
+    }
+
+    //Save the current pagination setting using sharedPreferences
+    private void savePagination(int paginationIndex) {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putInt("pagination_index", paginationIndex);
+        editor.apply();
+    }
+
+    private int getPageLimit() {
+        String selectedPagination = paginationValues[paginationIndex];
+        int limit = 0;
+
+        if (selectedPagination.equals("All")) {
+            return 0;
+        }
+        return Integer.parseInt(selectedPagination);
+    }
+
+    private List<Item> getCurrentItemList() {
+        return searchList;
+    }
+    private void slicePage() {
+        List<Item> fullList = getCurrentItemList();
+
+        int limit = getPageLimit();
+        List<Item> pageSlice;
+
+        // Limit set to all, or the current limit setting is big enough to support all artifacts
+        if (limit <= 0 || limit >= fullList.size()) {
+            pageSlice = new ArrayList<>(fullList);
+        } else {
+             int start = currentPage * limit;
+             int end = Math.min(start + limit, fullList.size());
+
+             if (start < fullList.size()) {
+                 pageSlice = new ArrayList<>(fullList.subList(start, end));
+             } else {
+                 pageSlice = new ArrayList<>();
+             }
+        }
+
+        if (itemAdapter != null) {
+            itemAdapter.updateListDisplay(pageSlice);
         }
     }
 

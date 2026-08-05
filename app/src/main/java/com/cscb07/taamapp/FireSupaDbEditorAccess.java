@@ -16,6 +16,7 @@ import com.google.firebase.database.ValueEventListener;
  */
 public class FireSupaDbEditorAccess implements DbEditorAccess{
     public static final String TAG = "FireSupaDbEditorAccess";
+    private boolean isUnique;
     private final FirebaseDatabase db;
     private final DatabaseReference dbRef;
     private final String subFieldPath = "value";
@@ -25,6 +26,7 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
     private AddedItemChangeListener addChangeListener = null;
 
     public FireSupaDbEditorAccess() {
+        isUnique = false;
         db = FirebaseDatabase.getInstance();
         dbRef = db.getReference("artifacts/");
     }
@@ -39,12 +41,14 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
             addedItemRef.removeEventListener(addChangeListener);
         }
 
+        isUnique = false;
         addedItemRef = null;
         addChangeListener = null;
     }
     @Override
     public String getUniqueLotNumber() {
         removeAddedKey();
+        isUnique = true;
         addedItemRef = dbRef.push();
         Log.i(TAG, "Adding item - created key: " + addedItemRef.getKey());
 
@@ -52,12 +56,13 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
     }
 
     @Override
-    public boolean isLotNumberUnique(String lotNumber) {
-        final boolean[] result = {true};
-        dbRef.child(lotNumber).addListenerForSingleValueEvent(new ValueEventListener() {
+    public void changeLotNumber(String lotNumber) {
+        removeAddedKey();
+        addedItemRef = dbRef.child(lotNumber);
+        addedItemRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                result[0] = snapshot.exists();
+                isUnique = snapshot.exists();
             }
 
             @Override
@@ -65,11 +70,10 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
                 Log.e(TAG, "Error checking if lot number is in use.");
             }
         });
-        if (!result[0]) {
-            removeAddedKey();
-            addedItemRef = dbRef.child(lotNumber);
-        }
-        return result[0];
+    }
+    @Override
+    public boolean isLotNumberUnique() {
+        return isUnique;
     }
 
     @Override

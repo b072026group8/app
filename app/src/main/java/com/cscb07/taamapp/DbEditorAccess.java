@@ -12,11 +12,15 @@ public interface DbEditorAccess {
     public String getUniqueLotNumber();
 
     /**
-     * checks if lotNumber is a Lot number currently in use in the database.
-     * @param lotNumber The Lot number to be checked.
+     * changes currently reserved Lot number to lotNumber
+     * @param lotNumber The Lot number to be changed to
+     */
+    public void changeLotNumber(String lotNumber);
+    /**
+     * checks if reserved lotNumber is a Lot number currently in use in the database.
      * @return true if the Lot number is in use, false otherwise
      */
-    public boolean isLotNumberUnique(String lotNumber);
+    public boolean isLotNumberUnique();
 
     /**
      * Attempt to edit the item in the database with the matching Lot number, and return whether

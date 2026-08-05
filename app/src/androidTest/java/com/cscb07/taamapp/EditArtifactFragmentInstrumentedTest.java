@@ -157,6 +157,11 @@ public class EditArtifactFragmentInstrumentedTest {
             public String getUniqueLotNumber() {
                 return someLot;
             }
+
+            @Override
+            public void changeLotNumber(String lotNumber) {}
+            @Override
+            public boolean isLotNumberUnique() {return false;}
             @Override public DbEditorAccessResult editItem(Item item) { throw new RuntimeException("Shouldn't run"); }
             @Override public void cancelAdd(String lotNumber) { }
         };

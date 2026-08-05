@@ -266,161 +266,158 @@ public class ExpandedArtifactViewFragment extends Fragment{
 
                             }
                         }).show();
+        });
 
+
+        //edit functionality
+        editButton.setOnClickListener(v -> {
+            ref = db.getReference("artifacts").child(lot);
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    DataSnapshot data = snapshot.child("value");
+                    Item item = data.getValue(Item.class);
+                    if (item == null) {
+                        Log.e(Tag, "Could not find item for lot: " + lot);
+                        return;
+                    }
+                    EditArtifactFragment editFragment = new EditArtifactFragment(item, new FireSupaDbEditorAccess());
+
+                    getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, editFragment).addToBackStack(null).commit();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("Firebase", "Error fetching artifact fields.", databaseError.toException());
+                }
 
             });
+        });
+    }
+
+    homeButton.setOnClickListener(v -> {
+            Log.i(Tag, "popping back to " + popBackId);
+            if (popBackId < 0) {
+                Log.w(Tag, "popBackId isn't set, popping back 1 state by default (was: " + popBackId + ")");
+                getParentFragmentManager().popBackStack();
+            } else {
+                getParentFragmentManager().popBackStack(popBackId, 0 /* don't pop target as well. */);
+            }
+        });
+
+        ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
+        saveArtifactButton.setClickable(false);
 
 
-            //edit functionality
-            editButton.setOnClickListener(v -> {
-                ref = db.getReference("artifacts").child(lot);
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        DataSnapshot data = snapshot.child("value");
-                        Item item = data.getValue(Item.class);
-                        if (item == null) {
-                            Log.e(Tag, "Could not find item for lot: " + lot);
-                            return;
-                        }
-                        EditArtifactFragment editFragment = new EditArtifactFragment(item, new FireSupaDbEditorAccess());
+        // Like/Unlike feature
+        CheckBox likeButton = view.findViewById(R.id.likeButton);
+        FirebaseUser acc = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = acc.getUid();
 
-                        getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, editFragment).addToBackStack(null).commit();
-                    }
+        if (uid != null && lot != null) {
+            LikeManager likeManager = new LikeManager();
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e("Firebase", "Error fetching artifact fields.", databaseError.toException());
-                    }
+            // User liked artifacts
+            likeManager.checkUserLikes(uid, lot, new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    likeButton.setChecked(snapshot.exists());
+                }
 
-                });
-            });
-        }
-
-            homeButton.setOnClickListener(v -> {
-                Log.i(Tag, "popping back to " + popBackId);
-                if (popBackId < 0) {
-                    Log.w(Tag, "popBackId isn't set, popping back 1 state by default (was: " + popBackId + ")");
-                    getParentFragmentManager().popBackStack();
-                } else {
-                    getParentFragmentManager().popBackStack(popBackId, 0 /* don't pop target as well. */);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("Firebase", "Failed to load user liked artifacts", error.toException());
                 }
             });
 
-            ToggleButton saveArtifactButton = view.findViewById(R.id.saveArtifactToggle);
+            // Like count for artifacts
+            likeManager.likeCountUpdater(lot, new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Long count = snapshot.getValue(Long.class);
+
+                    // If the count is null, it means no one has liked the artifact yet.
+                    likeButton.setText(String.valueOf(count != null ? count : "0"));
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("Firebase", "Failed to load like count", error.toException());
+                }
+            });
+
+            // Like button toggled
+            likeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    // Guest can't like
+                    if (acc.isAnonymous()) {
+                        likeButton.setChecked(false);
+                        Toast.makeText(getContext(), "Please sign in to like artifacts", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Users and admins can like/unlike
+                    likeManager.toggleLike(uid, lot, likeButton.isChecked());
+                }
+            });
+        }
+
+
+        // Saved artifact feature
+
+        if (uid != null) {
+            SavedArtifactWriter savedArtifactWriter = new SavedArtifactWriter();
+            saveArtifactButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ToggleButton instance = (ToggleButton) view;
+                    if (uid == null) {
+                        Log.w(Tag, "Null user, 'saved artifact' button shouldn't be accessible");
+                        return;
+                    }
+                    if (instance.isChecked()) {
+                        Log.i(Tag, "adding artifact " + lot + " to user's collection: " + uid);
+                        savedArtifactWriter.addSavedArtifact(uid, lot);
+                    } else {
+                        Log.i(Tag, "removing artifact " + lot + " from user's collection: " + uid);
+                        savedArtifactWriter.removeSavedArtifact(uid, lot);
+                    }
+                }
+            });
             saveArtifactButton.setClickable(false);
+            SavedArtifactReader reader = SavedArtifactReader.getInstance(uid);
+            reader.addOnSavedArtifactChangedListener(lot, new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    saveArtifactButton.setClickable(true);
+                    saveArtifactButton.setChecked(snapshot.exists());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e(Tag, "listener cancelled", error.toException());
+                }
+            });
 
 
-            // Like/Unlike feature
-            CheckBox likeButton = view.findViewById(R.id.likeButton);
-            FirebaseUser acc = FirebaseAuth.getInstance().getCurrentUser();
-            String uid = acc.getUid();
-
-            if (uid != null && lot != null) {
-                LikeManager likeManager = new LikeManager();
-
-                // User liked artifacts
-                likeManager.checkUserLikes(uid, lot, new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        likeButton.setChecked(snapshot.exists());
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("Firebase", "Failed to load user liked artifacts", error.toException());
-                    }
-                });
-
-                // Like count for artifacts
-                likeManager.likeCountUpdater(lot, new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Long count = snapshot.getValue(Long.class);
-
-                        // If the count is null, it means no one has liked the artifact yet.
-                        likeButton.setText(String.valueOf(count != null ? count : "0"));
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("Firebase", "Failed to load like count", error.toException());
-                    }
-                });
-
-                // Like button toggled
-                likeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        // Guest can't like
-                        if (acc.isAnonymous()) {
-                            likeButton.setChecked(false);
-                            Toast.makeText(getContext(), "Please sign in to like artifacts", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        // Users and admins can like/unlike
-                        likeManager.toggleLike(uid, lot, likeButton.isChecked());
-                    }
-                });
-            }
+            // Comments
+            Button addComment = view.findViewById(R.id.addComment);
+            EditText commentContent = view.findViewById(R.id.commentField);
+            RecyclerView commentSection = view.findViewById(R.id.commentSection);
+            if (user != null) {
+                DatabaseReference userref = db.getReference("users").child(user.getUid()).child("accountType");
+                userref.get().addOnSuccessListener(snapshot -> {
+                    String accountType = snapshot.getValue(String.class);
 
 
-            // Saved artifact feature
-
-            if (uid != null) {
-                SavedArtifactWriter savedArtifactWriter = new SavedArtifactWriter();
-                saveArtifactButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        ToggleButton instance = (ToggleButton) view;
-                        if (uid == null) {
-                            Log.w(Tag, "Null user, 'saved artifact' button shouldn't be accessible");
-                            return;
-                        }
-                        if (instance.isChecked()) {
-                            Log.i(Tag, "adding artifact " + lot + " to user's collection: " + uid);
-                            savedArtifactWriter.addSavedArtifact(uid, lot);
-                        } else {
-                            Log.i(Tag, "removing artifact " + lot + " from user's collection: " + uid);
-                            savedArtifactWriter.removeSavedArtifact(uid, lot);
-                        }
-                    }
-                });
-                saveArtifactButton.setClickable(false);
-
-                SavedArtifactReader reader = SavedArtifactReader.getInstance(uid);
-                reader.addOnSavedArtifactChangedListener(lot, new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        saveArtifactButton.setClickable(true);
-                        saveArtifactButton.setChecked(snapshot.exists());
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e(Tag, "listener cancelled", error.toException());
-                    }
-                });
-
-
-                // Comments
-                Button addComment = view.findViewById(R.id.addComment);
-                EditText commentContent = view.findViewById(R.id.commentField);
-                RecyclerView commentSection = view.findViewById(R.id.commentSection);
-                if (user != null) {
-                    DatabaseReference userref = db.getReference("users").child(user.getUid()).child("accountType");
-                    userref.get().addOnSuccessListener(snapshot -> {
-                        String accountType = snapshot.getValue(String.class);
-
-
-                        List<Comment> commentList = new ArrayList<>();
-                        CommentManager commentManager = new CommentManager(this.lot, uid, accountType, getContext(), commentList);
-                        CommentAdapter adapter = new CommentAdapter(commentList, commentManager);
-                        commentSection.setLayoutManager(new LinearLayoutManager(requireContext()));
-                        commentSection.setAdapter(adapter);
-                        commentManager.loadComments(adapter);
+                    List<Comment> commentList = new ArrayList<>();
+                    CommentManager commentManager = new CommentManager(this.lot, uid, accountType, getContext(), commentList);
+                    CommentAdapter adapter = new CommentAdapter(commentList, commentManager);
+                    commentSection.setLayoutManager(new LinearLayoutManager(requireContext()));
+                    commentSection.setAdapter(adapter);
+                    commentManager.loadComments(adapter);
 
                 if (!acc.isAnonymous()) {
                     addComment.setVisibility(View.VISIBLE);
@@ -438,21 +435,20 @@ public class ExpandedArtifactViewFragment extends Fragment{
                                         commentManager.addComment(comment);
                                     }
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                Log.e(Tag, "Error getting account name");
-                                            }
-                                        });
-                                    } else {
-                                        Toast.makeText(getContext(), "Comment cannot be empty.", Toast.LENGTH_SHORT).show();
-                                    }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Log.e(Tag, "Error getting account name");
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(getContext(), "Comment cannot be empty.", Toast.LENGTH_SHORT).show();
                                 }
-                            });
-                        }
-                    });
-                }
+                            }
+                        });
+                    }
+                });
             }
-
+        }
 
         return view;
     }

@@ -23,24 +23,14 @@ public class CommentManager {
     private Context context;
     private List<Comment> commentList;
 
-    public CommentManager(String lotNum, String userUid, Context context, List<Comment> commentList) {
+    public CommentManager(String lotNum, String userUid, String accountType, Context context, List<Comment> commentList) {
         this.lotNum = lotNum;
         this.userUid = userUid;
-        db.getReference("users/" + userUid).child("accountType").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                accountType = snapshot.getValue(String.class);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "Error getting account type");
-            }
-        });
+        this.accountType = accountType;
         this.context = context;
         this.commentList = commentList;
     }
-    public void loadComments() {
+    public void loadComments(CommentAdapter adapter) {
         DatabaseReference ref = db.getReference("artifacts/" + lotNum + "/comments");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -50,6 +40,7 @@ public class CommentManager {
                     Comment comment = curr.getValue(Comment.class);
                     commentList.add(comment);
                 }
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -75,7 +66,6 @@ public class CommentManager {
             Log.e(TAG, "DB returned null id for adding comment");
             Toast.makeText(context, "Failed to add comment.", Toast.LENGTH_SHORT).show();
         }
-        loadComments();
     }
 
     public void deleteComment(Comment comment) {

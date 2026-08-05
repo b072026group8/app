@@ -345,7 +345,6 @@ public class ExpandedArtifactViewFragment extends Fragment{
                     Log.e("Firebase", "Failed to load like count", error.toException());
                 }
             });
-
             // Like button toggled
             likeButton.setOnClickListener(new View.OnClickListener() {
                 @Override

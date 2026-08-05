@@ -152,6 +152,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 updatePagination();
+                currentPage = 0;
+                slicePage();
                 buttonPagination.setText(paginationValues[paginationIndex]);
                 savePagination(paginationIndex);
             }

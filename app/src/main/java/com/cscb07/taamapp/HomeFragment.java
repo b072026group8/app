@@ -98,6 +98,8 @@ public class HomeFragment extends Fragment {
         Button buttonManageItems = view.findViewById(R.id.buttonManageItems);
         Button buttonLogout = view.findViewById(R.id.buttonLogout);
         Button buttonPagination = view.findViewById(R.id.buttonPagination);
+        Button buttonLeft = view.findViewById(R.id.buttonLeft);
+        Button buttonRight = view.findViewById(R.id.buttonRight);
         RecyclerView artifactCardGrid = view.findViewById(R.id.artifactCardGrid);
         EditText searchBar = view.findViewById(R.id.homeSearchEditText);
 

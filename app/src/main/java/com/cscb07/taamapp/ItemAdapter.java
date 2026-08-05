@@ -24,6 +24,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     private LayoutOverrides layoutOverrides;
     private int popBackStackId = -1;
     private int itemLimit = 0;  // Let 0 represent "All"
+    private int currentPage = 0;
     public int getPopBackStackId() { return popBackStackId; }
     public void setPopBackStackId(int popBackStackId) {
         this.popBackStackId = popBackStackId;
@@ -92,6 +93,21 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
     public void setItemLimit(int limit) {
         this.itemLimit = limit;
+        this.currentPage = 0;  // Reset page to zero when we switch pagination
+        notifyDataSetChanged();
+    }
+
+    public void setCurrentPage(int page) {
+        this.currentPage = page;
+        notifyDataSetChanged();
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void updateListDisplay(List<Item> updatedList) {
+        this.itemList = updatedList;
         notifyDataSetChanged();
     }
     public static class ItemViewHolder extends RecyclerView.ViewHolder {

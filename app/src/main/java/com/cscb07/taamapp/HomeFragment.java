@@ -49,6 +49,8 @@ public class HomeFragment extends Fragment {
     private FirebaseDatabase db;
     private DatabaseReference itemsRef;
     private FirebaseUser user;
+    private final String[] paginationValues = {"All", "12", "24"};
+    private int paginationIndex = 0;
 
     /**
      * Creates an instance with default implementations of interfaces.
@@ -92,6 +94,7 @@ public class HomeFragment extends Fragment {
         Button buttonRecyclerView = view.findViewById(R.id.buttonFilterSaved);
         Button buttonManageItems = view.findViewById(R.id.buttonManageItems);
         Button buttonLogout = view.findViewById(R.id.buttonLogout);
+        Button buttonPagination = view.findViewById(R.id.buttonPagination);
         RecyclerView artifactCardGrid = view.findViewById(R.id.artifactCardGrid);
         EditText searchBar = view.findViewById(R.id.homeSearchEditText);
 
@@ -131,6 +134,15 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 logout();
+            }
+        });
+
+        // Pagination Button for artifacts
+        buttonPagination.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updatePagination();
+                buttonPagination.setText(paginationValues[paginationIndex]);
             }
         });
 
@@ -231,6 +243,13 @@ public class HomeFragment extends Fragment {
         if (fragmentManager.getBackStackEntryCount() > 0) {
             // Go to the first view in stack (login page) upon logging out
             fragmentManager.popBackStack(fragmentManager.getBackStackEntryAt(0).getId(), 0);
+        }
+    }
+
+    private void updatePagination() {
+        paginationIndex++;
+        if (paginationIndex > 2) {
+            paginationIndex = 0;
         }
     }
 

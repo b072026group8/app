@@ -296,9 +296,8 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    /*
-    Calling this method automatically cycles to the next pagination setting. All -> 12 -> 24 -> ...
-     */
+
+    //Calling this method automatically cycles to the next pagination setting. All -> 12 -> 24 -> ...
     private void updatePagination() {
         paginationIndex++;
         if (paginationIndex > paginationValues.length - 1) {
@@ -309,9 +308,8 @@ public class HomeFragment extends Fragment {
         slicePage();
     }
 
-    /*
-    Retrieve saved pagination value, and update the button and the actual amount of items on display
-     */
+
+    //Retrieve saved pagination value, and update the button and the actual amount of items on display
     private void loadPaginationPref(Button buttonPagination) {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
         paginationIndex = sharedPreferences.getInt("pagination_index", 0);
@@ -324,9 +322,7 @@ public class HomeFragment extends Fragment {
         slicePage();
     }
 
-    /*
-    Save the current pagination setting using sharedPreferences
-     */
+    //Save the current pagination setting using sharedPreferences
     private void savePagination(int paginationIndex) {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();

@@ -112,7 +112,7 @@ public class HomeFragment extends Fragment {
         savedItemList = savedItemProvider.getValue();
         displayItemList = new ListStrategy<>(itemList);
         searchList = new ItemFilterList(displayItemList);
-        itemAdapter = new ItemAdapter(searchList, getParentFragmentManager().beginTransaction());
+        itemAdapter = new ItemAdapter(new ArrayList<>(), getParentFragmentManager().beginTransaction());
         db = FirebaseDatabase.getInstance();
 
         loadPaginationPref(buttonPagination);
@@ -123,7 +123,8 @@ public class HomeFragment extends Fragment {
 
             if (displayItemList.getListStrategy() == itemList) {
                 searchList.requery();
-                itemAdapter.notifyDataSetChanged();
+                currentPage = 0;
+                slicePage();
             }
         });
 
@@ -133,7 +134,8 @@ public class HomeFragment extends Fragment {
             if (displayItemList.getListStrategy() == previousList) {
                 displayItemList.setListStrategy(list);
                 searchList.requery();
-                itemAdapter.notifyDataSetChanged();
+                currentPage = 0;
+                slicePage();
             }
         });
 
@@ -201,7 +203,8 @@ public class HomeFragment extends Fragment {
                     displayItemList.setListStrategy(itemList);
                 }
                 searchList.requery();
-                itemAdapter.notifyDataSetChanged();
+                currentPage = 0;
+                slicePage();
             }
         });
 
@@ -245,7 +248,8 @@ public class HomeFragment extends Fragment {
                 String query = editable.toString().trim();
                 Log.d(Tag, "new search query: " + query);
                 searchList.queryKeyword(query);
-                itemAdapter.notifyDataSetChanged();
+                currentPage = 0;
+                slicePage();
             }
         });
 
@@ -340,7 +344,7 @@ public class HomeFragment extends Fragment {
     }
 
     private List<Item> getCurrentItemList() {
-        return displayItemList.getListStrategy();
+        return searchList;
     }
     private void slicePage() {
         List<Item> fullList = getCurrentItemList();

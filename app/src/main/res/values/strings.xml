@@ -28,6 +28,8 @@
     <string name="add_comment">Add Comment</string>
     <string name="left">&lt;-</string>
     <string name="right">-&gt;</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
 
     <string-array name="categories_array">
         <item>Painting and Calligraphy</item>

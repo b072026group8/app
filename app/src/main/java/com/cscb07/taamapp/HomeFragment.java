@@ -252,15 +252,22 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /*
+    Calling this method automatically cycles to the next pagination setting. All -> 12 -> 24 -> ...
+     */
     private void updatePagination() {
         paginationIndex++;
-        if (paginationIndex > 2) {
+        if (paginationIndex > paginationValues.length - 1) {
             paginationIndex = 0;
         }
 
+        // Update the amt of items on display
         updateLimitInItemAdaptor();
     }
 
+    /*
+    Retrieve saved pagination value, and update the button and the actual amount of items on display
+     */
     private void loadPaginationPref(Button buttonPagination) {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
         paginationIndex = sharedPreferences.getInt("pagination_index", 0);
@@ -273,6 +280,9 @@ public class HomeFragment extends Fragment {
         updateLimitInItemAdaptor();
     }
 
+    /*
+    Save the current pagination setting using sharedPreferences
+     */
     private void savePagination(int paginationIndex) {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -281,6 +291,9 @@ public class HomeFragment extends Fragment {
         editor.apply();
     }
 
+    /*
+    Update the number of artifacts displayed in the ui
+     */
     private void updateLimitInItemAdaptor() {
         String selectedPagination = paginationValues[paginationIndex];
         int limit = 0;

@@ -420,7 +420,6 @@ public class ExpandedArtifactViewFragment extends Fragment{
                                         String name = snapshot.getValue(String.class);
                                         Comment comment = new Comment(uid, name, commentContent.getText().toString());
                                         commentManager.addComment(comment);
-                                        adapter.notifyItemInserted(adapter.getItemCount() - 1);
                                     }
 
                                     @Override

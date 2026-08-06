@@ -37,6 +37,7 @@ This is an artifact management app for the Toronto Asian Art Museum (TAAM). This
 
 <img width="325" height="650" alt="Screenshot 2026-08-05 235727" src="https://github.com/user-attachments/assets/21df9222-3f27-4cdd-ac18-c4491560ef89" />
 <img width="325" height="650" alt="Screenshot 2026-08-05 235736" src="https://github.com/user-attachments/assets/137acc12-aa81-4440-a2ff-8b71d97ad4e6" />
+
 <img width="325" height="650" alt="Screenshot 2026-08-06 000300" src="https://github.com/user-attachments/assets/de3ab18c-700f-4145-b938-78f1aad24c16" />
 <img width="325" height="650" alt="Screenshot 2026-08-06 000309" src="https://github.com/user-attachments/assets/50e32a01-fdf6-4e14-95c6-b2e34432eb31" />
 
@@ -51,7 +52,18 @@ This is an artifact management app for the Toronto Asian Art Museum (TAAM). This
 
 <img width="325" height="650" alt="Screenshot 2026-08-06 001125" src="https://github.com/user-attachments/assets/abb72289-7a01-4af6-88f2-b244f0235636" />
 <img width="325" height="650" alt="Screenshot 2026-08-06 001207" src="https://github.com/user-attachments/assets/1b24f4fd-b765-4ed9-b720-b329138690a2" />
+
 <img width="325" height="650" alt="Screenshot 2026-08-06 001224" src="https://github.com/user-attachments/assets/fa4ded74-053d-4fd9-aaad-2499adbb85e7" />
 <img width="325" height="650" alt="Screenshot 2026-08-06 001336" src="https://github.com/user-attachments/assets/76c86d40-a21b-4780-b915-370f54f1f0a7" />
-<img width="325" height="650" alt="Screenshot 2026-08-06 001607" src="https://github.com/user-attachments/assets/61932829-cfe8-4b66-998e-efeb3892987a" />
+
+
+### Adding, Editing, Deleting Artifacts:
+- Admins can add new artifacts and specify its fields: Lot number, artifact name, description, category, material, dynasty/period. The rest are optional fields.
+- App prevents duplicate lot numbers. They are always unique.
+- Admins can delete any artifacts (purpose is to remove old artifacts no longer displayed)
+- Admins can edit an existing artifacts.
+- Image uploading is handled by Supabase.
+
+<img width="325" height="650" alt="Screenshot 2026-08-06 001843" src="https://github.com/user-attachments/assets/814b4e82-12d2-4568-b70c-8d8af0e6cf3c" />
+<img width="325" height="650" alt="Screenshot 2026-08-06 001853" src="https://github.com/user-attachments/assets/4fa15673-c71d-4ce1-9990-ebda75ea176f" />
 

@@ -150,7 +150,9 @@ public class EditArtifactFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                dbAccess.changeLotNumber(editable.toString());
+                if (dbAccess != null) {
+                    dbAccess.changeLotNumber(editable.toString());
+                }
             }
         });
         editTextName = view.findViewById(R.id.editTextName);

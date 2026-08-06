@@ -145,8 +145,14 @@ public class EditArtifactFragmentTest {
                     inputItem.setDynastyPeriod(EditArtifactFragment.SPINNER_DEFAULT_DYNASTY);
                     System.out.println("\tmissing Dynasty/Period");
                     break;
+                case 5:
+                    inputItem.setLotNumber("");
+                    System.out.println("\tmissing Lot number");
+                    break;
             }
-            EditArtifactFragment sut = new EditArtifactFragment(null, null, new TestLogger());
+            DbEditorAccess access = mock(DbEditorAccess.class);
+            when(access.isLotNumberUnique()).thenReturn(false);
+            EditArtifactFragment sut = new EditArtifactFragment(null, access, new TestLogger());
             stubFields(sut, inputItem);
 
             boolean result = sut.validateFields();
@@ -158,7 +164,7 @@ public class EditArtifactFragmentTest {
     @Test
     public void validateFields_FilledItem_ReturnsTrue() {
         Item inputItem = new Item(
-                "",
+                "asdf",
                 "name",
                 "description",
                 "category",
@@ -174,7 +180,9 @@ public class EditArtifactFragmentTest {
                 "",
                 ""
         );
-        EditArtifactFragment sut = new EditArtifactFragment(null, null, new TestLogger());
+        DbEditorAccess access = mock(DbEditorAccess.class);
+        when(access.isLotNumberUnique()).thenReturn(false);
+        EditArtifactFragment sut = new EditArtifactFragment(null, access, new TestLogger());
         stubFields(sut, inputItem);
 
         boolean result = sut.validateFields();
@@ -233,6 +241,7 @@ public class EditArtifactFragmentTest {
             sut = new EditArtifactFragment(item, access, new TestLogger());
         }
         stubFields(sut, item);
+        sut.editTextLotNumber = spy(sut.editTextLotNumber);
 
         sut.onSave();
 

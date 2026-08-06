@@ -70,8 +70,10 @@ This is an artifact management app for the Toronto Asian Art Museum (TAAM). This
 # Installation:
 
 ### 1. Clone the repository:
-`git clone https://github.com/b072026group8/app
-cd app`
+```bash
+git clone https://github.com/b072026group8/app  
+cd app
+```
 
 ### 2. Open in Android Studio:
 - Launch Android Studio.

@@ -84,7 +84,20 @@ public class EditArtifactFragmentInstrumentedTest {
             @NonNull
             @Override
             public Fragment instantiate(@NonNull ClassLoader classLoader, @NonNull String className) {
-                return new EditArtifactFragment(inputItem);
+                return new EditArtifactFragment(inputItem, new DbEditorAccess() {
+                    @Override
+                    public String getUniqueLotNumber() { return "asdf"; }
+
+                    @Override
+                    public void changeLotNumber(String lotNumber) { }
+                    @Override
+                    public boolean isLotNumberUnique() { return false; }
+
+                    @Override
+                    public DbEditorAccessResult editItem(Item item) { return DbEditorAccessResult.SUCCESS; }
+
+                    @Override
+                    public void cancelAdd(String lotNumber) { } });
             }
         };
 
@@ -93,7 +106,7 @@ public class EditArtifactFragmentInstrumentedTest {
             scenario.onFragment(f -> {
 
 
-                assertEquals(inputItem.getLotNumber(), f.editTextLotNumber.getText());
+                assertEquals(inputItem.getLotNumber(), f.editTextLotNumber.getText().toString());
                 assertEquals(inputItem.getDescription(), f.editTextArtifactDescription.getText().toString());
                 assertEquals(inputItem.getCategory(), f.getSpinnerCategory());
                 assertEquals(inputItem.getMaterial(), f.getSpinnerMaterial());

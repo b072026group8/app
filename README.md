@@ -67,3 +67,17 @@ This is an artifact management app for the Toronto Asian Art Museum (TAAM). This
 <img width="325" height="650" alt="Screenshot 2026-08-06 001843" src="https://github.com/user-attachments/assets/814b4e82-12d2-4568-b70c-8d8af0e6cf3c" />
 <img width="325" height="650" alt="Screenshot 2026-08-06 001853" src="https://github.com/user-attachments/assets/4fa15673-c71d-4ce1-9990-ebda75ea176f" />
 
+# Installation:
+
+### 1. Clone the repository:
+`git clone https://github.com/b072026group8/app
+cd app`
+
+### 2. Open in Android Studio:
+- Launch Android Studio.
+- Click Open and select cloned app project directory.
+
+### 3. Sync & Run:
+- Wait for Gradle to finish syncing dependencies (Can take about 10 sec to 3 minutes)
+- Connect to Android Device or launch an emulator (For our demo, Pixel 8 was used)
+- Click Run

@@ -265,12 +265,14 @@ public class EditArtifactFragment extends Fragment {
         );
     }
      boolean validateFields() {
-        if (editTextLotNumber.getText().toString().trim().isEmpty()) {
-            errorEmptyField("Lot Number");
-            return false;
-        } else if (dbAccess.isLotNumberUnique()) {
-            Toast.makeText(getContext(), "Lot number is not unique.", Toast.LENGTH_SHORT).show();
-            return false;
+        if (initialItem == null) {
+            if (editTextLotNumber.getText().toString().trim().isEmpty()) {
+                errorEmptyField("Lot Number");
+                return false;
+            } else if (dbAccess.isLotNumberUnique()) {
+                Toast.makeText(getContext(), "Lot number is not unique.", Toast.LENGTH_SHORT).show();
+                return false;
+            }
         }
         if (editTextName.getText().toString().trim().isEmpty()) {
             errorEmptyField("Name");

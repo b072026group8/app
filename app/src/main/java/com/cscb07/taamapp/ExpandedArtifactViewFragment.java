@@ -166,29 +166,37 @@ public class ExpandedArtifactViewFragment extends Fragment{
 
                     relatedArtifactProvider = getOrderingFactory().getOrdering(item);
                     relatedArtifactProvider.registerObserver(relatedArtifactUpdateListener);
-                    if (!item.getCulturalOrigin().isEmpty()) {
+                    if (!item.getCulturalOrigin().trim().isEmpty()) {
                         culturalOriginHeader.setVisibility(View.VISIBLE);
+                        culturalOrigin.setVisibility(View.VISIBLE);
                     }
-                    if (!item.getDimensions().isEmpty()) {
+                    if (!item.getDimensions().trim().isEmpty()) {
                         dimensionsHeader.setVisibility(View.VISIBLE);
+                        dimensions.setVisibility(View.VISIBLE);
                     }
-                    if (!item.getConditionReport().isEmpty()) {
+                    if (!item.getConditionReport().trim().isEmpty()) {
                         conditionReportHeader.setVisibility(View.VISIBLE);
+                        dimensions.setVisibility(View.VISIBLE);
                     }
-                    if (!item.getCurrentLocation().isEmpty()) {
+                    if (!item.getCurrentLocation().trim().isEmpty()) {
                         currentLocationHeader.setVisibility(View.VISIBLE);
+                        currentLocation.setVisibility(View.VISIBLE);
                     }
-                    if (!item.getAcquisitionMethod().isEmpty()) {
+                    if (!item.getAcquisitionMethod().trim().isEmpty()) {
                         acquisitionMethodHeader.setVisibility(View.VISIBLE);
+                        acquisitionMethod.setVisibility(View.VISIBLE);
                     }
-                    if (!item.getProvenance().isEmpty()) {
+                    if (!item.getProvenance().trim().isEmpty()) {
                         provenanceHeader.setVisibility(View.VISIBLE);
+                        provenance.setVisibility(View.VISIBLE);
                     }
-                    if (!item.getAccessionNumber().isEmpty()) {
+                    if (!item.getAccessionNumber().trim().isEmpty()) {
                         accessionNumberHeader.setVisibility(View.VISIBLE);
+                        accessionNumber.setVisibility(View.VISIBLE);
                     }
-                    if (!item.getNotes().isEmpty()) {
+                    if (!item.getNotes().trim().isEmpty()) {
                         notesHeader.setVisibility(View.VISIBLE);
+                        notes.setVisibility(View.VISIBLE);
                     }
                 }
 

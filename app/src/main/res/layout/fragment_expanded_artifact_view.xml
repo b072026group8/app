@@ -168,7 +168,8 @@
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/textView10"
@@ -185,7 +186,8 @@
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/textView11"
@@ -202,7 +204,8 @@
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/textView12"
@@ -219,7 +222,8 @@
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/textView13"
@@ -236,7 +240,8 @@
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/textView14"
@@ -253,7 +258,8 @@
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/textView15"
@@ -270,7 +276,8 @@
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/textView16"
@@ -287,7 +294,16 @@
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/relatedArtifactsHead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Related Artifacts:"
+                android:textColor="@color/lightgold"
+                android:textSize="24sp"
+                android:visibility="visible" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/relatedArtifactsList"

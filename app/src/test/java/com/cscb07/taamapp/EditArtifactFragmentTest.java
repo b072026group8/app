@@ -75,8 +75,7 @@ public class EditArtifactFragmentTest {
      * Set up mocks of the value fields of the fragment f, using param item for the values.
      */
     private void stubFields(EditArtifactFragment f, Item item) {
-        f.textViewLotNumber = mock(TextView.class);
-        when(f.textViewLotNumber.getText()).thenReturn(item.getLotNumber());
+        f.editTextLotNumber = new MockableEditText(item.getLotNumber());
         f.editTextName = new MockableEditText(item.getArtifactName());
         f.editTextArtifactDescription = new MockableEditText(item.getDescription());
         f.spinnerArtifactCategory = mockSpinner(item.getCategory());
@@ -237,7 +236,7 @@ public class EditArtifactFragmentTest {
 
         sut.onSave();
 
-        verify(sut.textViewLotNumber, never()).setText(any(CharSequence.class));
+        verify(sut.editTextLotNumber, never()).setText(any(CharSequence.class));
         verify(access, atLeastOnce()).editItem(any());
     }
 
@@ -246,8 +245,7 @@ public class EditArtifactFragmentTest {
         final String Lot = "sample-lot-123";
         DbEditorAccess access = mock(DbEditorAccess.class);
         EditArtifactFragment sut = new EditArtifactFragment(null, access, new TestLogger());
-        sut.textViewLotNumber = mock(TextView.class);
-        when(sut.textViewLotNumber.getText()).thenReturn(Lot);
+        sut.editTextLotNumber = new MockableEditText(Lot);
 
         ThrowingRunnable testedAction = sut::onCancel;
 

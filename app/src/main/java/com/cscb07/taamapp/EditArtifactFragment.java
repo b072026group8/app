@@ -1,6 +1,9 @@
 package com.cscb07.taamapp;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +40,8 @@ public class EditArtifactFragment extends Fragment {
     private final boolean isAdding() { return initialItem == null; }
     private final DbEditorAccess dbAccess;
     private final Logger log;
-    TextView textViewLotNumber;
     EditText
+            editTextLotNumber,
             editTextName,
             editTextArtifactDescription,
             editTextCulturalOrigin,
@@ -137,7 +140,19 @@ public class EditArtifactFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_artifact, container, false);
         imageUploader = new SupabaseImageUploader(requireContext());
-        textViewLotNumber = view.findViewById(R.id.textViewLotNumber);
+        editTextLotNumber = view.findViewById(R.id.textViewLotNumber);
+        editTextLotNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                dbAccess.changeLotNumber(editable.toString());
+            }
+        });
         editTextName = view.findViewById(R.id.editTextName);
         editTextArtifactDescription = view.findViewById(R.id.editTextArtifactDescription);
         editTextCulturalOrigin = view.findViewById(R.id.editTextCulturalOrigin);
@@ -172,14 +187,15 @@ public class EditArtifactFragment extends Fragment {
         if (initialItem == null) {
             if (dbAccess == null) {
                 log.wtf(TAG, "dbAccess is null");
-                textViewLotNumber.setText("Config Error");
+                editTextLotNumber.setText("Config Error");
             } else {
-                textViewLotNumber.setText(dbAccess.getUniqueLotNumber());
+                editTextLotNumber.setText(dbAccess.getUniqueLotNumber());
             }
 
         } else {
             Item initial = initialItem;
-            textViewLotNumber.setText(initial.getLotNumber());
+            editTextLotNumber.setRawInputType(InputType.TYPE_NULL);
+            editTextLotNumber.setText(initial.getLotNumber());
             editTextName.setText(initial.getArtifactName());
             editTextArtifactDescription.setText(initial.getDescription());
             editTextCulturalOrigin.setText(initial.getCulturalOrigin());
@@ -231,7 +247,7 @@ public class EditArtifactFragment extends Fragment {
     }
     Item createItem(String imageUrl) {
         return new Item(
-                getTextViewValue(textViewLotNumber),
+                getTextViewValue(editTextLotNumber),
                 getTextViewValue(editTextName),
                 getTextViewValue(editTextArtifactDescription),
                 getSpinnerCategory(),
@@ -249,6 +265,15 @@ public class EditArtifactFragment extends Fragment {
         );
     }
      boolean validateFields() {
+        if (initialItem == null) {
+            if (editTextLotNumber.getText().toString().trim().isEmpty()) {
+                errorEmptyField("Lot Number");
+                return false;
+            } else if (dbAccess.isLotNumberUnique()) {
+                Toast.makeText(getContext(), "Lot number is not unique.", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
         if (editTextName.getText().toString().trim().isEmpty()) {
             errorEmptyField("Name");
             return false;
@@ -283,7 +308,7 @@ public class EditArtifactFragment extends Fragment {
             if (dbAccess == null)
                 log.wtf(TAG, "dbAccess is null, can't cancel addition");
             else
-                dbAccess.cancelAdd(textViewLotNumber.getText().toString().trim());
+                dbAccess.cancelAdd(editTextLotNumber.getText().toString().trim());
         }
         if (cancelling) {
             exitEditArtifact();
@@ -330,7 +355,7 @@ public class EditArtifactFragment extends Fragment {
             return;
         }
 
-        String lotNumber = getTextViewValue(textViewLotNumber);
+        String lotNumber = getTextViewValue(editTextLotNumber);
 
         imageUploader.uploadImage(
                 selectedImageUri,

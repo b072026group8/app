@@ -16,6 +16,7 @@ import com.google.firebase.database.ValueEventListener;
  */
 public class FireSupaDbEditorAccess implements DbEditorAccess{
     public static final String TAG = "FireSupaDbEditorAccess";
+    private boolean isUnique;
     private final FirebaseDatabase db;
     private final DatabaseReference dbRef;
     private final String subFieldPath = "value";
@@ -25,6 +26,7 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
     private AddedItemChangeListener addChangeListener = null;
 
     public FireSupaDbEditorAccess() {
+        isUnique = false;
         db = FirebaseDatabase.getInstance();
         dbRef = db.getReference("artifacts/");
     }
@@ -39,16 +41,39 @@ public class FireSupaDbEditorAccess implements DbEditorAccess{
             addedItemRef.removeEventListener(addChangeListener);
         }
 
+        isUnique = false;
         addedItemRef = null;
         addChangeListener = null;
     }
     @Override
     public String getUniqueLotNumber() {
         removeAddedKey();
+        isUnique = true;
         addedItemRef = dbRef.push();
         Log.i(TAG, "Adding item - created key: " + addedItemRef.getKey());
 
         return addedItemRef.getKey();
+    }
+
+    @Override
+    public void changeLotNumber(String lotNumber) {
+        removeAddedKey();
+        addedItemRef = dbRef.child(lotNumber);
+        addedItemRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                isUnique = snapshot.exists();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error checking if lot number is in use.");
+            }
+        });
+    }
+    @Override
+    public boolean isLotNumberUnique() {
+        return isUnique;
     }
 
     @Override
